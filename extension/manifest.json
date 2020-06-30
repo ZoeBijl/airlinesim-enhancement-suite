@@ -1,0 +1,66 @@
+{
+  "name": "AirlineSim Enhancement Suite",
+  "version": "0.6.4",
+  "description": "Great quality of live improvements for AirlineSim",
+  "permissions": ["activeTab", "declarativeContent", "storage","unlimitedStorage"],
+  "options_page": "options.html",
+  "background": {
+    "scripts": ["background.js"],
+    "persistent": false
+  },
+  "page_action": {
+    "default_popup": "popup.html",
+    "default_icon": {
+      "16": "images/AES-logo-16.png",
+      "32": "images/AES-logo-32.png",
+      "48": "images/AES-logo-48.png",
+      "128": "images/AES-logo-128.png"
+    }
+  },
+  "content_scripts": [
+    {
+      "matches": ["https://*.airlinesim.aero/app/com/inventory/*"],
+      "js": ["js/jquery-3.4.1.min.js","content_inventory.js"]
+    },
+    {
+      "matches": ["https://*.airlinesim.aero/app/info/enterprises/*tab=3"],
+      "js": ["js/jquery-3.4.1.min.js","content_fligthSchedule.js"]
+    },
+    {
+      "matches": ["https://*.airlinesim.aero/app/enterprise/settings*"],
+      "js": ["js/jquery-3.4.1.min.js","content_settings.js"]
+    },
+    {
+      "matches": ["https://*.airlinesim.aero/app/enterprise/dashboard*"],
+      "js": ["js/jquery-3.4.1.min.js","content_dashboard.js"]
+    },
+    {
+      "matches": ["https://*.airlinesim.aero/action/enterprise/staffOverview*"],
+      "js": ["js/jquery-3.4.1.min.js","content_personelManagement.js"]
+    },
+    {
+      "matches": ["https://*.airlinesim.aero/app/info/enterprises/*"],
+      "js": ["js/jquery-3.4.1.min.js","content_enterpriceOverview.js"]
+    },
+    {
+      "matches": ["https://*.airlinesim.aero/action/info/flight*"],
+      "js": ["js/jquery-3.4.1.min.js","content_flightInfo.js"]
+    },
+    {
+      "matches": ["https://*.airlinesim.aero/app/fleets/aircraft/*/1*"],
+      "js": ["js/jquery-3.4.1.min.js","content_aircraftFlights.js"]
+    },
+    {
+      "matches": ["https://*.airlinesim.aero/app/fleets*"],
+      "js": ["js/jquery-3.4.1.min.js","content_fleetManagement.js"]
+    }
+  ],
+
+  "icons": {
+    "16": "images/AES-logo-16.png",
+    "32": "images/AES-logo-32.png",
+    "48": "images/AES-logo-48.png",
+    "128": "images/AES-logo-128.png"
+  },
+  "manifest_version": 2
+}

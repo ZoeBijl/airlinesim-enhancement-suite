@@ -241,7 +241,7 @@ function fltmng_formatMoney(value){
   if(value < 0){
     span.addClass('bad');
   }
-  text = text + value + ' AS$';
+  text = text + Intl.NumberFormat().format(value) + ' AS$';
   span.text(text);
   return span;
 }

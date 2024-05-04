@@ -1,0 +1,56 @@
+{
+  "background": {
+    "service_worker": "background.js"
+  }, 
+  "content_scripts": [ {
+    "js": [ "js/jquery-3.4.1.min.js", "content_inventory.js" ],
+    "matches": [ "https://*.airlinesim.aero/app/com/inventory/*" ]
+  }, {
+    "js": [ "js/jquery-3.4.1.min.js", "content_fligthSchedule.js" ],
+    "matches": [ "https://*.airlinesim.aero/app/info/enterprises/*tab=3" ]
+  }, {
+    "js": [ "js/jquery-3.4.1.min.js", "content_settings.js" ],
+    "matches": [ "https://*.airlinesim.aero/app/enterprise/settings*" ]
+  }, {
+    "js": [ "js/jquery-3.4.1.min.js", "content_dashboard.js" ],
+    "matches": [ "https://*.airlinesim.aero/app/enterprise/dashboard*" ]
+  }, {
+    "js": [ "js/jquery-3.4.1.min.js", "content_personelManagement.js" ],
+    "matches": [ "https://*.airlinesim.aero/action/enterprise/staffOverview*" ]
+  }, {
+    "js": [ "js/jquery-3.4.1.min.js", "content_enterpriceOverview.js" ],
+    "matches": [ "https://*.airlinesim.aero/app/info/enterprises/*" ]
+  }, {
+    "js": [ "js/jquery-3.4.1.min.js", "content_flightInfo.js" ],
+    "matches": [ "https://*.airlinesim.aero/action/info/flight*" ]
+  }, {
+    "js": [ "js/jquery-3.4.1.min.js", "content_aircraftFlights.js" ],
+    "matches": [ "https://*.airlinesim.aero/app/fleets/aircraft/*/1*" ]
+  }, {
+    "js": [ "js/jquery-3.4.1.min.js", "content_fleetManagement.js" ],
+    "matches": [ "https://*.airlinesim.aero/app/fleets*" ]
+  } ],
+  "description": "Great quality of live improvements for AirlineSim",
+   "icons": {
+      "128": "images/AES-logo-128.png",
+      "16": "images/AES-logo-16.png",
+      "32": "images/AES-logo-32.png",
+      "48": "images/AES-logo-48.png"
+   },
+  "key": "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAlgUt+9pr5xsoJIdZtv2s/miPjNaUMf5NdIRH6wQzgWpGzMCwf46cUSL0FbpnIo6E9d6pITalABU8Dx72/isyas/da0EQNCQkYxhvu2YakUyUMyzKg0jPuxR+VyaEzDMVQKyVD1xZb/jjOkHXvGew/EHPw9BzCdhKRptRqo4gqdgifS0/xQFiqneA35Hhqwo9bh5zfhZpdMsssMHH3uGGm1f4Yeq+j2ZUtvf74v8pWR5+sVI/dFhTSpQaT60sWFYkPVwtpQ5jUwqm9vDyAH0obZxVtBqI5UkmjEJsCXmQW6QdC4+gRwTgrKc137SH+mUVRHfcXogMSa72+szX63pMUQIDAQAB",
+  "manifest_version": 3,
+  "name": "AirlineSim Enhancement Suite",
+  "action": {
+    "default_icon": {
+      "128": "images/AES-logo-128.png",
+      "16": "images/AES-logo-16.png",
+      "32": "images/AES-logo-32.png",
+      "48": "images/AES-logo-48.png"
+    }
+  },
+  "permissions": [ "activeTab", "declarativeContent", "storage", "unlimitedStorage" ],
+  "host_permissions": [
+    "https://*.airlinesim.aero/"
+  ],
+  "version": "0.6.6"
+}

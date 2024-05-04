@@ -84,20 +84,65 @@ function displayRouteManagement(){
   chrome.storage.local.get([scheduleKey], function(result) {
     let scheduleData = result[scheduleKey];
     if(scheduleData){
-      //TABLE
+      // Table
       generateRouteManagementTable(scheduleData);
-      //BUTTONS OPTIONS
-      let divFieldset = $('<fieldset></fieldset>').html('<legend>Options</legend>');
-      let space = '<span> </span>'
-      let btn1 = $('<button type="button" class="btn btn-default">select first 10</button>');
-      let btn2 = $('<button type="button" class="btn btn-default">hide checked</button>');
-      let btn3 = $('<button type="button" class="btn btn-default">open inventory (max 10)</button>');
-      let btn5 = $('<button type="button" class="btn btn-default">reload table</button>');
-      divFieldset.append(btn1,space,btn2,space,btn3,space,btn5);
-      let optionsDiv = $('<div class="col-md-4"></div>').append(divFieldset);
-      //Btn actions
-      //Select 50
-      btn1.click( function(){
+
+      // Option buttons
+      let fieldsetEl = document.createElement("fieldset")
+      let legendEl = document.createElement("legend")
+      let buttonGroupEl = document.createElement("div")
+
+      let buttonElements = {
+        "selectFirstTen": {
+          "label": "select first 10"
+        },
+        "hideChecked": {
+          "label": "hide checked"
+        },
+        "openInventory": {
+          "label": "open inventory (max 10)"
+        },
+        "reloadTable": {
+          "label": "reload table"
+        }
+      }
+      
+      for (let key in buttonElements) {
+        let buttonObj = buttonElements[key]
+        let buttonEl = document.createElement("button")
+        let buttonClassNames = buttonObj?.classNames
+        let buttonType = buttonObj?.type
+        let buttonDefaultClassNames = "btn btn-default"
+        buttonEl.innerText = buttonObj.label
+        
+        if (buttonType) {
+          buttonEl.setAttribute("type", buttonType)
+        } else {
+          buttonEl.setAttribute("type", "button")
+        }
+        
+        if (buttonClassNames) {
+          buttonEl.className = buttonClassNames
+        } else {
+          buttonEl.className = buttonDefaultClassNames
+        }
+        
+        buttonObj.element = buttonEl
+        
+        buttonGroupEl.append(buttonEl)
+      }
+      
+      legendEl.innerText = "Options"
+      buttonGroupEl.classList.add("btn-group")
+      
+      fieldsetEl.append(legendEl, buttonGroupEl)
+      
+      let optionsDiv = $('<div class="col-md-4"></div>').append(fieldsetEl);
+      
+      // Button actions
+      
+      // Select first ten
+      buttonElements["selectFirstTen"].element.addEventListener("click", function(){
         let count = 0
         $('#aes-table-routeManagement tbody tr').each(function(){
           $(this).find("input").prop('checked', true);
@@ -107,12 +152,14 @@ function displayRouteManagement(){
           }
         })
       });
-      //Remove checked
-      btn2.click( function(){
+
+      // Remove checked
+      buttonElements["hideChecked"].element.addEventListener("click", function(){
         $('#aes-table-routeManagement tbody tr').has('input:checked').remove();
       });
-      //Open Inventory
-      btn3.click( function(){
+
+      // Open Inventory
+      buttonElements["openInventory"].element.addEventListener("click", function(){
         //Get checked collumns
         let pages = $('#aes-table-routeManagement tbody tr').has('input:checked').map(function() {
           let orgdest = $(this).attr('id');
@@ -122,6 +169,7 @@ function displayRouteManagement(){
           let url = 'https://'+server+'.airlinesim.aero/app/com/inventory/'+orgdest;
           return url;
         }).toArray();
+
         //Open new tabs
         for (let i = 0; i < pages.length; i++) {
           window.open(pages[i], '_blank');
@@ -130,8 +178,9 @@ function displayRouteManagement(){
           }
         }
       });
-      //Reload table
-      btn5.click( function(){
+
+      // Reload table reloadTable
+      buttonElements["reloadTable"].element.addEventListener("click", function(){
         generateRouteManagementTable(scheduleData);
       });
       let divRow = $('<div class="row"></div>').append(optionsDiv,displayRouteManagementFilters(),displayRouteManagementCollumns())

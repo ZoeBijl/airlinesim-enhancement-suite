@@ -230,7 +230,7 @@ function formatMoney(value){
   valueEl.innerText = formattedValue
   currencyEl.innerText = " AS$"
   
-  container.classList.add("aes-text-right")
+  container.classList.add("aes-text-right", "aes-no-text-wrap")
   container.append(indicatorEl, valueEl, currencyEl)
   
   return container

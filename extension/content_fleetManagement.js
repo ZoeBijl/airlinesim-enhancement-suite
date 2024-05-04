@@ -167,7 +167,7 @@ function fltmng_display(){
 function fltmng_displayAircraftProfit(){
   let table = $('.as-page-fleet-management > .row > .col-md-9 > .as-panel:eq(0) table');
   //Head
-  let th = ['<th rowspan="2">Profit/Loss</th>','<th rowspan="2">Extract date</th>'];
+  let th = ['<th rowspan="2" class="aes-text-right">Profit/Loss</th>','<th rowspan="2">Extract date</th>'];
   $('thead tr:eq(0)',table).append(th);
   //Body
   $('tbody tr',table).each(function(){
@@ -186,7 +186,7 @@ function fltmng_displayAircraftProfit(){
     });
     let td = [];
     if(date){
-      td.push($('<td></td>').html(fltmng_formatMoney(profit)));
+      td.push(fltmng_formatMoney(profit));
       td.push($('<td></td>').html(fltmng_formatDate(date)+'<br>'+time));
     } else {
       td.push('<td></td>','<td></td>');
@@ -232,18 +232,29 @@ function fltmng_getServerName(){
   return server[0];
 }
 function fltmng_formatMoney(value){
-  let span = $('<span></span>');
-  let text = '';
-  if(value > 0){
-    span.addClass('good');
-    text = '+'
+  let container = document.createElement("td")
+  let formattedValue = Intl.NumberFormat().format(value)
+  let indicatorEl = document.createElement("span")
+  let valueEl = document.createElement("span")
+  let currencyEl = document.createElement("span")
+
+  valueEl.innerText = formattedValue
+  currencyEl.innerText = " AS$"
+
+  if (value >= 0) {
+    valueEl.classList.add("good")
+    indicatorEl.innerText = "+"
   }
-  if(value < 0){
-    span.addClass('bad');
+
+  if (value < 0) {
+    valueEl.classList.add("bad")
+    indicatorEl.innerText = "-"
   }
-  text = text + Intl.NumberFormat().format(value) + ' AS$';
-  span.text(text);
-  return span;
+
+  container.classList.add("aes-text-right")
+  container.append(indicatorEl, valueEl, currencyEl)
+
+  return container
 }
 function fltmng_formatDate(date){
   return date.substring(0, 4)+'-'+date.substring(4, 6)+'-'+date.substring(6, 8);

@@ -187,7 +187,7 @@ function fltmng_displayAircraftProfit(){
     let td = [];
     if(date){
       td.push($('<td></td>').html(fltmng_formatMoney(profit)));
-      td.push($('<td></td>').html(fltmng_formatDate(date)+' '+time));
+      td.push($('<td></td>').html(fltmng_formatDate(date)+'<br>'+time));
     } else {
       td.push('<td></td>','<td></td>');
     }

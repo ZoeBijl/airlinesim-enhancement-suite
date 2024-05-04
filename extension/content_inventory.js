@@ -769,7 +769,7 @@ function buildHistoryTable(){
       th1.push('<th>Load</th>');
       th1.push('<th>&Delta; %</th>');
       //index
-      th1.push('<th>Index</th>');
+      th1.push('<th class="aes-text-right">Index</th>');
     }
 
 

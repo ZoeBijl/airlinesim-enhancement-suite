@@ -212,16 +212,16 @@ function getAnalysis(flights, prices, storedData){
     displayPrice:function(cmp,type){
       switch (type) {
         case 'current':
-          return this.data[cmp].currentPrice+' AS$ ('+displayPerc(this.data[cmp].currentPricePoint,'price')+')';
+          return formatCurrency(this.data[cmp].currentPrice)+' AS$ ('+displayPerc(this.data[cmp].currentPricePoint,'price')+')';
         case 'new':
           if(this.data[cmp].newPrice){
-            return this.data[cmp].newPrice+' AS$ ('+displayPerc(this.data[cmp].newPricePoint,'price')+')';
+            return formatCurrency(this.data[cmp].newPrice)+' AS$ ('+displayPerc(this.data[cmp].newPricePoint,'price')+')';
           } else {
             return '-';
           }
         case 'analysis':
           if(this.data[cmp].valid){
-            return this.data[cmp].analysisPrice+' AS$ ('+displayPerc(this.data[cmp].analysisPricePoint,'price')+')';
+            return formatCurrency(this.data[cmp].analysisPrice)+' AS$ ('+displayPerc(this.data[cmp].analysisPricePoint,'price')+')';
           } else {
             return '-';
           }
@@ -494,12 +494,12 @@ function displayAnalysis(analysis,prices){
   let th = [];
   th.push('<th>SC</th>');
   th.push('<th>Note</th>');
-  th.push('<th>Analysis Price</th>');
+  th.push('<th class="aes-text-right">Analysis Price</th>');
   th.push('<th>Load</th>');
-  th.push('<th>Index</th>');
-  th.push('<th>Current Price</th>');
+  th.push('<th class="aes-text-right">Index</th>');
+  th.push('<th class="aes-text-right">Current Price</th>');
   th.push('<th>Recommendation</th>');
-  th.push('<th>New Price</th>');
+  th.push('<th class="aes-text-right">New Price</th>');
   let headRow = $('<tr></tr>').append(th);
   let thead = $('<thead></thead>').append(headRow);
 
@@ -509,12 +509,12 @@ function displayAnalysis(analysis,prices){
     let td = [];
     td.push('<td>'+cmp+'</td>');
     td.push('<td>'+analysis.note(cmp)+'</td>');
-    td.push('<td>'+analysis.displayPrice(cmp,'analysis')+'</td>');
+    td.push('<td class="aes-text-right">'+analysis.displayPrice(cmp,'analysis')+'</td>');
     td.push('<td>'+analysis.displayLoad(cmp)+'</td>');
-    td.push($('<td></td>').html(analysis.displayIndex(cmp)));
-    td.push('<td>'+analysis.displayPrice(cmp,'current')+'</td>');
+    td.push($('<td class="aes-text-right"></td>').html(analysis.displayIndex(cmp)));
+    td.push('<td class="aes-text-right">'+analysis.displayPrice(cmp,'current')+'</td>');
     td.push('<td>'+analysis.displayRec(cmp)+'</td>');
-    td.push('<td>'+analysis.displayPrice(cmp,'new')+'</td>');
+    td.push('<td class="aes-text-right">'+analysis.displayPrice(cmp,'new')+'</td>');
     let row = $('<tr></tr>').append(td);
     tbody.append(row);
   }
@@ -527,7 +527,7 @@ function displayAnalysis(analysis,prices){
   tf.push('<th>Total PAX</th>');
   tf.push('<td colspan="2"></td>');
   tf.push($('<td></td>').html(analysis.displayTotalLoad('pax')));
-  tf.push($('<td></td>').html(analysis.displayTotalIndex('pax')));
+  tf.push($('<td class="aes-text-right"></td>').html(analysis.displayTotalIndex('pax')));
   tf.push('<td colspan="3"></td>');
   footRow.push($('<tr></tr>').append(tf));
   //Total
@@ -535,7 +535,7 @@ function displayAnalysis(analysis,prices){
   tf.push('<th>Total PAX+Cargo</th>');
   tf.push('<td colspan="2"></td>');
   tf.push($('<td></td>').html(analysis.displayTotalLoad('all')));
-  tf.push($('<td></td>').html(analysis.displayTotalIndex('all')));
+  tf.push($('<td class="aes-text-right"></td>').html(analysis.displayTotalIndex('all')));
   tf.push('<td colspan="3"></td>');
   footRow.push($('<tr></tr>').append(tf));
   let tfoot = $('<tfoot></tfoot>').append(footRow);
@@ -747,29 +747,29 @@ function buildHistoryTable(){
       let date = dates[i];
       if(i){
         th.push($('<th colspan="5"></th>').text(formatDate(date)));
-        th1.push('<th>Price</th>');
+        th1.push('<th class="aes-text-right">Price</th>');
         th1.push('<th>&Delta; %</th>');
         th1.push('<th>Load</th>');
         th1.push('<th>&Delta; %</th>');
         //Index
-        th1.push('<th>Index</th>');
+        th1.push('<th class="aes-text-right">Index</th>');
       } else {
         th.push($('<th colspan="3"></th>').text(formatDate(date)));
-        th1.push('<th>Price</th>');
+        th1.push('<th class="aes-text-right">Price</th>');
         th1.push('<th>Load</th>');
         //Index
-        th1.push('<th>Index</th>');
+        th1.push('<th class="aes-text-right">Index</th>');
       }
     }
     if(showNow){
       //Now
       th.push($('<th colspan="4"></th>').text('Now'));
-      th1.push('<th>Price</th>');
+      th1.push('<th class="aes-text-right">Price</th>');
       th1.push('<th>&Delta; %</th>');
       th1.push('<th>Load</th>');
       th1.push('<th>&Delta; %</th>');
       //index
-      th1.push('<th>Index</th>');
+      th1.push('<th class="aes-text-right">Index</th>');
     }
 
 
@@ -796,29 +796,29 @@ function buildHistoryTable(){
           let prevData = pricingData.date[dates[i-1]].data[cmp];
           //Not first data point
           td.push($('<td></td>').html(displayHistoryPrice(data)));
-          td.push($('<td></td>').html(displayDifference(data,prevData).price));
+          td.push($('<td class="aes-text-right"></td>').html(displayDifference(data,prevData).price));
           td.push($('<td></td>').html(displayHistoryLoad(data)));
           td.push($('<td></td>').html(displayDifference(data,prevData).load));
           //index
-          td.push($('<td></td>').html(historyDisplayIndex(data,0)));
+          td.push($('<td class="aes-text-right"></td>').html(historyDisplayIndex(data,0)));
         } else {
           //First data point
-          td.push($('<td></td>').html(displayHistoryPrice(data)));
+          td.push($('<td class="aes-text-right"></td>').html(displayHistoryPrice(data)));
           td.push($('<td></td>').html(displayHistoryLoad(data)));
           //index
-          td.push($('<td></td>').html(historyDisplayIndex(data,0)));
+          td.push($('<td class="aes-text-right"></td>').html(historyDisplayIndex(data,0)));
         }
       }
       if(showNow){
         //Now TDs
         let data = analysis.data[cmp];
         let prevData = pricingData.date[dates[dates.length-1]].data[cmp];
-        td.push($('<td></td>').html(displayHistoryPrice(data)));
+        td.push($('<td class="aes-text-right"></td>').html(displayHistoryPrice(data)));
         td.push($('<td></td>').html(displayDifference(data,prevData).price));
         td.push($('<td></td>').html(displayHistoryLoad(data)));
         td.push($('<td></td>').html(displayDifference(data,prevData).load));
         //Index
-        td.push($('<td></td>').html(historyDisplayIndex(data,0)));
+        td.push($('<td class="aes-text-right"></td>').html(historyDisplayIndex(data,0)));
       }
 
 
@@ -845,12 +845,12 @@ function buildHistoryTable(){
           tf.push($('<td></td>').html(historyDisplayTotal(data,type)));
           tf.push('<td></td>');
           //index
-          tf.push($('<td></td>').html(historyDisplayIndex(data,type)));
+          tf.push($('<td class="aes-text-right"></td>').html(historyDisplayIndex(data,type)));
         } else {
           tf.push('<td></td>');
           tf.push($('<td></td>').html(historyDisplayTotal(data,type)));
           //index
-          tf.push($('<td></td>').html(historyDisplayIndex(data,type)));
+          tf.push($('<td class="aes-text-right"></td>').html(historyDisplayIndex(data,type)));
         }
       }
       if(showNow){
@@ -860,7 +860,7 @@ function buildHistoryTable(){
         tf.push($('<td></td>').html(historyDisplayTotal(data,type)));
         tf.push('<td></td>');
         //index
-        tf.push($('<td></td>').html(historyDisplayIndex(data,type)));
+        tf.push($('<td class="aes-text-right"></td>').html(historyDisplayIndex(data,type)));
       }
 
 
@@ -1067,7 +1067,7 @@ function displayHistoryPrice(data){
   if(data.valid){
     let price =data.analysisPrice;
     let pricePoint = data.analysisPricePoint;
-    return price+' AS$ ('+displayPerc(pricePoint,'price')+')';
+    return formatCurrency(price)+' AS$ ('+displayPerc(pricePoint,'price')+')';
   } else {
     return '-';
   }
@@ -1116,6 +1116,9 @@ function displayPerc(perc,type){
 //Helper functions
 function formatDate(date){
   return date.substring(0, 4)+'-'+date.substring(4, 6)+'-'+date.substring(6, 8);
+}
+function formatCurrency(value) {
+  return Intl.NumberFormat().format(value)
 }
 function cleanInteger(a){
   a = a.replace(',','');

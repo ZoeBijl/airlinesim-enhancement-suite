@@ -118,7 +118,7 @@ function displayFlightProfit(){
     let td = [];
 
     if(value.data){
-      td.push($('<td></td>').html(formatMoney(value.data.money.CM5.Total)));
+      td.push(formatMoney(value.data.money.CM5.Total));
       td.push($('<td></td>').text(formatDate(value.data.date)+' '+value.data.time));
     } else {
       td.push('<td></td>');
@@ -131,7 +131,7 @@ function displayFlightProfit(){
 function buildTable(){
   //head
   let row = [];
-  row.push($('<tr></tr>').append('<th>Total aircraft profit/loss</th>',$('<td></td>').append(formatMoney(aircraftFlightData.profit))));
+  row.push($('<tr></tr>').append('<th>Total aircraft profit/loss</th>',formatMoney(aircraftFlightData.profit)));
   row.push($('<tr></tr>').append('<th>Aircraft Id</th>','<td>'+aircraftFlightData.aircraftId+'</td>'));
   row.push($('<tr></tr>').append('<th>Registration</th>','<td>'+aircraftFlightData.registration+'</td>'));
   row.push($('<tr></tr>').append('<th>Total flights</th>','<td>'+aircraftFlightData.totalFlights+'</td>'));
@@ -210,18 +210,30 @@ function getAircraftId(){
   return parseInt(a[a.length-2],10);
 }
 function formatMoney(value){
-  let span = $('<span></span>');
-  let text = '';
-  if(value > 0){
-    span.addClass('good');
-    text = '+'
+  let container = document.createElement("td")
+  let formattedValue = Intl.NumberFormat().format(value)
+  let indicatorEl = document.createElement("span")
+  let valueEl = document.createElement("span")
+  let currencyEl = document.createElement("span")
+  
+  if (value >= 0) {
+    valueEl.classList.add("good")
+    indicatorEl.innerText = "+"
   }
-  if(value < 0){
-    span.addClass('bad');
+  
+  if (value < 0) {
+    valueEl.classList.add("bad")
+    indicatorEl.innerText = "-"
+    formattedValue = formattedValue.replace("-", "")
   }
-  text = text + value + ' AS$';
-  span.text(text);
-  return span;
+  
+  valueEl.innerText = formattedValue
+  currencyEl.innerText = " AS$"
+  
+  container.classList.add("aes-text-right", "aes-no-text-wrap")
+  container.append(indicatorEl, valueEl, currencyEl)
+  
+  return container
 }
 function formatDate(date){
   return date.substring(0, 4)+'-'+date.substring(4, 6)+'-'+date.substring(6, 8);

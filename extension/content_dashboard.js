@@ -2798,7 +2798,7 @@ function getDate(type,option1){
       dates.reverse();
       return dates[0];
     case 'today':
-      let a = $(".as-footer-line-element:eq(2)").text().trim();
+      let a = $(".as-footer-line-element:has('.fa-clock-o')").text().trim();
       let b = a.split(" ");
       //For date
       let dateTemp = b[0].split("-");

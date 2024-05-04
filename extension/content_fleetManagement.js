@@ -237,23 +237,24 @@ function fltmng_formatMoney(value){
   let indicatorEl = document.createElement("span")
   let valueEl = document.createElement("span")
   let currencyEl = document.createElement("span")
-
-  valueEl.innerText = formattedValue
-  currencyEl.innerText = " AS$"
-
+  
   if (value >= 0) {
     valueEl.classList.add("good")
     indicatorEl.innerText = "+"
   }
-
+  
   if (value < 0) {
     valueEl.classList.add("bad")
     indicatorEl.innerText = "-"
+    formattedValue = formattedValue.replace("-", "")
   }
-
+  
+  valueEl.innerText = formattedValue
+  currencyEl.innerText = " AS$"
+  
   container.classList.add("aes-text-right")
   container.append(indicatorEl, valueEl, currencyEl)
-
+  
   return container
 }
 function fltmng_formatDate(date){

@@ -2,7 +2,7 @@
     "manifest_version": 3,
     "name": "AirlineSim Enhancement Suite",
     "description": "Great quality of live improvements for AirlineSim",
-    "version": "0.6.6",
+    "version": "0.6.7",
     "action": {
         "default_icon": {
             "128": "images/AES-logo-128.png",

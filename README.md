@@ -17,6 +17,8 @@ Marcipanas wrote [a guide](https://docs.google.com/document/d/1hzMHb3hTBXSZNtuDK
 
 ## Installation
 
+Supported platforms: chromium based browsers (Chrome, Edge, etc)
+
 Please follow [racsofp’s guide](https://forums.airlinesim.aero/t/manual-installation-of-the-ase-airlinesim-enhancement-suite-chrome-extension/24671)
 
 ## History

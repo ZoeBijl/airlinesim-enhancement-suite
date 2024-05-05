@@ -23,6 +23,7 @@
     "content_scripts": [
         {
             "css": ["css/content.css"],
+            "js": ["helpers.js"],
             "matches": ["https://*.airlinesim.aero/app/*"]
         },
         {

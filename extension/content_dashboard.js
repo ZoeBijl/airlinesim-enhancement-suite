@@ -2836,13 +2836,15 @@ function SortTable(collumn,number,tableId,collumnPrefix){
 
 
 //Helper
-function getDate(type,option1){
+function getDate(type, scheduleData){
   switch(type) {
     case 'schedule':
-      //option1 must be schedule object with dates as properties
+      //scheduleData must be schedule object with dates as properties
       let dates = [];
-      for(let date in option1){
-        dates.push(date);
+      for(let date in scheduleData){
+        if (Number.isInteger(parseInt(date))) {
+          dates.push(date);
+        }
       }
       dates.reverse();
       return dates[0];

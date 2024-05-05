@@ -2374,7 +2374,7 @@ function generateTable(tableOptionsRule){
         if(value < 0){
           span.addClass('bad');
         }
-        text = text + value + ' AS$';
+        text = text + new Intl.NumberFormat().format(value) + ' AS$';
         span.text(text);
         return span;
         break;

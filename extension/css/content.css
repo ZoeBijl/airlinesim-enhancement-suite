@@ -1,7 +1,14 @@
+/* Helpers */
 .aes-text-right {
 	text-align: right;
 }
 
 .aes-no-text-wrap {
+	white-space: nowrap;
+}
+
+/* Specific */
+.aes-aircraftProfit-profit {
+	text-align: right;
 	white-space: nowrap;
 }

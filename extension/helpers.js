@@ -1,0 +1,4 @@
+/** Shared logic */
+class AES {
+    
+}

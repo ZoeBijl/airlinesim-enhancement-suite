@@ -82,7 +82,7 @@ function buildTable(){
     let td = [];
     td.push('<th>'+cm+'</th>');
     for(let cmp in flightInfoData.money[cm]) {
-      td.push($('<td></td>').html(formatMoney(flightInfoData.money[cm][cmp])));
+      td.push($('<td></td>').html(AES.formatCurrency(flightInfoData.money[cm][cmp])));
     }
     row.push($('<tr></tr>').append(td));
   }

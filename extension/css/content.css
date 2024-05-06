@@ -18,6 +18,27 @@
 
 /* Specific */
 .aes-aircraftProfit-profit {
-	text-align: right;
-	white-space: nowrap;
+    text-align: right;
+    white-space: nowrap;
+}
+
+/* Dark Mode fixes */
+head:has(link[href^="/dist/assets/theme-dark"]) + body .bad {
+    color: #ffb8b6;
+}
+
+head:has(link[href^="/dist/assets/theme-dark"]) + body .good {
+    color: #7cde7c;
+}
+
+head:has(link[href^="/dist/assets/theme-dark"]) + body .warning {
+    color: #ffbc5d;
+}
+
+head:has(link[href^="/dist/assets/theme-dark"]) + body .visual-flight-plan .vfp div.day div.blocks div.block.flight.locked {
+    color: #a26900;
+}
+
+head:has(link[href^="/dist/assets/theme-dark"]) + body .visual-flight-plan .vfp div.day div.blocks div.block.flight.error {
+    color: #cd0000;
 }

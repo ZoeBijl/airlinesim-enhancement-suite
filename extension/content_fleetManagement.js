@@ -61,8 +61,10 @@ function fltmng_getMaintanance(value){
   return value;
 }
 function fltmng_getAircraftId(value){
-  value = value.split('/');
-  return parseInt(value[value.length-2],10);
+    if (value) {
+        value = value.split('/');
+        return parseInt(value[value.length-2],10);
+    }
 }
 function fltmng_getStorageData(){
   let keys = [];

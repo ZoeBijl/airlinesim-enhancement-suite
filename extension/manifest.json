@@ -23,43 +23,43 @@
     "content_scripts": [
         {
             "css": ["css/content.css"],
-            "js": ["helpers.js"],
+            "js": ["js/jquery-3.4.1.min.js", "helpers.js"],
             "matches": ["https://*.airlinesim.aero/app/*", "https://*.airlinesim.aero/action/*"]
         },
         {
-            "js": ["js/jquery-3.4.1.min.js", "content_inventory.js"],
+            "js": ["content_inventory.js"],
             "matches": ["https://*.airlinesim.aero/app/com/inventory/*"]
         },
         {
-            "js": ["js/jquery-3.4.1.min.js", "content_fligthSchedule.js"],
+            "js": ["content_fligthSchedule.js"],
             "matches": ["https://*.airlinesim.aero/app/info/enterprises/*tab=3"]
         },
         {
-            "js": ["js/jquery-3.4.1.min.js", "content_settings.js"],
+            "js": ["content_settings.js"],
             "matches": ["https://*.airlinesim.aero/app/enterprise/settings*"]
         },
         {
-            "js": ["js/jquery-3.4.1.min.js", "content_dashboard.js"],
+            "js": ["content_dashboard.js"],
             "matches": ["https://*.airlinesim.aero/app/enterprise/dashboard*"]
         },
         {
-            "js": ["js/jquery-3.4.1.min.js", "content_personelManagement.js"],
+            "js": ["content_personelManagement.js"],
             "matches": ["https://*.airlinesim.aero/action/enterprise/staffOverview*"]
         },
         {
-            "js": ["js/jquery-3.4.1.min.js", "content_enterpriceOverview.js"],
+            "js": ["content_enterpriceOverview.js"],
             "matches": ["https://*.airlinesim.aero/app/info/enterprises/*"]
         },
         {
-            "js": ["js/jquery-3.4.1.min.js", "content_flightInfo.js"],
+            "js": ["content_flightInfo.js"],
             "matches": ["https://*.airlinesim.aero/action/info/flight*"]
         },
         {
-            "js": ["js/jquery-3.4.1.min.js", "content_aircraftFlights.js"],
+            "js": ["content_aircraftFlights.js"],
             "matches": ["https://*.airlinesim.aero/app/fleets/aircraft/*/1*"]
         },
         {
-            "js": ["js/jquery-3.4.1.min.js", "content_fleetManagement.js"],
+            "js": ["content_fleetManagement.js"],
             "matches": ["https://*.airlinesim.aero/app/fleets*"]
         }
     ],

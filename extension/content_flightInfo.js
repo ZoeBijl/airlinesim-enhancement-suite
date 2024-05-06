@@ -68,12 +68,12 @@ function buildTable(){
   //head
   let th = [];
   th.push('<th></th>');
-  th.push('<th>Y</th>');
-  th.push('<th>C</th>');
-  th.push('<th>F</th>');
-  th.push('<th>PAX</th>');
-  th.push('<th>Cargo</th>');
-  th.push('<th>Total</th>');
+  th.push('<th class="aes-text-right">Y</th>');
+  th.push('<th class="aes-text-right">C</th>');
+  th.push('<th class="aes-text-right">F</th>');
+  th.push('<th class="aes-text-right">PAX</th>');
+  th.push('<th class="aes-text-right">Cargo</th>');
+  th.push('<th class="aes-text-right">Total</th>');
   let hrow = $('<tr></tr>').append(th);
   let thead = $('<thead></thead>').append(hrow);
   //body
@@ -82,7 +82,7 @@ function buildTable(){
     let td = [];
     td.push('<th>'+cm+'</th>');
     for(let cmp in flightInfoData.money[cm]) {
-      td.push($('<td></td>').html(AES.formatCurrency(flightInfoData.money[cm][cmp])));
+      td.push($('<td class="aes-text-right"></td>').html(AES.formatCurrency(flightInfoData.money[cm][cmp])));
     }
     row.push($('<tr></tr>').append(td));
   }
@@ -99,7 +99,7 @@ function buildTable(){
   let frow = $('<tr></tr>').append(tf);
   let fblankRow = $('<tr></tr>').append('<td colspan="7"></td>');
   let tfoot = $('<tfoot></tfoot>').append(fblankRow,frow);
-  return $('<table class="table table-bordered table-striped table-hover"></table>').append(thead,tbody,tfoot);
+  return $('<table class="aes-table table table-bordered table-striped table-hover"></table>').append(thead,tbody,tfoot);
 }
 function formatMoney(value){
   let span = $('<span></span>');

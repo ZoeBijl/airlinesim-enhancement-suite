@@ -20,11 +20,13 @@ class AES {
         
         if (value >= 0) {
             valueEl.classList.add("good")
+            indicatorEl.classList.add("good")
             indicatorEl.innerText = "+"
         }
         
         if (value < 0) {
             valueEl.classList.add("bad")
+            indicatorEl.classList.add("bad")
             indicatorEl.innerText = "-"
             formattedValue = formattedValue.replace("-", "")
         }

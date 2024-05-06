@@ -1,10 +1,19 @@
+/* Tables */
+.aes-table {
+    width: auto;
+}
+
+.as-table-well:has(.aes-table) {
+    width: fit-content;
+}
+
 /* Helpers */
 .aes-text-right {
-	text-align: right;
+    text-align: right;
 }
 
 .aes-no-text-wrap {
-	white-space: nowrap;
+    white-space: nowrap;
 }
 
 /* Specific */

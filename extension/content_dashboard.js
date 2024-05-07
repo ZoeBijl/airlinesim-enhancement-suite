@@ -2,6 +2,8 @@
 //MAIN
 //Global vars
 var settings,airline,server,todayDate;
+let aesDashboardEl
+let aesDashboardTabPanelEl
 $(function(){
   todayDate = (getDate('today',0));
   airline = getAirlineCode();
@@ -9,37 +11,83 @@ $(function(){
   chrome.storage.local.get(['settings'], function(result) {
     settings = result.settings;
 
+    createDashboard();
     displayDashboard();
-    dashboardHandle();
-    $("#aes-select-dashboard-main").change(function () {
-      dashboardHandle();
-    });
+    // dashboardHandle();
+    // $("#aes-select-dashboard-main").change(function () {
+    //   dashboardHandle();
+    // });
   });
 });
+
+function createDashboard() {
+    let tabs = {
+        "General": "general",
+        "Route Management": "routeManagement",
+        "Competitor Monitoring": "competitorMonitoring",
+        "Aircraft Profitability": "aircraftProfitability"
+    }
+    
+    let section = document.createElement("section")
+    section.id = "aes-dashboard"
+    // section.className = "as-panel"
+    let row = document.createElement("div")
+    row.className = "row"
+    let heading = document.createElement("h3")
+    heading.innerText = "AirlineSim Enhancement Suite Dashboard"
+    let panel = document.createElement("div")
+    panel.className = "as-panel"
+    panel.id = "aes-div-dashboard"
+    let tabList = document.createElement("div")
+    tabList.setAttribute("role", "tablist")
+    tabList.className = "aes-tabs"
+    
+    for (const key in tabs) {
+        let tabEl = document.createElement("button")
+        tabEl.setAttribute("type", "button")
+        tabEl.innerText = key
+        tabList.append(tabEl)
+    }
+    
+    tabList.children[0].setAttribute("aria-selected", "true")
+    
+    
+    section.append(heading, tabList, panel)
+
+    aesDashboardEl = section
+    aesDashboardTabPanelEl = document.querySelector("#aes-div-dashboard")
+}
+
 function displayDashboard(){
-  let mainDiv = $("#enterprise-dashboard");
-  mainDiv.before(
-    `
-    <h3>AirlineSim Enhancement Suite Dashboard</h3>
-    <div class="as-panel">
-      <div class="form-group">
-        <label class="control-label">
-          <span for="aes-select-dashboard-main">Show Dashboard</span>
-        </label>
-        <select class="form-control" id="aes-select-dashboard-main">
-          <option value="general" selected="selected">General</option>
-          <option value="routeManagement">Route Management</option>
-          <option value="competitorMonitoring">Competitor Monitoring</option>
-          <option value="aircraftProfitability">Aircraft Profitability</option>
-          <option value="other">None</option>
-        </select>
-      </div>
-    </div>
-    <div id="aes-div-dashboard">
-    </div>
-    `
-  );
-  $("#aes-select-dashboard-main").val(settings.general.defaultDashboard);
+    let asDashboard = document.querySelector("#enterprise-dashboard")
+    asDashboard.before(aesDashboardEl)
+    
+    // displayDefault()
+    displayGeneral()
+    
+  // let mainDiv = $("#enterprise-dashboard");
+  // mainDiv.before(
+  //   `
+  //   <h3>AirlineSim Enhancement Suite Dashboard</h3>
+  //   <div class="as-panel">
+  //     <div class="form-group">
+  //       <label class="control-label">
+  //         <span for="aes-select-dashboard-main">Show Dashboard</span>
+  //       </label>
+  //       <select class="form-control" id="aes-select-dashboard-main">
+  //         <option value="general" selected="selected">General</option>
+  //         <option value="routeManagement">Route Management</option>
+  //         <option value="competitorMonitoring">Competitor Monitoring</option>
+  //         <option value="aircraftProfitability">Aircraft Profitability</option>
+  //         <option value="other">None</option>
+  //       </select>
+  //     </div>
+  //   </div>
+  //   <div id="aes-div-dashboard">
+  //   </div>
+  //   `
+  // );
+  // $("#aes-select-dashboard-main").val(settings.general.defaultDashboard);
 }
 function dashboardHandle(){
   let value = $("#aes-select-dashboard-main").val();
@@ -1055,28 +1103,46 @@ function displayIndexChange(index){
 }
 //Display General
 function displayGeneral(){
-  let mainDiv = $("#aes-div-dashboard");
-  mainDiv.empty();
+    // aesDashboardTabPanelEl.innerHtml = ""
+    
+    let aesDashboardTabPanelEl = document.querySelector("#aes-div-dashboard")
+    
+    let tableWell = document.createElement("div")
+    tableWell.className = "as-table-well"
+    
+    let table = document.createElement("table")
+    table.className = "table table-hover"
+    
+    let thead = document.createElement("thead")
+    let row = document.createElement("tr")
+    let th = document.createElement("th")
+    let th1 = th.cloneNode()
+    th1.innerText = "Area"
+    let th2 = th.cloneNode()
+    th2.innerText = "Status"
+    let th3 = th.cloneNode()
+    th3.innerText = "Action"
+    row.append(th1, th2, th3)
+    thead.append(row)
+    
+    let tbody = document.createElement("tbody")
+    
+    
 
-  //Table
-  //Head cells
-  let th1 = $('<th>Area</th>');
-  let th2 = $('<th>Status</th>');
-  let th3 = $('<th>Action</th>');
-  let headRow = $('<tr></tr>').append(th1,th2,th3);
-  let thead = $('<thead></thead>').append(headRow);
-  //Body cells
-  let tbody = $('<tbody></tbody>');
   generalAddScheduleRow(tbody);
   generalAddPersonelManagementRow(tbody);
 
+  table.append(thead, tbody)
+tableWell.append(table)
 
-  let table = $('<table class="table table-bordered table-striped table-hover"></table>').append(thead,tbody);
+  // let table = $('<table class="table table-bordered table-striped table-hover"></table>').append(thead,tbody);
   //Build layout
-  let divTable = $('<div class="as-table-well"></div>').append(table);
-  let title = $('<h3></h3>').text('General');
-  let div = $('<div id="aes-div-dashboard-general" class="as-panel"></div>').append(divTable);
-  mainDiv.append(title,div);
+  // let divTable = $('<div class="as-table-well"></div>').append(table);
+  // let title = $('<h3></h3>').text('General');
+  // let div = $('<div id="aes-div-dashboard-general" class="as-panel"></div>').append(divTable);
+  // mainDiv.append(title,div);
+  aesDashboardTabPanelEl.append(tableWell)
+  // aesDashboardTabPanelEl.innerTest = "test"
 }
 //Display COmpetitor Monitoring
 function displayCompetitorMonitoring(){
@@ -2679,88 +2745,114 @@ function generateTable(tableOptionsRule){
   }
 }
 //Display general helper functions
-function generalAddScheduleRow(tbody){
-  let td1 = $('<td></td>').text("Schedule");
-  let td2 = $('<td></td>');
-  let td3 = $('<td></td>');
-  let row = $('<tr></tr>').append(td1,td2,td3);
-  tbody.append(row);
-  //Get schedule
-  let scheduleKey = server+airline.code+'schedule';
-  chrome.storage.local.get([scheduleKey], function(result) {
-    let scheduleData = result[scheduleKey];
-    if(scheduleData){
-      let lastUpdate = getDate('schedule',scheduleData.date);
-      let diff = getDateDiff(todayDate.date,lastUpdate);
-      let span = $('<span></span>').text('Last schedule extract '+formatDate(lastUpdate)+' ('+diff+' days ago). Extract new schedule if there are new routes.');
-      if(diff >= 0 && diff < 7){
-        span.addClass('good');
-      } else {
-        span.addClass('warning');
-      }
-      td2.append(span);
-      generalUpdateScheduleAction(td3);
-
-
-
-    } else {
-      //no schedule
-      td2.html('<span class="bad">No Schedule data found. Extract schedule or some AES parts will not work</span>');
-      generalUpdateScheduleAction(td3);
-    }
-
-
-
-  });
+function generalAddScheduleRow(tbody) {
+    let td = document.createElement("td")
+    let td1 = td.cloneNode()
+    td1.innerText = "Schedule"
+    let td2 = td.cloneNode()
+    let td3 = td.cloneNode()
+    let row = document.createElement("tr")
+    row.append(td1, td2, td3)
+    tbody.append(row)
+    
+    // Get schedule
+    let scheduleKey = server+airline.code+'schedule'
+    
+    chrome.storage.local.get([scheduleKey], (result) => {
+        let scheduleData = result[scheduleKey]
+        let scheduleExtractEl = document.createElement("span")
+        
+        if (scheduleData) {
+            let lastUpdate = getDate("schedule", scheduleData.date)
+            let diff = getDateDiff(todayDate.date, lastUpdate)
+            scheduleExtractEl.innerText = `Last schedule extract ${formatDate(lastUpdate)} (${diff} days ago). Extract new schedule if there are new routes.`
+            
+            if (diff >= 0 && diff < 7) {
+                scheduleExtractEl.className = "good"
+            } else {
+                scheduleExtractEl.className = "warning"
+            }
+        } else {
+            scheduleExtractEl.className = "bad"
+            scheduleExtractEl.innerText = "No Schedule data found. Extract schedule or some AES parts will not work."
+        }
+        
+        td2.append(scheduleExtractEl)
+        generalUpdateScheduleAction(td3);
+    })
 }
-function generalUpdateScheduleAction(td3){
-  let btn = $('<button type="button" class="btn btn-xs btn-default">extract schedule data</button>');
-  btn.click(function(){
-    settings.schedule.autoExtract = 1;
-    //get schedule link
-    let link = $('#enterprise-dashboard table:eq(0) tfoot td a:eq(2)');
-    chrome.storage.local.set({settings: settings}, function() {
-      link[0].click();
-    });
-  });
-  td3.append(btn);
+
+function generalUpdateScheduleAction(tableCell) {
+    let button = document.createElement("button")
+    button.innerText = "extract schedule data"
+    button.setAttribute("type", "button")
+    button.className = "btn btn-default"
+    
+    button.addEventListener("click", (event) => {
+        settings.schedule.autoExtract = 1;
+        
+        // Get schedule link
+        let link = $('#enterprise-dashboard table:eq(0) tfoot td a:eq(2)');
+        
+        chrome.storage.local.set({settings: settings}, () => {
+            link[0].click();
+        });
+    })
+    
+    tableCell.append(button)
 }
+
 function generalAddPersonelManagementRow(tbody){
-  let td = [];
-  td.push($('<td></td>').text("Personnel Management"));
-  td.push($('<td></td>'));
-  td.push($('<td></td>'));
-  let row = $('<tr></tr>').append(td);
-  tbody.append(row);
-  //Get Status
-  let key = server+airline.name+'personelManagement';
-  chrome.storage.local.get([key], function(result) {
-    let personelManagementData = result[key];
-    if(personelManagementData){
-      let lastUpdate = personelManagementData.date;
-      let diff = getDateDiff(todayDate.date,lastUpdate);
-      let span = $('<span></span>').text('Last personnel salary update: '+formatDate(lastUpdate)+' ('+diff+' days ago).');
-      if(diff >= 0 && diff < 7){
-        span.addClass('good');
-      } else {
-        span.addClass('warning');
-      }
-      td[1].append(span);
-    } else {
-      //no schedule
-      td[1].html('<span class="bad">No personnel salary update date found.</span>');
-    }
-  });
-
-  //Action
-  let btn = $('<button type="button" class="btn btn-xs btn-default">open personel management</button>');
-  btn.click(function(){
-    //get schedule link
-    let link = $('#as-navbar-main-collapse > ul > li:eq(4) > ul > li:eq(5) > a');
-    link[0].click();
-  });
-  td[2].append(btn);
+    let td = document.createElement("td")
+    let tableCells = [td.cloneNode(), td.cloneNode(), td.cloneNode()]
+    tableCells[0].innerText = "Personnel Management"
+    let row = document.createElement("tr")
+    row.append(tableCells[0], tableCells[1], tableCells[2])
+    tbody.append(row)
+    
+    // Get status
+    let key = server+airline.name+'personelManagement';
+    
+    chrome.storage.local.get([key], (result) => {
+        let personelManagementData = result[key]
+        let personelManagementUpdateEl = document.createElement("span")
+        
+        if (personelManagementData) {
+            let lastUpdate = personelManagementData.date
+            let diff = getDateDiff(todayDate.date, lastUpdate)
+            personelManagementUpdateEl.innerText = `Last personnel salary update: ${formatDate(lastUpdate)} (${diff} days ago).`
+            
+            if (diff >= 0 && diff < 7) {
+                personelManagementUpdateEl.className = "good"
+            } else {
+                personelManagementUpdateEl.className = "warning"
+            }
+        } else {
+            personelManagementUpdateEl.className = "bad"
+            personelManagementUpdateEl.innerText = "No personnel salary update date found."
+        }
+        
+        tableCells[1].append(personelManagementUpdateEl)
+        generalUpdatePersonelAction(tableCells[2])
+    })
 }
+
+function generalUpdatePersonelAction(tableCell) {
+    let button = document.createElement("button")
+    button.innerText = "open personel management"
+    button.setAttribute("type", "button")
+    button.className = "btn btn-default"
+    
+    button.addEventListener("click", (event) => {
+        // Get personel link
+        let link = $('#as-navbar-main-collapse > ul > li:eq(4) > ul > li:eq(5) > a')
+        
+        link[0].click()
+    })
+    
+    tableCell.append(button)
+}
+
 //Display  default
 function displayDefault(){
   let mainDiv = $("#aes-div-dashboard");

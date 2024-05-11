@@ -1,24 +1,25 @@
-"use strict";
-//MAIN
-//Global vars
-var settings,airline,server,todayDate;
+"use strict"
+// MAIN
+// Global vars
+let settings, airline, server, todayDate
 let aesDashboardEl
 let aesDashboardTabPanelEl
-$(function(){
-  todayDate = (getDate('today',0));
-  airline = getAirlineCode();
-  server = getServerName();
-  chrome.storage.local.get(['settings'], function(result) {
-    settings = result.settings;
+let defaultDashboard = "general"
 
-    createDashboard();
-    displayDashboard();
-    // dashboardHandle();
-    // $("#aes-select-dashboard-main").change(function () {
-    //   dashboardHandle();
-    // });
-  });
-});
+window.addEventListener("load", async (event) => {
+    todayDate = getDate('today', 0)
+    airline = getAirlineCode()
+    server = getServerName()
+    settings = await getSettings()
+    
+    createDashboard()
+    displayDashboard()
+})
+
+async function getSettings() {
+    let result = await chrome.storage.local.get(['settings']);
+    return result.settings
+}
 
 function createDashboard() {
     let tabs = {
@@ -30,69 +31,105 @@ function createDashboard() {
     
     let section = document.createElement("section")
     section.id = "aes-dashboard"
-    // section.className = "as-panel"
+    
+    let tabSection = document.createElement("div")
+    tabSection.className = "as-panel"
+    
     let row = document.createElement("div")
     row.className = "row"
+    
     let heading = document.createElement("h3")
     heading.innerText = "AirlineSim Enhancement Suite Dashboard"
+
     let panel = document.createElement("div")
-    panel.className = "as-panel"
+    panel.className = "as-panel tab-content"
     panel.id = "aes-div-dashboard"
-    let tabList = document.createElement("div")
+
+    let tabList = document.createElement("ul")
     tabList.setAttribute("role", "tablist")
-    tabList.className = "aes-tabs"
+    tabList.className = "aes-tabs nav nav-tabs"
     
     for (const key in tabs) {
-        let tabEl = document.createElement("button")
-        tabEl.setAttribute("type", "button")
+        let listEl = document.createElement("li")
+        let tabEl = document.createElement("a")
+        let currentTab
+        
+        if (settings?.general.currentDashboard == tabs[key]) {
+            listEl.className = "active"
+        }
+        
+        tabEl.setAttribute("data-section", tabs[key])
+        tabEl.setAttribute("href", `#${tabs[key]}`)
         tabEl.innerText = key
-        tabList.append(tabEl)
+        tabEl.addEventListener("click", dashboardTabHandler)
+        listEl.append(tabEl)
+        tabList.append(listEl)
     }
     
     tabList.children[0].setAttribute("aria-selected", "true")
     
-    
-    section.append(heading, tabList, panel)
+    tabSection.append(tabList, panel)
+    section.append(heading, tabSection)
 
     aesDashboardEl = section
     aesDashboardTabPanelEl = document.querySelector("#aes-div-dashboard")
 }
 
+function setDashboardTabState(sectionName) {
+    let activeLink = document.querySelector(".aes-tabs .active")
+    let link = document.querySelector(`a[data-section=${sectionName}`)
+        
+    if (activeLink) {
+        activeLink.classList.remove("active")
+    }
+    
+    link.parentNode.classList.add("active")
+}
+
+function dashboardTabHandler(event) {
+    console.log(event)
+    let dashboardSection = event.target.dataset.section
+    
+    settings.general.currentDashboard = dashboardSection
+    chrome.storage.local.set({settings: settings})
+    
+    document.querySelector("#aes-div-dashboard").innerHTML = ""
+    
+    setDashboardTabState(dashboardSection)
+    
+    switch (dashboardSection) {
+        case "general":
+            displayGeneral()
+            break
+        case "routeManagement":
+            displayRouteManagement()
+            break
+        case "competitorMonitoring":
+            displayCompetitorMonitoring()
+            break
+        case "hr":
+            displayHr()
+            break
+        case "aircraftProfitability":
+            displayAircraftProfitability()
+            break
+        default:
+            displayDefault()
+    }
+}
+
 function displayDashboard(){
     let asDashboard = document.querySelector("#enterprise-dashboard")
+    // let defaultDashboard = settings.general.defaultDashboard
     asDashboard.before(aesDashboardEl)
     
     // displayDefault()
     displayGeneral()
-    
-  // let mainDiv = $("#enterprise-dashboard");
-  // mainDiv.before(
-  //   `
-  //   <h3>AirlineSim Enhancement Suite Dashboard</h3>
-  //   <div class="as-panel">
-  //     <div class="form-group">
-  //       <label class="control-label">
-  //         <span for="aes-select-dashboard-main">Show Dashboard</span>
-  //       </label>
-  //       <select class="form-control" id="aes-select-dashboard-main">
-  //         <option value="general" selected="selected">General</option>
-  //         <option value="routeManagement">Route Management</option>
-  //         <option value="competitorMonitoring">Competitor Monitoring</option>
-  //         <option value="aircraftProfitability">Aircraft Profitability</option>
-  //         <option value="other">None</option>
-  //       </select>
-  //     </div>
-  //   </div>
-  //   <div id="aes-div-dashboard">
-  //   </div>
-  //   `
-  // );
-  // $("#aes-select-dashboard-main").val(settings.general.defaultDashboard);
 }
 function dashboardHandle(){
-  let value = $("#aes-select-dashboard-main").val();
-  settings.general.defaultDashboard = value;
-  chrome.storage.local.set({settings: settings}, function() {});
+  // let value = $("#aes-select-dashboard-main").val();
+  // settings.general.defaultDashboard = value;
+  // chrome.storage.local.set({settings: settings}, function() {});
   switch(value) {
     case 'general':
       displayGeneral();
@@ -1133,7 +1170,7 @@ function displayGeneral(){
   generalAddPersonelManagementRow(tbody);
 
   table.append(thead, tbody)
-tableWell.append(table)
+  tableWell.append(table)
 
   // let table = $('<table class="table table-bordered table-striped table-hover"></table>').append(thead,tbody);
   //Build layout

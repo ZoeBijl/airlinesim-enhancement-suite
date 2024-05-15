@@ -1,5 +1,4 @@
 "use strict"
-// MAIN
 // Global vars
 let settings, airline, server, todayDate
 let aesDashboardEl
@@ -58,6 +57,7 @@ function createDashboard() {
             listEl.className = "active"
         }
         
+        tabEl.setAttribute("role", "button")
         tabEl.setAttribute("data-section", tabs[key])
         tabEl.setAttribute("href", `#${tabs[key]}`)
         tabEl.innerText = key
@@ -1098,10 +1098,12 @@ function getRouteAnalysisImportantDates(dates){
   let analysisDates = [];
   let pricingDates = []
   for(let date in dates) {
-    if(dates[date].pricingUpdated){
-      pricingDates.push(date);
+      if (Number.isInteger(parseInt(date))) {
+        if(dates[date].pricingUpdated){
+          pricingDates.push(date);
+        }
+        analysisDates.push(date);
     }
-    analysisDates.push(date);
   }
   analysisDates.reverse();
   pricingDates.reverse();
@@ -2963,10 +2965,7 @@ function SortTable(collumn,number,tableId,collumnPrefix){
   }
 }
 
-
-
-
-//Helper
+// Helper
 function getDate(type, scheduleData){
   switch(type) {
     case 'schedule':

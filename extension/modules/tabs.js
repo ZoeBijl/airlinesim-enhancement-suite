@@ -1,10 +1,8 @@
 class Tabs {
-    constructor(tabsData = [{name: "no data"}], targetElement, targetMethod = "append") {
+    constructor(tabsData = [{name: "no data"}]) {
         this.settings = {
             defaultTabIndex: 0,
-            currentTabIndex: 0,
-            insertionTarget: targetElement,
-            insertionMethod: targetMethod
+            currentTabIndex: 0
         }
         
         this.data = {
@@ -20,15 +18,7 @@ class Tabs {
         this.createTabList(this.data.tabs)
         this.setCurrentTab()
         
-        this.appendTabs()
-    }
-    
-    appendTabs = () => {
-        if (this.settings.insertionMethod === "append") {
-            this.settings.insertionTarget.append(this.elements.tablist)
-        } else if (this.settings.insertionMethod === "before") {
-            this.settings.insertionTarget.before(this.elements.tablist)
-        }
+        return this.elements.tablist
     }
     
     createTabList = (tabs) => {

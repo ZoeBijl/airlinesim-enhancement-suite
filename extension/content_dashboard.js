@@ -2,8 +2,28 @@
 // Global vars
 let settings, airline, server, todayDate
 let aesDashboardEl
+let aesDashboardTabs = []
 let aesDashboardTabPanelEl
 let defaultDashboard = "general"
+let aesDashboardSections = {
+    "General": "general",
+    "Route Management": "routeManagement",
+    "Competitor Monitoring": "competitorMonitoring",
+    "Aircraft Profitability": "aircraftProfitability"
+}
+
+/*
+    settings.general.defaultDashboard = sectionName / or index?
+    chrome.storage.local.set({settings: settings})
+    
+    settings.general.currentDashboard = currentTab
+    chrome.storage.local.set({settings: settings})
+    
+    if (settings.general.defaultDashboard === null) {
+        settings.general.defaultDashboard = defaultDashboard
+        chrome.storage.local.set({settings: settings})
+    }
+*/
 
 window.addEventListener("load", async (event) => {
     todayDate = getDate('today', 0)
@@ -11,8 +31,7 @@ window.addEventListener("load", async (event) => {
     server = getServerName()
     settings = await getSettings()
     
-    createDashboard()
-    displayDashboard()
+    addDashboardUI()
 })
 
 async function getSettings() {
@@ -20,136 +39,36 @@ async function getSettings() {
     return result.settings
 }
 
-function createDashboard() {
-    let tabs = {
-        "General": "general",
-        "Route Management": "routeManagement",
-        "Competitor Monitoring": "competitorMonitoring",
-        "Aircraft Profitability": "aircraftProfitability"
-    }
+function addDashboardUI() {
+    let target = document.getElementById("enterprise-dashboard")
+    let dashboardSection = createAesDashboard()
     
-    let section = document.createElement("section")
-    section.id = "aes-dashboard"
-    
-    let tabSection = document.createElement("div")
-    tabSection.className = "as-panel"
-    
-    let row = document.createElement("div")
-    row.className = "row"
+    target.before(dashboardSection)
+}
+
+function createAesDashboard() {
+    let aesDashboard = document.createElement("section")
+    aesDashboard.id = "aes-dashboard"
     
     let heading = document.createElement("h3")
     heading.innerText = "AirlineSim Enhancement Suite Dashboard"
-
+    
     let panel = document.createElement("div")
-    panel.className = "as-panel tab-content"
-    panel.id = "aes-div-dashboard"
-
-    let tabList = document.createElement("ul")
-    tabList.setAttribute("role", "tablist")
-    tabList.className = "aes-tabs nav nav-tabs"
+    panel.className = "as-panel"
     
-    for (const key in tabs) {
-        let listEl = document.createElement("li")
-        let tabEl = document.createElement("a")
-        let currentTab
-        
-        if (settings?.general.currentDashboard == tabs[key]) {
-            listEl.className = "active"
-        }
-        
-        tabEl.setAttribute("role", "button")
-        tabEl.setAttribute("data-section", tabs[key])
-        tabEl.setAttribute("href", `#${tabs[key]}`)
-        tabEl.innerText = key
-        tabEl.addEventListener("click", dashboardTabHandler)
-        listEl.append(tabEl)
-        tabList.append(listEl)
-    }
+    let tabs = new Tabs([
+        {name: "General"},
+        {name: "Route Management"},
+        {name: "Competitor Monitor"},
+        {name: "Aircraft Profitability"}
+    ])
+    panel.append(tabs)
     
-    tabList.children[0].setAttribute("aria-selected", "true")
+    aesDashboard.append(heading, panel)
     
-    tabSection.append(tabList, panel)
-    section.append(heading, tabSection)
-
-    aesDashboardEl = section
-    aesDashboardTabPanelEl = document.querySelector("#aes-div-dashboard")
+    return aesDashboard
 }
 
-function setDashboardTabState(sectionName) {
-    let activeLink = document.querySelector(".aes-tabs .active")
-    let link = document.querySelector(`a[data-section=${sectionName}`)
-        
-    if (activeLink) {
-        activeLink.classList.remove("active")
-    }
-    
-    link.parentNode.classList.add("active")
-}
-
-function dashboardTabHandler(event) {
-    console.log(event)
-    let dashboardSection = event.target.dataset.section
-    
-    settings.general.currentDashboard = dashboardSection
-    chrome.storage.local.set({settings: settings})
-    
-    document.querySelector("#aes-div-dashboard").innerHTML = ""
-    
-    setDashboardTabState(dashboardSection)
-    
-    switch (dashboardSection) {
-        case "general":
-            displayGeneral()
-            break
-        case "routeManagement":
-            displayRouteManagement()
-            break
-        case "competitorMonitoring":
-            displayCompetitorMonitoring()
-            break
-        case "hr":
-            displayHr()
-            break
-        case "aircraftProfitability":
-            displayAircraftProfitability()
-            break
-        default:
-            displayDefault()
-    }
-}
-
-function displayDashboard(){
-    let asDashboard = document.querySelector("#enterprise-dashboard")
-    // let defaultDashboard = settings.general.defaultDashboard
-    asDashboard.before(aesDashboardEl)
-    
-    // displayDefault()
-    displayGeneral()
-}
-function dashboardHandle(){
-  // let value = $("#aes-select-dashboard-main").val();
-  // settings.general.defaultDashboard = value;
-  // chrome.storage.local.set({settings: settings}, function() {});
-  switch(value) {
-    case 'general':
-      displayGeneral();
-      break;
-    case 'routeManagement':
-      displayRouteManagement();
-      break;
-    case 'competitorMonitoring':
-      displayCompetitorMonitoring();
-      break;
-    case 'hr':
-      displayHr();
-      break;
-    case 'aircraftProfitability':
-      displayAircraftProfitability();
-      break;
-    default:
-      displayDefault();
-  }
-}
 //Route Management Dashbord
 function displayRouteManagement(){
   //Check ROute Managemetn seetings

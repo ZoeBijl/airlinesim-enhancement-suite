@@ -1,42 +1,47 @@
 class Tabs {
+    settings
+    #data
+    #elements
+    #message = "hello"
+    
     constructor(tabsData = [{name: "no data"}]) {
         this.settings = {
             defaultTabIndex: 0,
             currentTabIndex: 0
         }
         
-        this.data = {
+        this.#data = {
             tabs: tabsData
         }
         
-        this.elements = {
+        this.#elements = {
             container: null,
             tablist: null,
             tabs: [],
             tabpanel: null
         }
         
-        this.createTabList(this.data.tabs)
+        this.createTabList(this.#data.tabs)
         this.createTabPanel()
         this.createContainer()
         
-        this.setCurrentTab()
+        this.#setCurrentTab()
         
-        return this.elements.container
+        // return this.#elements.container
     }
     
-    createContainer = () => {
+    createContainer() {
         let container = document.createElement("div")
-        container.append(this.elements.tablist, this.elements.tabpanel)
+        container.append(this.#elements.tablist, this.#elements.tabpanel)
         
-        this.elements.container = container
+        this.#elements.container = container
     }
     
-    createTabList = (tabs) => {
+    createTabList(tabs) {
         let tablist = document.createElement("ul")
         tablist.setAttribute("role", "tablist")
         tablist.className = "nav nav-tabs"
-        this.elements.tablist = tablist
+        this.#elements.tablist = tablist
         // let index
 
         for (const tab of tabs) {
@@ -48,33 +53,33 @@ class Tabs {
             anchor.innerText = tab.name
             anchor.index = tabs.indexOf(tab)
             
-            anchor.addEventListener("click", this.clickHandler)
-            anchor.addEventListener("keydown", this.keyDownHandler)
-            anchor.addEventListener("keyup", this.keyUpHandler)
+            anchor.addEventListener("click", this.clickHandler.bind(this))
+            anchor.addEventListener("keydown", this.keyDownHandler.bind(this))
+            anchor.addEventListener("keyup", this.keyUpHandler.bind(this))
             
             listItem.append(anchor)
-            this.elements.tabs.push(listItem)
-            this.elements.tablist.append(listItem)
+            this.#elements.tabs.push(listItem)
+            this.#elements.tablist.append(listItem)
         }
     }
     
-    createTabPanel = () => {
+    createTabPanel() {
         let tabpanel = document.createElement("div")
         tabpanel.setAttribute("role", "tabpanel")
         tabpanel.classList.add("tab-content")
         tabpanel.innerText = "Hello"
         
-        this.elements.tabpanel = tabpanel
+        this.#elements.tabpanel = tabpanel
     }
     
     // Event handlers
-    clickHandler = (event) => {
+    clickHandler(event) {
         let index = event.target.index
         
-        this.setCurrentTab(index)
+        this.#setCurrentTab(index)
     }
     
-    keyDownHandler = (event) => {
+    keyDownHandler(event) {
         let key = event.key
         
         if (key === "Enter" || key === " " || key === "ArrowRight" || key === "ArrowLeft") {
@@ -82,29 +87,29 @@ class Tabs {
         }
     }
     
-    keyUpHandler = (event) => {
+    keyUpHandler(event) {
         let key = event.key
         let index = this.#calculateTabIndex(key, event.target.index)
         
         if (key === "ArrowRight" || key === "ArrowLeft") {
-            this.setCurrentTab(index, true)
+            this.#setCurrentTab(index, true)
         }
         
         if (key === "Enter" || key === " ") {
-            this.setCurrentTab(index)
+            this.#setCurrentTab(index)
         }
     }
     
     // Setting tab states
-    setCurrentTab = (index = this.settings.defaultTabIndex, focusCurrent) => {
+    #setCurrentTab(index = this.settings.defaultTabIndex, focusCurrent) {
         this.settings.currentTabIndex = index
         
         this.#setTabStates(index, focusCurrent)
     }
     
-    #setTabStates = (index, focusCurrent = false) => {
-        for (const listitem of this.elements.tabs) {
-            let listitemIndex = this.elements.tabs.indexOf(listitem)
+    #setTabStates(index, focusCurrent = false) {
+        for (const listitem of this.#elements.tabs) {
+            let listitemIndex = this.#elements.tabs.indexOf(listitem)
             listitem.classList.remove("active")
             
             let anchor = listitem.querySelector("a")
@@ -123,11 +128,11 @@ class Tabs {
         }
     }
     
-    #calculateTabIndex = (key, index) => {
+    #calculateTabIndex(key, index) {
         let newIndex = index
         
         if (key === "ArrowLeft") {
-            let length = this.elements.tabs.length
+            let length = this.#elements.tabs.length
             newIndex = index - 1
             
             if (newIndex < 0) {
@@ -136,7 +141,7 @@ class Tabs {
         }
         
         if (key === "ArrowRight") {
-            let length = this.elements.tabs.length
+            let length = this.#elements.tabs.length
             // Try to 
             newIndex = index + 1
             
@@ -146,5 +151,19 @@ class Tabs {
         }
         
         return newIndex
+    }
+    
+    // Getters
+    get index() {
+        return this.settings.currentTabIndex
+        //return this.#message
+    }
+    
+    get container() {
+        return this.#elements.container
+    }
+    
+    set index(index) {
+        this.#setCurrentTab(index)
     }
 }

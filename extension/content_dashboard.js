@@ -56,13 +56,14 @@ function createAesDashboard() {
     let panel = document.createElement("div")
     panel.className = "as-panel"
     
-    let tabs = new Tabs([
+    const tabs = new Tabs([
         {name: "General"},
         {name: "Route Management"},
         {name: "Competitor Monitor"},
         {name: "Aircraft Profitability"}
     ])
-    panel.append(tabs)
+    
+    panel.append(tabs.container)
     
     aesDashboard.append(heading, panel)
     

@@ -22,6 +22,19 @@
     white-space: nowrap;
 }
 
+#aes-dashboard .nav.nav-tabs a {
+    cursor: pointer;
+}
+
+#aes-dashboard .nav.nav-tabs a:focus {
+    outline: 2px transparent;
+}
+
+#aes-dashboard .nav.nav-tabs a:focus-visible {
+    outline: 2px solid #1f6feb;
+    outline-offset: -2px;
+}
+
 /* Dark Mode fixes */
 head:has(link[href^="/dist/assets/theme-dark"]) + body .bad {
     color: #ffb8b6;

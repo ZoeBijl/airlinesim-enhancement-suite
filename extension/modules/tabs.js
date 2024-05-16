@@ -10,15 +10,26 @@ class Tabs {
         }
         
         this.elements = {
+            container: null,
             tablist: null,
             tabs: [],
             tabpanel: null
         }
         
         this.createTabList(this.data.tabs)
+        this.createTabPanel()
+        this.createContainer()
+        
         this.setCurrentTab()
         
-        return this.elements.tablist
+        return this.elements.container
+    }
+    
+    createContainer = () => {
+        let container = document.createElement("div")
+        container.append(this.elements.tablist, this.elements.tabpanel)
+        
+        this.elements.container = container
     }
     
     createTabList = (tabs) => {
@@ -50,6 +61,8 @@ class Tabs {
     createTabPanel = () => {
         let tabpanel = document.createElement("div")
         tabpanel.setAttribute("role", "tabpanel")
+        tabpanel.classList.add("tab-content")
+        tabpanel.innerText = "Hello"
         
         this.elements.tabpanel = tabpanel
     }

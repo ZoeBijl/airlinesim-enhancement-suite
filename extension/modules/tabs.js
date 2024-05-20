@@ -1,8 +1,7 @@
 class Tabs {
     settings
     #data
-    #elements
-    #message = "hello"
+    #elements = {}
     
     constructor(tabsData = [{name: "no data"}]) {
         this.settings = {
@@ -14,38 +13,28 @@ class Tabs {
             tabs: tabsData
         }
         
-        this.#elements = {
-            container: null,
-            tablist: null,
-            tabs: [],
-            tabpanel: null
-        }
-        
-        this.createTabList(this.#data.tabs)
-        this.createTabPanel()
-        this.createContainer()
+        this.#elements.tabs = []
+        this.#elements.tablist = this.#createTabList(this.#data.tabs)
+        this.#elements.tabpanel = this.#createTabPanel()
+        this.#elements.dashboardTabPanels = new DashboardTabpanels(this, this.settings.defaultTabIndex)
+        this.#elements.container = this.#createContainer()
         
         this.#setCurrentTab()
-        
-        // return this.#elements.container
     }
     
-    createContainer() {
+    #createContainer() {
         let container = document.createElement("div")
         container.append(this.#elements.tablist, this.#elements.tabpanel)
         
-        this.#elements.container = container
+        return container
     }
     
-    createTabList(tabs) {
+    #createTabList(tabs) {
         let tablist = document.createElement("ul")
         tablist.setAttribute("role", "tablist")
         tablist.className = "nav nav-tabs"
-        this.#elements.tablist = tablist
-        // let index
 
         for (const tab of tabs) {
-            // index = index++
             let listItem = document.createElement("li")
             let anchor = document.createElement("a")
             anchor.setAttribute("role", "tab")
@@ -58,18 +47,20 @@ class Tabs {
             anchor.addEventListener("keyup", this.keyUpHandler.bind(this))
             
             listItem.append(anchor)
+            tablist.append(listItem)
             this.#elements.tabs.push(listItem)
-            this.#elements.tablist.append(listItem)
         }
+        
+        return tablist
     }
     
-    createTabPanel() {
+    #createTabPanel() {
         let tabpanel = document.createElement("div")
         tabpanel.setAttribute("role", "tabpanel")
         tabpanel.classList.add("tab-content")
         tabpanel.innerText = "Hello"
         
-        this.#elements.tabpanel = tabpanel
+        return tabpanel
     }
     
     // Event handlers
@@ -105,6 +96,7 @@ class Tabs {
         this.settings.currentTabIndex = index
         
         this.#setTabStates(index, focusCurrent)
+        this.#setTabPanelContent(index)
     }
     
     #setTabStates(index, focusCurrent = false) {
@@ -126,6 +118,13 @@ class Tabs {
                 }
             }
         }
+    }
+    
+    #setTabPanelContent(index) {
+        let tab = this.#data.tabs[index]
+        
+        this.#elements.tabpanel.setAttribute("aria-label", tab.name)
+        this.panelContent = this.#elements.dashboardTabPanels.getContentForPanel(index)
     }
     
     #calculateTabIndex(key, index) {
@@ -165,5 +164,10 @@ class Tabs {
     
     set index(index) {
         this.#setCurrentTab(index)
+    }
+    
+    set panelContent(value) {
+        this.#elements.tabpanel.innerHTML = null
+        this.#elements.tabpanel.append(value)
     }
 }

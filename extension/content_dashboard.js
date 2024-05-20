@@ -5,12 +5,8 @@ let aesDashboardEl
 let aesDashboardTabs = []
 let aesDashboardTabPanelEl
 let defaultDashboard = "general"
-let aesDashboardSections = {
-    "General": "general",
-    "Route Management": "routeManagement",
-    "Competitor Monitoring": "competitorMonitoring",
-    "Aircraft Profitability": "aircraftProfitability"
-}
+
+let tabs
 
 /*
     settings.general.defaultDashboard = sectionName / or index?
@@ -56,7 +52,7 @@ function createAesDashboard() {
     let panel = document.createElement("div")
     panel.className = "as-panel"
     
-    const tabs = new Tabs([
+    tabs = new Tabs([
         {name: "General"},
         {name: "Route Management"},
         {name: "Competitor Monitor"},
@@ -1060,49 +1056,7 @@ function displayIndexChange(index){
   }
   return ' (<span class="warning">'+index+'</span>)';
 }
-//Display General
-function displayGeneral(){
-    // aesDashboardTabPanelEl.innerHtml = ""
-    
-    let aesDashboardTabPanelEl = document.querySelector("#aes-div-dashboard")
-    
-    let tableWell = document.createElement("div")
-    tableWell.className = "as-table-well"
-    
-    let table = document.createElement("table")
-    table.className = "table table-hover"
-    
-    let thead = document.createElement("thead")
-    let row = document.createElement("tr")
-    let th = document.createElement("th")
-    let th1 = th.cloneNode()
-    th1.innerText = "Area"
-    let th2 = th.cloneNode()
-    th2.innerText = "Status"
-    let th3 = th.cloneNode()
-    th3.innerText = "Action"
-    row.append(th1, th2, th3)
-    thead.append(row)
-    
-    let tbody = document.createElement("tbody")
-    
-    
 
-  generalAddScheduleRow(tbody);
-  generalAddPersonelManagementRow(tbody);
-
-  table.append(thead, tbody)
-  tableWell.append(table)
-
-  // let table = $('<table class="table table-bordered table-striped table-hover"></table>').append(thead,tbody);
-  //Build layout
-  // let divTable = $('<div class="as-table-well"></div>').append(table);
-  // let title = $('<h3></h3>').text('General');
-  // let div = $('<div id="aes-div-dashboard-general" class="as-panel"></div>').append(divTable);
-  // mainDiv.append(title,div);
-  aesDashboardTabPanelEl.append(tableWell)
-  // aesDashboardTabPanelEl.innerTest = "test"
-}
 //Display COmpetitor Monitoring
 function displayCompetitorMonitoring(){
   //Div
@@ -2810,12 +2764,6 @@ function generalUpdatePersonelAction(tableCell) {
     })
     
     tableCell.append(button)
-}
-
-//Display  default
-function displayDefault(){
-  let mainDiv = $("#aes-div-dashboard");
-  mainDiv.empty();
 }
 
 //Table sort and other functions

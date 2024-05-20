@@ -90,7 +90,7 @@ class DashboardTabpanels {
                 
                 container.append(p)
             } else {
-                // generateRouteManagementTable(scheduleData)
+                container.append(generateRouteManagementTable(scheduleData[scheduleKey]))
             }
         })
         

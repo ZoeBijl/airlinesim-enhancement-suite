@@ -684,7 +684,7 @@ function generateRouteManagementTable(scheduleData){
   });
   let table = $('<table class="table table-bordered table-striped table-hover" id="aes-table-routeManagement"></table>').append(thead,tbody);
   let divTable = $('<div id="aes-div-routeManagement" class="as-table-well"></div>').append(table);
-  $('#aes-div-dashboard-routeManagement').append(divTable)
+  // $('#aes-div-dashboard-routeManagement').append(divTable)
   //Analysis collumns
   //Get unique ODs
   uniqueOD = [...new Set(uniqueOD)];
@@ -725,6 +725,7 @@ function generateRouteManagementTable(scheduleData){
       });
     });
   }
+  return divTable[0]
 }
 function routeManagementSortTable(collumn,number){
   let tableRows = $('#aes-table-routeManagement tbody tr');

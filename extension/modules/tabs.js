@@ -6,7 +6,7 @@ class Tabs {
     constructor(tabsData = [{name: "no data"}]) {
         this.settings = {
             defaultTabIndex: 0, // DefaultSelectedTab Number?
-            currentTabIndex: 0
+            currentTabIndex: null
         }
         
         this.#data = {
@@ -20,8 +20,18 @@ class Tabs {
         this.#elements.dashboardTabPanels = new DashboardTabpanels(this, this.settings.defaultTabIndex)
         this.#elements.container = this.#createContainer()
         
-        this.#setCurrentTab()
+        this.#getCurrentTabFromSettings()
+        
+        // this.#setCurrentTab()
     }
+    
+    async #getCurrentTabFromSettings() {
+        let result = await chrome.storage.local.get(['settings'])
+        this.settings.currentTabIndex = result.settings.general.currentDashboard
+        this.#setCurrentTab(this.settings.currentTabIndex)
+    }
+    
+    
     
     #createContainer() {
         let container = document.createElement("div")
@@ -99,6 +109,8 @@ class Tabs {
     // Setting tab states
     #setCurrentTab(index = this.settings.defaultTabIndex, focusCurrent) {
         this.settings.currentTabIndex = index
+        settings.general.currentDashboard = index
+        chrome.storage.local.set({settings: settings})
         
         this.#setTabStates(index, focusCurrent)
         this.#setTabPanelContent(index)
@@ -160,7 +172,6 @@ class Tabs {
     // Getters
     get index() {
         return this.settings.currentTabIndex
-        //return this.#message
     }
     
     get container() {

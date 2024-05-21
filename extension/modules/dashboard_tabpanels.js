@@ -3,40 +3,29 @@ class DashboardTabpanels {
         
     }
     
-    getContentForPanel(index) {
-        let html
+    getContentForPanel(index, tabpanel) {
+        tabpanel.innerHTML = null
         
         switch (index) {
             case 0:
-                html = this.#createGeneral()
+                this.#createGeneral(tabpanel)
                 break
             case 1:
-                html = this.#createRouteManagement()
+                this.#createRouteManagement(tabpanel)
                 break
             case 2:
-                html = this.#createCompetitorMonitor()
+                this.#createCompetitorMonitor(tabpanel)
                 break
             case 3:
-                html = this.#createAircraftProfitability()
+                this.#createAircraftProfitability(tabpanel)
                 break
             default:
-                html = `No content for tab at index ${index}`
+                tabpanel.append(`No content for tab at index ${index}`)
                 break
         }
-        
-        return html
     }
     
-    #createContainer() {
-        let container = document.createElement("div")
-        container.className = "tab-pane active"
-
-        return container
-    }
-    
-    #createGeneral() {
-        let container = this.#createContainer()
-        
+    #createGeneral(container) {
         let tableWell = document.createElement("div")
         tableWell.className = "as-table-well"
         
@@ -66,13 +55,9 @@ class DashboardTabpanels {
         tableWell.append(table)
         
         container.append(table)
-        
-        return container
     }
     
-    #createRouteManagement() {
-        let container = this.#createContainer()
-        
+    async #createRouteManagement(container) {
         // TODO: Move to onload/oninstall?
         if(!settings.routeManagement){
             setDefaultRouteManagementSettings();
@@ -80,41 +65,22 @@ class DashboardTabpanels {
         
         let scheduleKey = server+airline.code+'schedule'
         
-        chrome.storage.local.get([scheduleKey], (result) => {
-            let scheduleData = result
+        let scheduleData = await chrome.storage.local.get([scheduleKey])
             
-            if (!scheduleData) {
-                let p = document.createElement("p")
-                p.className = "warning"
-                p.innerText = "Note: schedule info is needed to show this section. Change Dashboard to “General” → “Schedule” → “Extract Schedule”."
-                
-                container.append(p)
-            } else {
-                container.append(generateRouteManagementTable(scheduleData[scheduleKey]))
-            }
-        })
-        
-        // let scheduleData = await getScheduleData(scheduleKey)
-        
-        // if (scheduleData) {
-        //     container.innerText = "Need schedule info to show this section. Change Dashboard to General -> Schedule -> Extract Schedule."
-        //     return container
-        // }
-        
-        //generateRouteManagementTable(scheduleData);
-        
-        /*
-          chrome.storage.local.get([scheduleKey], function(result) {
-            let scheduleData = scheduleData;
-            if(scheduleData){
-              // Table
-              generateRouteManagementTable(scheduleData);
-        
-              // Option buttons
-              let fieldsetEl = document.createElement("fieldset")
-              let legendEl = document.createElement("legend")
-              let buttonGroupEl = document.createElement("div")
-        
+        if (!scheduleData) {
+            let p = document.createElement("p")
+            p.className = "warning"
+            p.innerText = "Note: schedule info is needed to show this section. Change Dashboard to “General” → “Schedule” → “Extract Schedule”."
+            
+            container.append(p)
+        } else {
+            container.append(generateRouteManagementTable(scheduleData[scheduleKey]))
+            
+            // Option buttons
+            /*let fieldsetEl = document.createElement("fieldset")
+            let legendEl = document.createElement("legend")
+            let buttonGroupEl = document.createElement("div")
+            
             let buttonElements = {
                 "selectFirstTen": {
                     "label": "select first 10"
@@ -129,79 +95,82 @@ class DashboardTabpanels {
                     "label": "reload table"
                 }
             }
-              
-              for (let key in buttonElements) {
+            
+            for (let key in buttonElements) {
                 let buttonObj = buttonElements[key]
                 let buttonEl = document.createElement("button")
                 let buttonClassNames = buttonObj?.classNames
                 let buttonType = buttonObj?.type
                 let buttonDefaultClassNames = "btn btn-default"
                 buttonEl.innerText = buttonObj.label
-                
+            
                 if (buttonType) {
-                  buttonEl.setAttribute("type", buttonType)
+                    buttonEl.setAttribute("type", buttonType)
                 } else {
-                  buttonEl.setAttribute("type", "button")
+                    buttonEl.setAttribute("type", "button")
                 }
-                
+            
                 if (buttonClassNames) {
-                  buttonEl.className = buttonClassNames
+                    buttonEl.className = buttonClassNames
                 } else {
-                  buttonEl.className = buttonDefaultClassNames
+                    buttonEl.className = buttonDefaultClassNames
                 }
-                
+            
                 buttonObj.element = buttonEl
-                
+            
                 buttonGroupEl.append(buttonEl)
-              }
-              
-              legendEl.innerText = "Options"
-              buttonGroupEl.classList.add("btn-group")
-              
-              fieldsetEl.append(legendEl, buttonGroupEl)
-              
-              let optionsDiv = $('<div class="col-md-4"></div>').append(fieldsetEl);
-              
-              // Button actions
-              
-              // Select first ten
-              buttonElements["selectFirstTen"].element.addEventListener("click", function(){
+            }
+            
+            legendEl.innerText = "Options"
+            buttonGroupEl.classList.add("btn-group")
+            
+            fieldsetEl.append(legendEl, buttonGroupEl)
+            
+            let optionsDiv = $('<div class="col-md-4"></div>').append(fieldsetEl);
+            
+            // Button actions
+            
+            // Select first ten
+            buttonElements["selectFirstTen"].element.addEventListener("click", function() {
                 let count = 0
-                $('#aes-table-routeManagement tbody tr').each(function(){
-                  $(this).find("input").prop('checked', true);
-                  count++;
-                  if(count > 10){
-                    return false;
-                  }
+                $('#aes-table-routeManagement tbody tr').each(function() {
+                    $(this).find("input").prop('checked', true);
+                    count++;
+                    if (count > 10) {
+                        return false;
+                    }
                 })
-              });
-        
-              // Remove checked
-              buttonElements["hideChecked"].element.addEventListener("click", function(){
+            });
+            
+            // Remove checked
+            buttonElements["hideChecked"].element.addEventListener("click", function() {
                 $('#aes-table-routeManagement tbody tr').has('input:checked').remove();
-              });
-        
-              // Open Inventory
-              buttonElements["openInventory"].element.addEventListener("click", function(){
+            });
+            
+            // Open Inventory
+            buttonElements["openInventory"].element.addEventListener("click", function() {
                 //Get checked collumns
                 let pages = $('#aes-table-routeManagement tbody tr').has('input:checked').map(function() {
-                  let orgdest = $(this).attr('id');
-                  orgdest = orgdest.split("-");
-                  orgdest = orgdest[2];
-                  //let orgdest = $(this).find("td:eq(1)").text() + $(this).find("td:eq(2)").text();
-                  let url = 'https://'+server+'.airlinesim.aero/app/com/inventory/'+orgdest;
-                  return url;
+                    let orgdest = $(this).attr('id');
+                    orgdest = orgdest.split("-");
+                    orgdest = orgdest[2];
+                    //let orgdest = $(this).find("td:eq(1)").text() + $(this).find("td:eq(2)").text();
+                    let url = 'https://' + server + '.airlinesim.aero/app/com/inventory/' + orgdest;
+                    return url;
                 }).toArray();
-        
+    
                 //Open new tabs
                 for (let i = 0; i < pages.length; i++) {
-                  window.open(pages[i], '_blank');
-                  if(i==10){
-                    break;
-                  }
+                    window.open(pages[i], '_blank');
+                    if (i == 10) {
+                        break;
+                    }
                 }
-              });
+            })*/
+        }
         
+        
+        /*
               // Reload table reloadTable
               buttonElements["reloadTable"].element.addEventListener("click", function(){
                 generateRouteManagementTable(scheduleData);
@@ -231,22 +200,14 @@ class DashboardTabpanels {
             }
           });
           */
-        
-        return container
     }
     
-    #createCompetitorMonitor() {
-        let container = document.createElement("div")
+    #createCompetitorMonitor(container) {
         container.innerText = "Competitor Monitor panel"
-        
-        return container
     }
     
-    #createAircraftProfitability() {
-        let container = document.createElement("div")
+    #createAircraftProfitability(container) {
         container.innerText = "Aircraft Profitability panel"
-        
-        return container
     }
 }
 

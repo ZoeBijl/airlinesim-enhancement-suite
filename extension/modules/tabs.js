@@ -5,7 +5,7 @@ class Tabs {
     
     constructor(tabsData = [{name: "no data"}]) {
         this.settings = {
-            defaultTabIndex: 0,
+            defaultTabIndex: 0, // DefaultSelectedTab Number?
             currentTabIndex: 0
         }
         
@@ -15,6 +15,7 @@ class Tabs {
         
         this.#elements.tabs = []
         this.#elements.tablist = this.#createTabList(this.#data.tabs)
+        this.#elements.tabcontent = null
         this.#elements.tabpanel = this.#createTabPanel()
         this.#elements.dashboardTabPanels = new DashboardTabpanels(this, this.settings.defaultTabIndex)
         this.#elements.container = this.#createContainer()
@@ -58,7 +59,11 @@ class Tabs {
         let tabpanel = document.createElement("div")
         tabpanel.setAttribute("role", "tabpanel")
         tabpanel.classList.add("tab-content")
-        tabpanel.innerText = "Hello"
+        
+        let tabpane = document.createElement("div")
+        tabpane.className = "tab-pane active"
+        this.#elements.tabcontent = tabpane
+        tabpanel.append(tabpane)
         
         return tabpanel
     }
@@ -124,7 +129,7 @@ class Tabs {
         let tab = this.#data.tabs[index]
         
         this.#elements.tabpanel.setAttribute("aria-label", tab.name)
-        this.panelContent = this.#elements.dashboardTabPanels.getContentForPanel(index)
+        this.#elements.dashboardTabPanels.getContentForPanel(index, this.#elements.tabcontent)
     }
     
     #calculateTabIndex(key, index) {

@@ -78,7 +78,8 @@ class DashboardTabpanels {
             let row = document.createElement("div")
             row.className = "row"
             let options = this.#createRouteManagementOptions()
-            let filters = displayRouteManagementFilters()
+            // let filters = displayRouteManagementFilters()
+            let filters = this.#createRouteManagementFilters()
             
             row.append(options, filters)
             
@@ -202,6 +203,149 @@ class DashboardTabpanels {
         cell.append(fieldsetEl)
         
         return cell
+    }
+    
+    #createRouteManagementFilters() {
+        let filters = settings.routeManagement.filter
+        // TODO: Correct spelling of tableCollumns
+        let tableColumns = settings.routeManagement.tableCollumns
+        
+        let container = document.createElement("div")
+        container.className = "col-md-4"
+        
+        let fieldset = document.createElement("fieldset")
+        
+        let legend = document.createElement("legend")
+        legend.innerText = "Filters"
+        
+        let tableWell = document.createElement("div")
+        tableWell.id = "aes-div-routeManagement-filter"
+        tableWell.className = "as-table-well"
+        
+        let table = document.createElement("table")
+        table.className = "table table-bordered table-striped table-hover"
+        table.id = "aes-table-routeManagement-filter"
+        
+        // Create table head
+        let thead = document.createElement("thead")
+        let tr = document.createElement("tr")
+        
+        let columns = ["Column", "Operation", "Value", ""]
+        
+        for (const column of columns) {
+            let heading = document.createElement("th")
+            
+            heading.innerHTML = column
+            
+            tr.append(heading)
+        }
+        
+        thead.append(tr)
+        
+        // Create table body
+        let tbody = document.createElement("tbody")
+        
+        for (const filter of filters) {
+            let tr = document.createElement("tr")
+            
+            let cell = document.createElement("td")
+            let cells = [
+                cell.cloneNode(),
+                cell.cloneNode(),
+                cell.cloneNode(),
+                cell.cloneNode()
+            ]
+            
+            let input = document.createElement("input")
+            input.setAttribute("type", "hidden")
+            input.setAttribute("value", filter.collumCode)
+            
+            let anchor = document.createElement("a")
+            anchor.className = "aes-a-routeManagement-filter-delete-row"
+            anchor.setAttribute("aria-label", "delete row")
+            
+            let icon = document.createElement("span")
+            icon.className = "fa fa-trash"
+            
+            anchor.append(icon)
+            
+            cells[0].append(input, filter.collumn)
+            cells[1].append(filter.operation)
+            cells[2].append(filter.value)
+            cells[3].append(anchor)
+            
+            for (const cell of cells) {
+                tr.append(cell)
+            }
+            
+            tbody.append(tr)
+        }
+        
+        // Create table footer
+        let columnSelect = document.createElement("select")
+        columnSelect.className = "form-control"
+        columnSelect.id = "aes-select-routeManagement-filter-collumn"
+        
+        for (const column of tableColumns) {
+            let option = document.createElement("option")
+            option.setAttribute("value", column.class)
+            option.innerText = column.name
+            
+            columnSelect.append(option)
+        }
+        
+        let operatorSelect = document.createElement("select")
+        operatorSelect.className = "form-control"
+        operatorSelect.id = "aes-select-routeManagement-filter-operation"
+        
+        let operators = ["=", "!", ">", "<"]
+        
+        for (const operator of operators) {
+            let option = document.createElement("option")
+            option.innerText = operator
+            
+            operatorSelect.append(option)
+        }
+        
+        let input = document.createElement("input")
+        input.setAttribute("type", "text")
+        input.className = "form-control"
+        input.id = "aes-select-routeManagement-filter-value"
+        
+        let button = document.createElement("button")
+        button.setAttribute("type", "button")
+        button.innerText = "add rule"
+        button.className = "btn btn-default"
+        
+        let tfoot = document.createElement("tfoot")
+        tr = document.createElement("tr")
+        
+        let cell = document.createElement("td")
+        let cells = [
+            cell.cloneNode(),
+            cell.cloneNode(),
+            cell.cloneNode(),
+            cell.cloneNode()
+        ]
+        
+        cells[0].append(columnSelect)
+        cells[1].append(operatorSelect)
+        cells[2].append(input)
+        cells[3].append(button)
+        
+        for (const cell of cells) {
+            tr.append(cell)
+        }
+        
+        tfoot.append(tr)
+        
+        // Put it all together
+        table.append(thead, tbody, tfoot)
+        tableWell.append(table)
+        fieldset.append(legend, tableWell)
+        container.append(fieldset)
+        
+        return container
     }
     
     #createCompetitorMonitor(container) {

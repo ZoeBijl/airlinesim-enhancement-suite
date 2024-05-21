@@ -437,44 +437,44 @@ function routeManagementApplyFilter(){
   });
 }
 function displayRouteManagementFilters(){
-  //Table head
-  let th = [];
-  th.push('<th>Column</th>');
-  th.push('<th>Operation</th>');
-  th.push('<th>Value</th>');
-  th.push('<th></th>');
-  let thead= $('<thead></thead>').append($('<tr></tr>').append(th));
+  // //Table head
+  // let th = [];
+  // th.push('<th>Column</th>');
+  // th.push('<th>Operation</th>');
+  // th.push('<th>Value</th>');
+  // th.push('<th></th>');
+  // let thead= $('<thead></thead>').append($('<tr></tr>').append(th));
 
   //Table body
-  let tbody = $('<tbody></tbody>');
-  settings.routeManagement.filter.forEach(function(fil){
-    let td = [];
-    td.push('<td><input type="hidden" value="'+fil.collumnCode+'">'+fil.collumn+'</td>');
-    td.push('<td>'+fil.operation+'</td>');
-    td.push('<td>'+fil.value+'</td>');
-    td.push('<td><a class="aes-a-routeManagement-filter-delete-row" ><span class="fa fa-trash" title="Delete row"></span></a></td>');
-    tbody.append($('<tr></tr>').append(td));
-  });
+  // let tbody = $('<tbody></tbody>');
+  // settings.routeManagement.filter.forEach(function(fil){
+  //   let td = [];
+  //   td.push('<td><input type="hidden" value="'+fil.collumnCode+'">'+fil.collumn+'</td>');
+  //   td.push('<td>'+fil.operation+'</td>');
+  //   td.push('<td>'+fil.value+'</td>');
+  //   td.push('<td><a class="aes-a-routeManagement-filter-delete-row" ><span class="fa fa-trash" title="Delete row"></span></a></td>');
+  //   tbody.append($('<tr></tr>').append(td));
+  // });
 
   //Table foot
   //select collumn
-  let option1 = [];
-  settings.routeManagement.tableCollumns.forEach(function(col){
-    option1.push('<option value="'+col.class+'">'+col.name+'</option>');
-  });
-  let select1 = $('<select id="aes-select-routeManagement-filter-collumn" class="form-control"></select>').append(option1);
+  // let option1 = [];
+  // settings.routeManagement.tableCollumns.forEach(function(col){
+  //   option1.push('<option value="'+col.class+'">'+col.name+'</option>');
+  // });
+  // let select1 = $('<select id="aes-select-routeManagement-filter-collumn" class="form-control"></select>').append(option1);
 
 
 
   //Select value
-  let option = [];
-  option.push('<option>=</option>');
-  option.push('<option>!=</option>');
-  option.push('<option>></option>');
-  option.push('<option><</option>');
-  let select = $('<select id="aes-select-routeManagement-filter-operation" class="form-control"></select>').append(option);
+  // let option = [];
+  // option.push('<option>=</option>');
+  // option.push('<option>!=</option>');
+  // option.push('<option>></option>');
+  // option.push('<option><</option>');
+  // let select = $('<select id="aes-select-routeManagement-filter-operation" class="form-control"></select>').append(option);
   //Add button
-  let btn = $('<button class="btn btn-default"></button>').text('Add Row');
+  // let btn = $('<button class="btn btn-default"></button>').text('Add Row');
   btn.click(function(){
     let td = [];
     let collumn = $(this).closest("tr").find('#aes-select-routeManagement-filter-collumn option:selected').text();
@@ -491,19 +491,21 @@ function displayRouteManagementFilters(){
 
 
   //Footer rows
-  let tf = [];
-  tf.push($('<td></td>').html(select1));
-  tf.push($('<td></td>').html(select));
-  tf.push('<td><input id="aes-select-routeManagement-filter-value" type="text" class="form-control" style="min-width: 50px;"></td>');
-  tf.push($('<td></td>').append(btn));
-  let tfoot= $('<tfoot></tfoot>').append($('<tr></tr>').append(tf));
-  let table = $('<table class="table table-bordered table-striped table-hover" id="aes-table-routeManagement-filter"></table>').append(thead,tbody,tfoot);
-  let divTable = $('<div id="aes-div-routeManagement-filter" class="as-table-well"></div>').append(table);
+  // let tf = [];
+  // tf.push($('<td></td>').html(select1));
+  // tf.push($('<td></td>').html(select));
+  // tf.push('<td><input id="aes-select-routeManagement-filter-value" type="text" class="form-control" style="min-width: 50px;"></td>');
+  // tf.push($('<td></td>').append(btn));
+  // let tfoot= $('<tfoot></tfoot>').append($('<tr></tr>').append(tf));
+  // let table = $('<table class="table table-bordered table-striped table-hover" id="aes-table-routeManagement-filter"></table>').append(thead,tbody,tfoot);
+  
 
 
-  //
-  let saveBtn = $('<button class="btn btn-default">apply filter</button>');
-  let saveSpan = $('<span></span>');
+  let saveBtn = document.createElement("button")
+  saveBtn.innerHTML = "apply filter"
+  saveBtn.className = "btn btn-default"
+
+  let saveSpan = document.createElement("span")
 
   //Closable legend
   let link = $('<a style="cursor: pointer;"></a>').text('Filters');
@@ -512,9 +514,18 @@ function displayRouteManagementFilters(){
     divForAll.toggle();
   });
 
-  let divForAll = $('<div style="display: none;"></div>').append(divTable,saveBtn,saveSpan);
-  let fieldset = $('<fieldset></fieldset>').append(legend,divForAll);
-  let div = $('<div class="col-md-4"></div>').append(fieldset);
+  // let divForAll = $('<div style="display: none;"></div>').append(divTable,saveBtn,saveSpan);
+  
+  let divForAll = document.createElement("div")
+  divForAll.style = "display: none"
+  divForAll.append(divTable, saveBtn, saveSpan)
+  
+  // let fieldset = document.createElement("fieldset")
+  // fieldset.append(legend, divForAll);
+
+  let cell = document.createElement("div")
+  cell.className = "col-md-4"
+  cell.append(fieldset)
 
   //Delete row for filter row
   table.on("click", ".aes-a-routeManagement-filter-delete-row", function(){
@@ -545,7 +556,7 @@ function displayRouteManagementFilters(){
   });
 
 
-  return div;
+  return cell
 }
 function displayRouteManagementCollumns(){
   //Table Head

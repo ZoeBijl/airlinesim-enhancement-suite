@@ -280,7 +280,9 @@ function displayScheduleRow(){
       if(scheduleData){
         let scheduleDates = [];
         for(let date in scheduleData.date){
-          scheduleDates.push(date);
+          if (Number.isInteger(parseInt(date))) {
+            scheduleDates.push(date);
+          }
         }
         scheduleDates.reverse();
         let diff = getDateDiff(getDate().date,scheduleDates[0]);

@@ -207,8 +207,6 @@ class DashboardTabpanels {
     
     #createRouteManagementFilters() {
         let filters = settings.routeManagement.filter
-        // TODO: Correct spelling of tableCollumns
-        let tableColumns = settings.routeManagement.tableCollumns
         
         let container = document.createElement("div")
         container.className = "col-md-4"
@@ -227,123 +225,23 @@ class DashboardTabpanels {
         table.id = "aes-table-routeManagement-filter"
         
         // Create table head
-        let thead = document.createElement("thead")
-        let tr = document.createElement("tr")
+        let thead = createTableHeader()
+        let tbody = createTableBody(filters)
+        let tfoot = createTableFooter()
         
-        let columns = ["Column", "Operation", "Value", ""]
+        let saveSpan = document.createElement("span")
+        saveSpan.id = "aes-filter-message"
         
-        for (const column of columns) {
-            let heading = document.createElement("th")
-            
-            heading.innerHTML = column
-            
-            tr.append(heading)
-        }
-        
-        thead.append(tr)
-        
-        // Create table body
-        let tbody = document.createElement("tbody")
-        
-        for (const filter of filters) {
-            let tr = document.createElement("tr")
-            
-            let cell = document.createElement("td")
-            let cells = [
-                cell.cloneNode(),
-                cell.cloneNode(),
-                cell.cloneNode(),
-                cell.cloneNode()
-            ]
-            
-            let input = document.createElement("input")
-            input.setAttribute("type", "hidden")
-            input.setAttribute("value", filter.collumCode)
-            
-            let anchor = document.createElement("a")
-            anchor.className = "aes-a-routeManagement-filter-delete-row"
-            anchor.setAttribute("aria-label", "delete row")
-            
-            let icon = document.createElement("span")
-            icon.className = "fa fa-trash"
-            
-            anchor.append(icon)
-            
-            cells[0].append(input, filter.collumn)
-            cells[1].append(filter.operation)
-            cells[2].append(filter.value)
-            cells[3].append(anchor)
-            
-            for (const cell of cells) {
-                tr.append(cell)
-            }
-            
-            tbody.append(tr)
-        }
-        
-        // Create table footer
-        let columnSelect = document.createElement("select")
-        columnSelect.className = "form-control"
-        columnSelect.id = "aes-select-routeManagement-filter-collumn"
-        
-        for (const column of tableColumns) {
-            let option = document.createElement("option")
-            option.setAttribute("value", column.class)
-            option.innerText = column.name
-            
-            columnSelect.append(option)
-        }
-        
-        let operatorSelect = document.createElement("select")
-        operatorSelect.className = "form-control"
-        operatorSelect.id = "aes-select-routeManagement-filter-operation"
-        
-        let operators = ["=", "!", ">", "<"]
-        
-        for (const operator of operators) {
-            let option = document.createElement("option")
-            option.innerText = operator
-            
-            operatorSelect.append(option)
-        }
-        
-        let input = document.createElement("input")
-        input.setAttribute("type", "text")
-        input.className = "form-control"
-        input.id = "aes-select-routeManagement-filter-value"
-        
-        let button = document.createElement("button")
-        button.setAttribute("type", "button")
-        button.innerText = "add rule"
-        button.className = "btn btn-default"
-        
-        let tfoot = document.createElement("tfoot")
-        tr = document.createElement("tr")
-        
-        let cell = document.createElement("td")
-        let cells = [
-            cell.cloneNode(),
-            cell.cloneNode(),
-            cell.cloneNode(),
-            cell.cloneNode()
-        ]
-        
-        cells[0].append(columnSelect)
-        cells[1].append(operatorSelect)
-        cells[2].append(input)
-        cells[3].append(button)
-        
-        for (const cell of cells) {
-            tr.append(cell)
-        }
-        
-        tfoot.append(tr)
+        let saveButton = document.createElement("button")
+        saveButton.innerHTML = "apply filter"
+        saveButton.className = "btn btn-default"
+        saveButton.addEventListener("click", routeManagementFilterApplyButtonClickHandler)
         
         // Put it all together
         table.append(thead, tbody, tfoot)
         tableWell.append(table)
         fieldset.append(legend, tableWell)
-        container.append(fieldset)
+        container.append(fieldset, saveButton, saveSpan)
         
         return container
     }
@@ -361,4 +259,222 @@ async function getScheduleData(scheduleKey) {
     let result = await chrome.storage.local.get([scheduleKey])
 
     return result
+}
+
+function createTableHeader() {
+    let thead = document.createElement("thead")
+    let tr = document.createElement("tr")
+    
+    let columns = ["Column", "Operation", "Value", ""]
+    
+    for (const column of columns) {
+        let heading = document.createElement("th")
+        
+        heading.innerHTML = column
+        
+        tr.append(heading)
+    }
+    
+    thead.append(tr)
+    
+    return thead
+}
+
+function createTableBody(filters) {
+    let tbody = document.createElement("tbody")
+    
+    for (const [index, filter] of filters.entries()) {
+        let tr = document.createElement("tr")
+        tr.id = `rmf-row-${index}`
+        
+        let cell = document.createElement("td")
+        let cells = [
+            cell.cloneNode(),
+            cell.cloneNode(),
+            cell.cloneNode(),
+            cell.cloneNode()
+        ]
+        
+        let input = document.createElement("input")
+        input.setAttribute("type", "hidden")
+        input.setAttribute("value", filter.collumCode)
+        
+        let button = document.createElement("button")
+        button.setAttribute("type", "button")
+        button.setAttribute("aria-label", "delete row")
+        button.className = "btn btn-xs btn-link"
+        button.dataset.tr = tr.id
+        button.addEventListener("click", rmfDeleteButtonClickHandler)
+        
+        let icon = document.createElement("span")
+        icon.className = "fa fa-trash"
+        
+        button.append(icon)
+        
+        cells[0].append(input, filter.collumn)
+        cells[1].append(filter.operation)
+        cells[2].append(filter.value)
+        cells[3].append(button)
+        
+        for (const cell of cells) {
+            tr.append(cell)
+        }
+        
+        tbody.append(tr)
+    }
+    
+    return tbody
+}
+
+function createTableFooter() {
+    // TODO: Correct spelling of tableCollumns
+    let tableColumns = settings.routeManagement.tableCollumns
+    
+    let columnSelect = document.createElement("select")
+    columnSelect.className = "form-control"
+    columnSelect.id = "aes-select-routeManagement-filter-collumn"
+    
+    for (const column of tableColumns) {
+        let option = document.createElement("option")
+        option.setAttribute("value", column.class)
+        option.innerText = column.name
+        
+        columnSelect.append(option)
+    }
+    
+    let operatorSelect = document.createElement("select")
+    operatorSelect.className = "form-control"
+    operatorSelect.id = "aes-select-routeManagement-filter-operation"
+    
+    let operators = ["=", "!", ">", "<"]
+    
+    for (const operator of operators) {
+        let option = document.createElement("option")
+        option.innerText = operator
+        
+        operatorSelect.append(option)
+    }
+    
+    let input = document.createElement("input")
+    input.setAttribute("type", "text")
+    input.className = "form-control"
+    input.id = "aes-select-routeManagement-filter-value"
+    
+    let button = document.createElement("button")
+    button.setAttribute("type", "button")
+    button.innerText = "add rule"
+    button.className = "btn btn-default"
+    
+    button.addEventListener("click", routeManagementFilterButtonClickHandler)
+    
+    let tfoot = document.createElement("tfoot")
+    tr = document.createElement("tr")
+    
+    let cell = document.createElement("td")
+    let cells = [
+        cell.cloneNode(),
+        cell.cloneNode(),
+        cell.cloneNode(),
+        cell.cloneNode()
+    ]
+    
+    cells[0].append(columnSelect)
+    cells[1].append(operatorSelect)
+    cells[2].append(input)
+    cells[3].append(button)
+    
+    for (const cell of cells) {
+        tr.append(cell)
+    }
+    
+    tfoot.append(tr)
+    
+    return tfoot
+}
+
+function routeManagementFilterButtonClickHandler(event) {
+    let tbody = document.querySelector("#aes-table-routeManagement-filter tbody")
+    let tr = document.createElement("tr")
+    let cell = document.createElement("td")
+    let cells = [
+        cell.cloneNode(),
+        cell.cloneNode(),
+        cell.cloneNode(),
+        cell.cloneNode()
+    ]
+    let column = document.querySelector("#aes-select-routeManagement-filter-collumn")
+    let columnText = column.selectedOptions[0].innerText
+    let columnValue = column.value
+    let operator = document.querySelector("#aes-select-routeManagement-filter-operation").value
+    let value = document.querySelector("#aes-select-routeManagement-filter-value").value
+    
+    let input = document.createElement("input")
+    input.setAttribute("type", "hidden")
+    input.setAttribute("value", columnValue)
+    
+    let anchor = document.createElement("a")
+    anchor.className = "aes-a-routeManagement-filter-delete-row"
+    anchor.setAttribute("aria-label", "delete row")
+    
+    let icon = document.createElement("span")
+    icon.className = "fa fa-trash"
+    
+    anchor.append(icon)
+    
+    cells[0].append(input, columnText)
+    cells[1].append(operator)
+    cells[2].append(value)
+    cells[3].append(anchor)
+    
+    for (const cell of cells) {
+        tr.append(cell)
+    }
+    
+    tbody.append(tr)
+}
+
+function routeManagementFilterApplyButtonClickHandler(event) {
+    let span = document.querySelector("#aes-filter-message")
+    span.className = "warning"
+    span.innerText = "saving.."
+    
+    let filter = []
+    let rows = document.querySelectorAll("#aes-table-routeManagement-filter tbody tr")
+    
+    for (const row of rows) {
+        let columnCode = row.querySelector("input").value
+        let column = row.querySelector("td:first-child").innerText
+        let operator = row.querySelector("td:nth-child(2)").innerText
+        let value = row.querySelector("td:nth-child(3)").innerText
+        
+        filter.push({
+            collumnCode: columnCode,
+            collumn: column,
+            operation: operator,
+            value: value
+        })
+    }
+    
+    settings.routeManagement.filter = filter
+    
+    chrome.storage.local.set({settings: settings}, () => {
+        span.className = "warning"
+        span.innerText = "filtering..."
+
+        routeManagementApplyFilter()
+
+        span.className = "good"
+        span.innerText = "done!"
+    })
+}
+
+function rmfDeleteButtonClickHandler(event) {
+    let target = event.currentTarget
+    let tr = target.closest("tr")
+    
+    deleteRow(tr)
+}
+
+function deleteRow(row) {
+    row.remove()
 }

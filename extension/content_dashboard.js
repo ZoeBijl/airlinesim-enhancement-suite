@@ -475,19 +475,19 @@ function displayRouteManagementFilters(){
   // let select = $('<select id="aes-select-routeManagement-filter-operation" class="form-control"></select>').append(option);
   //Add button
   // let btn = $('<button class="btn btn-default"></button>').text('Add Row');
-  btn.click(function(){
-    let td = [];
-    let collumn = $(this).closest("tr").find('#aes-select-routeManagement-filter-collumn option:selected').text();
-    let collumnVal = $(this).closest("tr").find('#aes-select-routeManagement-filter-collumn').val();
-    let operation = $(this).closest("tr").find('#aes-select-routeManagement-filter-operation option:selected').text();
-    let value = $(this).closest("tr").find('#aes-select-routeManagement-filter-value').val()
-    td.push('<td><input type="hidden" value="'+collumnVal+'">'+collumn+'</td>');
-    td.push('<td>'+operation+'</td>');
-    td.push('<td>'+value+'</td>');
-    td.push('<td><a class="aes-a-routeManagement-filter-delete-row" ><span class="fa fa-trash" title="Delete row"></span></a></td>');
-
-    tbody.append($('<tr></tr>').append(td));
-  });
+//   btn.click(function(){
+//     let td = [];
+//     let collumn = $(this).closest("tr").find('#aes-select-routeManagement-filter-collumn option:selected').text();
+//     let collumnVal = $(this).closest("tr").find('#aes-select-routeManagement-filter-collumn').val();
+//     let operation = $(this).closest("tr").find('#aes-select-routeManagement-filter-operation option:selected').text();
+//     let value = $(this).closest("tr").find('#aes-select-routeManagement-filter-value').val()
+//     td.push('<td><input type="hidden" value="'+collumnVal+'">'+collumn+'</td>');
+//     td.push('<td>'+operation+'</td>');
+//     td.push('<td>'+value+'</td>');
+//     td.push('<td><a class="aes-a-routeManagement-filter-delete-row" ><span class="fa fa-trash" title="Delete row"></span></a></td>');
+// 
+//     tbody.append($('<tr></tr>').append(td));
+//   });
 
 
   //Footer rows
@@ -501,11 +501,11 @@ function displayRouteManagementFilters(){
   
 
 
-  let saveBtn = document.createElement("button")
-  saveBtn.innerHTML = "apply filter"
-  saveBtn.className = "btn btn-default"
-
-  let saveSpan = document.createElement("span")
+//   let saveBtn = document.createElement("button")
+//   saveBtn.innerHTML = "apply filter"
+//   saveBtn.className = "btn btn-default"
+// 
+//   let saveSpan = document.createElement("span")
 
   //Closable legend
   let link = $('<a style="cursor: pointer;"></a>').text('Filters');
@@ -516,9 +516,9 @@ function displayRouteManagementFilters(){
 
   // let divForAll = $('<div style="display: none;"></div>').append(divTable,saveBtn,saveSpan);
   
-  let divForAll = document.createElement("div")
-  divForAll.style = "display: none"
-  divForAll.append(divTable, saveBtn, saveSpan)
+  // let divForAll = document.createElement("div")
+  // divForAll.style = "display: none"
+  // divForAll.append(divTable, saveBtn, saveSpan)
   
   // let fieldset = document.createElement("fieldset")
   // fieldset.append(legend, divForAll);
@@ -533,27 +533,27 @@ function displayRouteManagementFilters(){
   });
 
   //Save Button
-  saveBtn.click(function(){
-
-    saveSpan.removeClass().addClass('warning').text(' saving...');
-    let filter = [];
-    $('#aes-table-routeManagement-filter tbody tr').each(function(){
-      filter.push(
-        {
-          collumnCode:$(this).find('input').val(),
-          collumn:$(this).find('td:eq(0)').text(),
-          operation:$(this).find('td:eq(1)').text(),
-          value:$(this).find('td:eq(2)').text(),
-        }
-      );
-    });
-    settings.routeManagement.filter = filter;
-    chrome.storage.local.set({settings: settings}, function(){
-      saveSpan.removeClass().addClass('warning').text(' filtering...');
-      routeManagementApplyFilter()
-      saveSpan.removeClass().addClass('good').text(' done!');
-    });
-  });
+//   saveBtn.click(function(){
+// 
+//     saveSpan.removeClass().addClass('warning').text(' saving...');
+//     let filter = [];
+//     $('#aes-table-routeManagement-filter tbody tr').each(function(){
+//       filter.push(
+//         {
+//           collumnCode:$(this).find('input').val(),
+//           collumn:$(this).find('td:eq(0)').text(),
+//           operation:$(this).find('td:eq(1)').text(),
+//           value:$(this).find('td:eq(2)').text(),
+//         }
+//       );
+//     });
+//     settings.routeManagement.filter = filter;
+//     chrome.storage.local.set({settings: settings}, function(){
+//       saveSpan.removeClass().addClass('warning').text(' filtering...');
+//       routeManagementApplyFilter()
+//       saveSpan.removeClass().addClass('good').text(' done!');
+//     });
+//   });
 
 
   return cell

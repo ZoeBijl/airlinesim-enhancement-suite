@@ -588,7 +588,9 @@ function generateRouteManagementTable(scheduleData){
   //Dates
   let dates = [];
   for(let date in scheduleData.date){
-    dates.push(date);
+      if (Number.isInteger(parseInt(date))) {
+          dates.push(date);
+      }
   }
   dates.reverse();
   //LatestSchedule

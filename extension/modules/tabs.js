@@ -80,7 +80,7 @@ class Tabs {
     
     // Event handlers
     clickHandler(event) {
-        let index = event.target.index
+        let index = event.currentTarget.index
         
         this.#setCurrentTab(index)
     }
@@ -95,7 +95,7 @@ class Tabs {
     
     keyUpHandler(event) {
         let key = event.key
-        let index = this.#calculateTabIndex(key, event.target.index)
+        let index = this.#calculateTabIndex(key, event.currentTarget.index)
         
         if (key === "ArrowRight" || key === "ArrowLeft") {
             this.#setCurrentTab(index, true)

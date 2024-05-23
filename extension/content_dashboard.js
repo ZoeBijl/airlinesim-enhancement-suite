@@ -1083,12 +1083,14 @@ function displayCompetitorMonitoring(){
 
   //Display airlines table
   displayCompetitorMonitoringAirlinesTable(div);
+  
+  return div[0]
 
-  let mainDiv = $("#aes-div-dashboard");
-  //Build layout
-  mainDiv.empty();
-  let title = $('<h3></h3>').text('Competitor Monitoring');
-  mainDiv.append(title,div);
+  // let mainDiv = $("#aes-div-dashboard");
+  // //Build layout
+  // mainDiv.empty();
+  // let title = $('<h3></h3>').text('Competitor Monitoring');
+  // mainDiv.append(title,div);
 
 }
 function displayCompetitorMonitoringAirlinesTable(div){

@@ -54,7 +54,7 @@ class DashboardTabpanels {
         table.append(thead, tbody)
         tableWell.append(table)
         
-        container.append(table)
+        container.append(tableWell)
     }
     
     async #createRouteManagement(container) {
@@ -103,10 +103,11 @@ class DashboardTabpanels {
             },
             "openInventory": {
                 "label": "open inventory (max 10)"
-            },
-            "reloadTable": {
-                "label": "reload table"
             }
+            // },
+            // "reloadTable": {
+            //     "label": "reload table"
+            // }
         }
         
         for (let key in buttonElements) {
@@ -179,7 +180,8 @@ class DashboardTabpanels {
         
         // Reload table reloadTable
         // buttonElements["reloadTable"].element.addEventListener("click", function() {
-        //     generateRouteManagementTable(scheduleData);
+        //     let container = document.querySelector("#aes-div-routeManagement")
+        //     container.innerHTML = generateRouteManagementTable(scheduleData)
         // });
         // let divRow = $('<div class="row"></div>').append(optionsDiv, displayRouteManagementFilters(), displayRouteManagementCollumns())
         // div.prepend(divRow)
@@ -219,6 +221,7 @@ class DashboardTabpanels {
         let tableWell = document.createElement("div")
         tableWell.id = "aes-div-routeManagement-filter"
         tableWell.className = "as-table-well"
+        tableWell.style = "overflow-x: auto"
         
         let table = document.createElement("table")
         table.className = "table table-bordered table-striped table-hover"
@@ -247,7 +250,10 @@ class DashboardTabpanels {
     }
     
     #createCompetitorMonitor(container) {
-        container.innerText = "Competitor Monitor panel"
+        let display = displayCompetitorMonitoring()
+        container.append(display)
+        
+        return container
     }
     
     #createAircraftProfitability(container) {
@@ -261,6 +267,7 @@ async function getScheduleData(scheduleKey) {
     return result
 }
 
+// TODO: Split this out into a routeManagement/filters module
 function createTableHeader() {
     let thead = document.createElement("thead")
     let tr = document.createElement("tr")

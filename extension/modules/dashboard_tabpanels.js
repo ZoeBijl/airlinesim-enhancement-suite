@@ -81,7 +81,7 @@ class DashboardTabpanels {
             // let filters = displayRouteManagementFilters()
             let filters = this.#createRouteManagementFilters()
             
-            row.append(options, filters)
+            row.append(options, filters, displayRouteManagementCollumns())
             
             container.append(row, table)
         }
@@ -240,8 +240,8 @@ class DashboardTabpanels {
         // Put it all together
         table.append(thead, tbody, tfoot)
         tableWell.append(table)
-        fieldset.append(legend, tableWell)
-        container.append(fieldset, saveButton, saveSpan)
+        fieldset.append(legend, tableWell, saveButton, saveSpan)
+        container.append(fieldset)
         
         return container
     }

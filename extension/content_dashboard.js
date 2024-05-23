@@ -184,7 +184,7 @@ function displayRouteManagement(){
       buttonElements["reloadTable"].element.addEventListener("click", function(){
         generateRouteManagementTable(scheduleData);
       });
-      let divRow = $('<div class="row"></div>').append(optionsDiv,displayRouteManagementFilters(),displayRouteManagementCollumns())
+      let divRow = $('<div class="row"></div>').append(optionsDiv,/*displayRouteManagementFilters(),*/displayRouteManagementCollumns())
       div.prepend(divRow);
       //Collumns selector Checkbox listener
       $('#aes-table-routeManagement-collumns input').change(function(){
@@ -388,53 +388,54 @@ function setDefaultRouteManagementSettings(){
     filter:[]
   };
 }
-function routeManagementApplyFilter(){
-  $('#aes-table-routeManagement tbody tr').each(function(){
-    let row = this;
-    settings.routeManagement.filter.forEach(function(filter){
-      let cell = $(row).find("."+filter.collumnCode).text();
-      //if(cell){
-        //Get collumn info if number or not
-        let number;
-        for(let i=0;i<settings.routeManagement.tableCollumns.length;i++){
-          let collumn = settings.routeManagement.tableCollumns[i];
-          if(filter.collumnCode == collumn.class){
-            number = collumn.number;
-            break;
-          }
-        }
-        let value = filter.value;
-        if(number){
-          if(cell){
-            cell = parseInt(cell,10);
-          }
-          if(value){
-            value = parseInt(value,10);
-          }
-        }
-        switch(filter.operation) {
-          case '=':
-            if(cell != value){
-              $(row).remove();
+function routeManagementApplyFilter() {
+    $('#aes-table-routeManagement tbody tr').each(function() {
+        let row = this;
+        settings.routeManagement.filter.forEach(function(filter) {
+            let cell = $(row).find("." + filter.collumnCode).text();
+            if (cell) {
+                //Get collumn info if number or not
+                let number;
+                for (let i = 0; i < settings.routeManagement.tableCollumns.length; i++) {
+                    let collumn = settings.routeManagement.tableCollumns[i];
+                    if (filter.collumnCode == collumn.class) {
+                        number = collumn.number;
+                        break;
+                    }
+                }
+                let value = filter.value;
+                if (number) {
+                    if (cell) {
+                        cell = parseInt(cell, 10);
+                    }
+                    if (value) {
+                        value = parseInt(value, 10);
+                    }
+                }
+                switch (filter.operation) {
+                    case '=':
+                        if (cell != value) {
+                            $(row).remove();
+                        }
+                        break;
+                    case '!=':
+                        if (cell == value) {
+                            $(row).remove();
+                        }
+                        break;
+                    case '>':
+                        if (cell < value) {
+                            $(row).remove();
+                        }
+                        break;
+                    case '<':
+                        if (cell > value) {
+                            $(row).remove();
+                        }
+                }
             }
-            break;
-          case '!=':
-            if(cell == value){
-              $(row).remove();
-            }
-            break;
-          case '>':
-            if(cell < value){
-              $(row).remove();
-            }
-            break;
-          case '<':
-            if(cell > value){
-              $(row).remove();
-            }
-        }
+        });
     });
-  });
 }
 function displayRouteManagementFilters(){
   // //Table head
@@ -528,9 +529,9 @@ function displayRouteManagementFilters(){
   cell.append(fieldset)
 
   //Delete row for filter row
-  table.on("click", ".aes-a-routeManagement-filter-delete-row", function(){
-    $(this).closest("tr").remove();
-  });
+  // table.on("click", ".aes-a-routeManagement-filter-delete-row", function(){
+  //   $(this).closest("tr").remove();
+  // });
 
   //Save Button
 //   saveBtn.click(function(){
@@ -592,7 +593,7 @@ function displayRouteManagementCollumns(){
 
   let fieldset = $('<fieldset></fieldset>').append(legend,divTable);
   let div = $('<div class="col-md-4"></div>').append(fieldset);
-  return div;
+  return div[0];
 }
 function generateRouteManagementTable(scheduleData){
   //Remove table

@@ -695,7 +695,7 @@ function generateRouteManagementTable(scheduleData){
     tbody.append(row);
   });
   let table = $('<table class="table table-bordered table-striped table-hover" id="aes-table-routeManagement"></table>').append(thead,tbody);
-  let divTable = $('<div id="aes-div-routeManagement" class="as-table-well"></div>').append(table);
+  let divTable = $('<div id="aes-div-routeManagement" class="as-table-well" style="overflow-x: auto"></div>').append(table);
   // $('#aes-div-dashboard-routeManagement').append(divTable)
   //Analysis collumns
   //Get unique ODs

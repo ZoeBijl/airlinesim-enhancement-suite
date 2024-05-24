@@ -1,9 +1,14 @@
 class DashboardTabpanels {
+    #tabpanel
+    #index
+    
     constructor(component, index) {
         
     }
     
     getContentForPanel(index, tabpanel) {
+        this.#tabpanel = tabpanel
+        this.#index = index
         tabpanel.innerHTML = null
         
         switch (index) {
@@ -102,12 +107,11 @@ class DashboardTabpanels {
                 "label": "hide checked"
             },
             "openInventory": {
-                "label": "open inventory (max 10)"
+                "label": "open inventory (max 10)",
+            },
+            "reloadTable": {
+                "label": "reload table"
             }
-            // },
-            // "reloadTable": {
-            //     "label": "reload table"
-            // }
         }
         
         for (let key in buttonElements) {
@@ -179,7 +183,9 @@ class DashboardTabpanels {
         })
         
         // Reload table reloadTable
-        // buttonElements["reloadTable"].element.addEventListener("click", function() {
+        buttonElements["reloadTable"].element.addEventListener("click", () => {
+            this.getContentForPanel(this.#index, this.#tabpanel)
+        })
         //     let container = document.querySelector("#aes-div-routeManagement")
         //     container.innerHTML = generateRouteManagementTable(scheduleData)
         // });

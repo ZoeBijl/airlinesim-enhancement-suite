@@ -35,7 +35,7 @@ class AES {
      * @param {string} alignment: "right" | "left"
      * @returns {HTMLElement} span with formatted value
      */
-    static formatCurrency = (value, alignment) => {
+    static formatCurrency(value, alignment) {
         let container = document.createElement("span")
         let formattedValue = Intl.NumberFormat().format(value)
         let indicatorEl = document.createElement("span")

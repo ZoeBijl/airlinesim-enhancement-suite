@@ -70,7 +70,7 @@ class AES {
     }
     
     /**
-     * Formats a date string to human readable format
+     * Returns a formatted date string
      * @param {string} "20240524"
      * @returns {string} "2024-05-24" | "error: invalid format for AES.formatDateString"
      */
@@ -89,6 +89,11 @@ class AES {
         return result
     }
     
+    /**
+     * Returns a formatted date (week) string
+     * @param {string} "???"
+     * @returns {string} "??/????" | "error: invalid format for AES.formatDateStringWeek"
+     */
     static formatDateStringWeek(date) {
         const correctLength = date.length === 6
         const isInteger = Number.isInteger(parseInt(date))
@@ -101,5 +106,18 @@ class AES {
             
             result = `${week}/${year}`
         }
+    }
+    
+    /**
+     * Returns the difference between dates in days
+     * @param {array} ["20240520", "20240524"]
+     * @returns {integer} 4
+     */
+    static getDateDiff(dates) {
+        let dateA = new Date(`${this.formatDateString(dates[0])}T12:00:00Z`)
+        let dateB = new Date(`${this.formatDateString(dates[1])}T12:00:00Z`)
+        let result = Math.round((dateA - dateB)/(1000 * 60 * 60 * 24))
+        
+        return result
     }
 }

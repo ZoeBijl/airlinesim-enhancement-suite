@@ -23,8 +23,8 @@ let tabs
 
 window.addEventListener("load", async (event) => {
     todayDate = getDate('today', 0)
-    airline = getAirlineCode()
-    server = getServerName()
+    airline = AES.getAirlineCode()
+    server = AES.getServerName()
     settings = await getSettings()
     
     addDashboardUI()

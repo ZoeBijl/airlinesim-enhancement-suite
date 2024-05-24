@@ -68,4 +68,38 @@ class AES {
         
         return container
     }
+    
+    /**
+     * Formats a date string to human readable format
+     * @param {string} "20240524"
+     * @returns {string} "2024-05-24" | "error: invalid format for AES.formatDateString"
+     */
+    static formatDateString(date) {
+        const correctLength = date.length === 8
+        const isInteger = Number.isInteger(parseInt(date))
+        let result = "error: invalid format for AES.formatDateString"
+        
+        if (correctLength && isInteger) {
+            const year = date.substring(0, 4)
+            const month = date.substring(4, 6)
+            const day = date.substring(6, 8)
+            result = `${year}-${month}-${day}`
+        }
+        
+        return result
+    }
+    
+    static formatDateStringWeek(date) {
+        const correctLength = date.length === 6
+        const isInteger = Number.isInteger(parseInt(date))
+        let result = "error: invalid format for AES.formatDateStringWeek"
+        
+        if (correctLength && isInteger) {
+            const DateAsString = date.toString()
+            const week = DateAsString.substring(0, 2)
+            const year = DateAsString.substring(2, 6)
+            
+            result = `${week}/${year}`
+        }
+    }
 }

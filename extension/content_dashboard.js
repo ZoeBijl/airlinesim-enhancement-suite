@@ -1188,7 +1188,7 @@ function displayCompetitorMonitoringAirlinesTable(div){
         }
         dates.sort(function(a, b){return b-a});
         if(dates.length){
-          data.fafWeek = formatWeekDate(value.tab2[dates[0]].week);
+          data.fafWeek = AES.formatDateStringWeek(value.tab2[dates[0]].week);
           data.fafAirportsServed = value.tab2[dates[0]].airportsServed;
           data.fafOperatedFlights = value.tab2[dates[0]].operatedFlights;
           data.fafSeatsOffered = value.tab2[dates[0]].seatsOffered;
@@ -1197,7 +1197,7 @@ function displayCompetitorMonitoringAirlinesTable(div){
           data.faffko = value.tab2[dates[0]].fko;
           //If previous date exists
           if(dates[1]){
-            data.fafWeekPre = formatWeekDate(value.tab2[dates[1]].week);
+            data.fafWeekPre = AES.formatDateStringWeek(value.tab2[dates[1]].week);
             data.fafAirportsServedDelta = getDelta(data.fafAirportsServed,value.tab2[dates[1]].airportsServed);
             data.fafOperatedFlightsDelta = getDelta(data.fafOperatedFlights,value.tab2[dates[1]].operatedFlights);
             data.fafSeatsOfferedDelta = getDelta(data.fafSeatsOffered,value.tab2[dates[1]].seatsOffered);
@@ -2890,8 +2890,4 @@ function getDate(type, scheduleData){
     default:
       return 0;
   }
-}
-function formatWeekDate(date){
-  let a = date.toString();
-  return a.substring(0, 2)+'/'+a.substring(2, 6);
 }

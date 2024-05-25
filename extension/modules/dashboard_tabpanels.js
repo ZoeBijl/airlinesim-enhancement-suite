@@ -246,7 +246,6 @@ async function getScheduleData(scheduleKey) {
     return result
 }
 
-class GeneralDashboard {
     #container
     #table
     

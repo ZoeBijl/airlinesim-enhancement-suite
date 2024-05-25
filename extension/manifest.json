@@ -42,7 +42,12 @@
             "matches": ["https://*.airlinesim.aero/app/enterprise/settings*"]
         },
         {
-            "js": ["modules/tabs.js", "modules/dashboard_tabpanels.js", "content_dashboard.js"],
+            "js": [
+                "modules/tabs.js",
+                "modules/dashboard_tabpanels.js",
+                "modules/dashboard_general.js",
+                "content_dashboard.js"
+            ],
             "matches": ["https://*.airlinesim.aero/app/enterprise/dashboard*"]
         },
         {

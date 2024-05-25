@@ -24,7 +24,10 @@
         {
             "css": ["css/content.css"],
             "js": ["js/jquery-3.4.1.min.js", "helpers.js"],
-            "matches": ["https://*.airlinesim.aero/app/*", "https://*.airlinesim.aero/action/*"]
+            "matches": [
+                "https://*.airlinesim.aero/app/*",
+                "https://*.airlinesim.aero/action/*"
+            ]
         },
         {
             "js": ["content_inventory.js"],

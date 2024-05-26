@@ -47,6 +47,7 @@
                 "modules/dashboard_tabpanels.js",
                 "modules/dashboard_general.js",
                 "modules/dashboard_routemanagement.js",
+                "modules/dashboard_aircraftprofitability.js",
                 "content_dashboard.js"
             ],
             "matches": ["https://*.airlinesim.aero/app/enterprise/dashboard*"]

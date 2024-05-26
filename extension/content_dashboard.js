@@ -6,6 +6,7 @@ let aesDashboardTabs = []
 let aesDashboardTabPanelEl
 let defaultDashboard = "general"
 
+// Instance of Tabs from tabs.js
 let tabs
 
 /*
@@ -1978,143 +1979,233 @@ function getDelta(newNr,oldNr){
   return newNr - oldNr;
 };
 //Display Aircraft aircraftProfitability
-function displayAircraftProfitability(){
-  if(!settings.aircraftProfitability){
-    settings.aircraftProfitability = {};
-  }
-  if(!settings.aircraftProfitability.hideColumn){
-    settings.aircraftProfitability.hideColumn = [];
-  }
-  //columns
-  let columns = [
-    {
-      category:'Aircraft',
-      title:'Aircraft ID',
-      data:'aircraftId',
-      sortable:1,
-      visible:1,
-      number:1,
-      id:1
-    },
-    {
-      category:'Aircraft',
-      title:'Registration',
-      data:'registration',
-      sortable:1,
-      visible:1
-    },
-    {
-      category:'Aircraft',
-      title:'Equipment',
-      data:'equipment',
-      sortable:1,
-      visible:1
-    },
-    {
-      category:'Aircraft',
-      title:'Fleet',
-      data:'fleet',
-      sortable:1,
-      visible:1
-    },
-    {
-      category:'Aircraft',
-      title:'Nickname',
-      data:'nickname',
-      sortable:1,
-      visible:1
-    },
-    {
-      category:'Aircraft',
-      title:'Note',
-      data:'note',
-      sortable:1,
-      visible:1
-    },
-    {
-      category:'Aircraft',
-      title:'Age',
-      data:'age',
-      sortable:1,
-      visible:1,
-      number:1
-    },
-    {
-      category:'Aircraft',
-      title:'Maintenance',
-      data:'maintenance',
-      sortable:1,
-      visible:1,
-      number:1
-    },
-    {
-      category:'Aircraft',
-      title:'Date',
-      data:'dateAircraft',
-      sortable:1,
-      visible:1
-    },
-    {
-      category:'Profit',
-      title:'Total flights',
-      data:'totalFlights',
-      sortable:1,
-      visible:1,
-      number:1
-    },
-    {
-      category:'Profit',
-      title:'Finished flights',
-      data:'finishedFlights',
-      sortable:1,
-      visible:1,
-      number:1
-    },
-    {
-      category:'Profit',
-      title:'Profit/loss flights',
-      data:'profitFlights',
-      sortable:1,
-      visible:1,
-      number:1
-    },
-    {
-      category:'Profit',
-      title:'Profit',
-      data:'profit',
-      sortable:1,
-      visible:1,
-      number:1,
-      format:'money'
-    },
-    {
-      category:'Profit',
-      title:'Profit extract date',
-      data:'dateProfit',
-      sortable:1,
-      visible:1
+async function displayAircraftProfitability(){
+    let output = document.createElement("div")
+    
+    if(!settings.aircraftProfitability){
+        settings.aircraftProfitability = {};
     }
-  ];
-  if(settings.aircraftProfitability.hideColumn.length){
-    columns.forEach(function(column){
-      settings.aircraftProfitability.hideColumn.forEach(function(hideColumn){
-        if(column.data == hideColumn){
-          column.visible = 0;
-        }
-      });
-    });
-  }
 
-  let key = server + airline.name + 'aircraftFleet';
-  //Get storage fleet data
-  chrome.storage.local.get(key, function(result) {
+    if(!settings.aircraftProfitability.hideColumn){
+        settings.aircraftProfitability.hideColumn = [];
+    }
+    
+    // TODO: get this from a JSON
+    // Columns
+    let columns = [
+        {
+          category:'Aircraft',
+          title:'Aircraft ID',
+          data:'aircraftId',
+          sortable:1,
+          visible:1,
+          number:1,
+          id:1
+        },
+        {
+          category:'Aircraft',
+          title:'Registration',
+          data:'registration',
+          sortable:1,
+          visible:1
+        },
+        {
+          category:'Aircraft',
+          title:'Equipment',
+          data:'equipment',
+          sortable:1,
+          visible:1
+        },
+        {
+          category:'Aircraft',
+          title:'Fleet',
+          data:'fleet',
+          sortable:1,
+          visible:1
+        },
+        {
+          category:'Aircraft',
+          title:'Nickname',
+          data:'nickname',
+          sortable:1,
+          visible:1
+        },
+        {
+          category:'Aircraft',
+          title:'Note',
+          data:'note',
+          sortable:1,
+          visible:1
+        },
+        {
+          category:'Aircraft',
+          title:'Age',
+          data:'age',
+          sortable:1,
+          visible:1,
+          number:1
+        },
+        {
+          category:'Aircraft',
+          title:'Maintenance',
+          data:'maintenance',
+          sortable:1,
+          visible:1,
+          number:1
+        },
+        {
+          category:'Aircraft',
+          title:'Date',
+          data:'dateAircraft',
+          sortable:1,
+          visible:1
+        },
+        {
+          category:'Profit',
+          title:'Total flights',
+          data:'totalFlights',
+          sortable:1,
+          visible:1,
+          number:1
+        },
+        {
+          category:'Profit',
+          title:'Finished flights',
+          data:'finishedFlights',
+          sortable:1,
+          visible:1,
+          number:1
+        },
+        {
+          category:'Profit',
+          title:'Profit/loss flights',
+          data:'profitFlights',
+          sortable:1,
+          visible:1,
+          number:1
+        },
+        {
+          category:'Profit',
+          title:'Profit',
+          data:'profit',
+          sortable:1,
+          visible:1,
+          number:1,
+          format:'money'
+        },
+        {
+          category:'Profit',
+          title:'Profit extract date',
+          data:'dateProfit',
+          sortable:1,
+          visible:1
+        }
+    ];
+    
+    // Hide columns
+    let hiddenColumns = settings.aircraftProfitability.hideColumn
+    let hiddenColumnLenght = hiddenColumns.length
+    
+    if (hiddenColumnLenght > 0) {
+        for (const [index, column] of hiddenColumns.entries()) {
+            if (columns[index]?.data === column) {
+                columns[index].visible = 0
+            }
+        }
+    }
+    // 
+    // if(settings.aircraftProfitability.hideColumn.length){
+    // columns.forEach(function(column){
+    //   settings.aircraftProfitability.hideColumn.forEach(function(hideColumn){
+    //     if(column.data == hideColumn){
+    //       column.visible = 0;
+    //     }
+    //   });
+    // });
+    // }
+    
+    // Aircraft data
+    let storageKey = `${server}${airline.name}aircraftFleet`
+    let data = await chrome.storage.local.get(storageKey)
+    let fleetData = data[storageKey] // aircraftFleetData
+    let fleetKeys = [] // keys
+    
+    if (!fleetData) {
+        let message = document.createElement("p")
+        message.className = "warning"
+        message.innerText = "No aircraft data in memory. Open fleet management to extract aircraft data."
+        
+        output.append(message)
+        
+        return output
+    }
+    
+    for (const aircraft of fleetData.fleet) {
+        let aircraftKey = `${server}aircraftFlights${aircraft.aircraftId}`
+        
+        if (aircraft.aircraftId != undefined) {
+            fleetKeys.push(aircraftKey)
+        }
+    }
+    
+    let flightData = await chrome.storage.local.get(fleetKeys)
+    
+    // TODO: Simplify this mess
+    for (const aircraftFlightData in flightData) {
+        for (let i = 0; i < fleetData.fleet.length; i++) {
+            if (fleetData.fleet[i].aircraftId == flightData[aircraftFlightData].aircraftId) {
+                fleetData.fleet[i].profit = {
+                    date: flightData[aircraftFlightData].date,
+                    finishedFlights: flightData[aircraftFlightData].finishedFlights,
+                    profit: flightData[aircraftFlightData].profit,
+                    profitFlights: flightData[aircraftFlightData].profitFlights,
+                    time: flightData[aircraftFlightData].time,
+                    totalFlights: flightData[aircraftFlightData].totalFlights,
+                };
+            }
+        }
+    }
+    
+    let newData = prepareAircraftProfitabilityData(fleetData);
+    let tableDiv;
+    if(newData.length){
+      tableDiv = generateTable(
+        {
+          column:columns,
+          data:newData,
+          columnPrefix:'aes-aircraftProfit-',
+          tableSettings:1,
+          options:['openAircraft','removeAircraft','reloadTableAircraftProfit','applyFilter','removeSelected'],
+          filter:settings.aircraftProfitability.filter,
+          hideColumn:settings.aircraftProfitability.hideColumn,
+          tableSettingStorage:'aircraftProfitability'
+        }
+      );
+    }
+    
+    output.append(tableDiv[0])
+    
+    
+    // for (const fleetKey of fleetKeys) {
+    //     let aircraft
+    //     
+    //     let div = document.createElement("div")
+    //     div.append(fleetKey)
+    //     output.append(div)
+    // }
+  
+  /*
+  let resultDiv = chrome.storage.local.get(storageKey, await function(result) {
     //get aircraft flight data
-    let aircraftFleetData = result[key];
+    let aircraftFleetData = result[storageKey];
+    
     if(aircraftFleetData){
       let keys = [];
       aircraftFleetData.fleet.forEach(function(value){
         keys.push(server + 'aircraftFlights' + value.aircraftId);
       });
+      
+      
       chrome.storage.local.get(keys, function(result) {
         for(let aircraftFlightData in result) {
           for (let i=0; i < aircraftFleetData.fleet.length; i++) {
@@ -2130,6 +2221,7 @@ function displayAircraftProfitability(){
             }
           }
         }
+        
         let data = prepareAircraftProfitabilityData(aircraftFleetData);
         let tableDiv;
         if(data.length){
@@ -2151,6 +2243,9 @@ function displayAircraftProfitability(){
         }
         //Div
         let div = $('<div class="as-panel"></div>').append(tableDiv);
+        
+        return div
+        
         let mainDiv = $("#aes-div-dashboard");
         //Build layout
         mainDiv.empty();
@@ -2173,6 +2268,7 @@ function displayAircraftProfitability(){
       mainDiv.append(title,div);
     }
   });
+  */
   function prepareAircraftProfitabilityData(storage){
     let data = [];
     storage.fleet.forEach(function(value){
@@ -2203,6 +2299,8 @@ function displayAircraftProfitability(){
     });
     return data;
   }
+
+  return output
 }
 
 //Auto table generator

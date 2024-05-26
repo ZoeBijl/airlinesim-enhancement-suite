@@ -4,8 +4,8 @@ class GeneralDashboard {
     
     constructor() {
         this.#container = this.#createContainer()
-        this.#table = this.#createTable()
-        
+        this.#table = this.#createTable()        
+
         this.#container.append(this.#table)
     }
     
@@ -147,9 +147,7 @@ class GeneralDashboard {
         let row = document.createElement("tr")
         
         // Append all cells
-        for (const cell of cells) {
-            row.append(cell)
-        }
+        row.append(...cells)
         
         return row
     }
@@ -195,18 +193,17 @@ class GeneralDashboard {
         return button
     }
     
-    #scheduleButtonClickHandler(event) {
+    async #scheduleButtonClickHandler(event) {
         settings.schedule.autoExtract = 1
         
         let link = document.querySelector(".facts tfoot a[href$=\"tab\=3\"]")
         
-        chrome.storage.local.set({settings: settings}, () => {
-            link.click()
-        })
+        await chrome.storage.local.set({settings: settings})
+        link.click()
     }
     
     #createPersonnelButton() {
-        let button = this.#createButton("open personel management")
+        let button = this.#createButton("open personnel management")
         
         button.addEventListener("click", this.#personnelButtonClickHandler)
         

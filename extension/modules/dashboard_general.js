@@ -55,6 +55,9 @@ class GeneralDashboard {
         
         cells[0].innerText = "Schedule"
         
+        let statusMessage = document.createElement("span")
+        cells[1].append(statusMessage)
+        
         // Create schedule button
         let button = this.#createScheduleButton()
         cells[2].append(button)
@@ -70,8 +73,8 @@ class GeneralDashboard {
         
         // Return instructions when no scheduleData is found
         if (!scheduleData) {
-            cells[1].className = "bad"
-            cells[1].innerText = "No Schedule data found. Extract schedule or some AES parts will not work."
+            statusMessage.className = "bad"
+            statusMessage.innerText = "No Schedule data found. Extract schedule or some AES parts will not work."
             
             tbody.append(row)
             
@@ -82,12 +85,12 @@ class GeneralDashboard {
         let lastUpdate = getDate("schedule", scheduleData.date)
         let diff = AES.getDateDiff([todayDate.date, lastUpdate])
         
-        cells[1].innerText = `Last schedule extract ${AES.formatDateString(lastUpdate)} (${diff} days ago). Extract new schedule if there are new routes.`
+        statusMessage.innerText = `Last schedule extract ${AES.formatDateString(lastUpdate)} (${diff} days ago). Extract new schedule if there are new routes.`
         
         if (diff >= 0 && diff < 7) {
-            cells[1].className = "good"
+            statusMessage.className = "good"
         } else {
-            cells[1].className = "warning"
+            statusMessage.className = "warning"
         }
         
         tbody.append(row)
@@ -103,6 +106,9 @@ class GeneralDashboard {
         
         cells[0].innerText = "Personnel Management"
         
+        let statusMessage = document.createElement("span")
+        cells[1].append(statusMessage)
+        
         // Create schedule button
         let button = this.#createPersonnelButton()
         cells[2].append(button)
@@ -117,8 +123,8 @@ class GeneralDashboard {
         let personnelData = data[personnelKey]
         
         if (!personnelData) {
-            cells[1].innerText = "No personnel salary update date found."
-            cells[1].className = "bad"
+            statusMessage.innerText = "No personnel salary update date found."
+            statusMessage.className = "bad"
             
             tbody.append(row)
             
@@ -127,12 +133,12 @@ class GeneralDashboard {
         
         let lastUpdate = personnelData.date
         let diff = AES.getDateDiff([todayDate.date, lastUpdate])
-        cells[1].innerText = `Last personnel salary update: ${AES.formatDateString(lastUpdate)} (${diff} days ago).`
+        statusMessage.innerText = `Last personnel salary update: ${AES.formatDateString(lastUpdate)} (${diff} days ago).`
         
         if (diff >= 0 && diff < 7) {
-            cells[1].className = "good"
+            statusMessage.className = "good"
         } else {
-            cells[1].className = "warning"
+            statusMessage.className = "warning"
         }
         
         tbody.append(row)

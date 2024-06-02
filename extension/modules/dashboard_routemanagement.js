@@ -11,7 +11,7 @@ class RouteManagementDashboard {
         this.#container.append(this.#toolbar)
         this.#data = this.#getData()
         
-        this.#table = this.#createTable()
+        this.#table = this.#createTable(this.#data)
         this.#container.append(this.#table.container)
     }
     
@@ -22,8 +22,8 @@ class RouteManagementDashboard {
         return container
     }
     
-    #createTable() {
-        let table = new RouteManagementTable(this.#data)
+    #createTable(data) {
+        let table = new RouteManagementTable(data)
         return table
     }
     
@@ -35,6 +35,8 @@ class RouteManagementDashboard {
         
         let data = await chrome.storage.local.get([scheduleKey])
         let scheduleData = data[scheduleKey]
+        
+        return scheduleData
     }
     
     /*async #createContent() {    
@@ -345,17 +347,199 @@ class RouteManagementDashboard {
 class RouteManagementTable {
     #container
     #data
+    #columns
+    #table
+    #thead
+    #tbody
+    #tfoot
     
     constructor(data) {
-        this.#container = this.#createContainer()
         this.#data = data
+        this.#columns = this.#getColumns()
+        
+        this.#thead = this.#createTableHead()
+        this.#tbody = this.#createTableBody()
+        this.#addRows(this.#tbody)
+        
+        this.#table = this.#createTable(this.#thead, this.#tbody)
+        this.#container = this.#createContainer(this.#table)
+        this.#container.append(this.#table)
     }
     
     #createContainer() {
         let container = document.createElement("div")
         container.className = "as-table-well"
+        container.style = "overflow-x: auto"
         
         return container
+    }
+    
+    #createTable(thead, tbody, tfoot) {
+        let table = document.createElement("table")
+        table.id = "aes-table-routeManagement"
+        table.className = "table table-bordered table-striped table-hover"
+        
+        if (thead) {
+            table.append(thead)
+        }
+        
+        if (tbody) {
+            table.append(tbody)
+        }
+        
+        if (tfoot) {
+            table.append(tfoot)
+        }
+        
+        return table
+    }
+    
+    #createTableHead() {
+        const thead = document.createElement("thead")
+        const tr = document.createElement("tr")
+        const th = document.createElement("th")
+        const input = document.createElement("input")
+        input.setAttribute("type", "checkbox")
+        
+        let checkboxCell = th.cloneNode()
+        checkboxCell.append(input.cloneNode())
+        tr.append(checkboxCell)
+        
+        for (const column of this.#columns) {
+            if (!column.show) {
+                continue
+            }
+            
+            let cell = th.cloneNode()
+            cell.innerHTML = column.name
+
+            tr.append(cell)
+        }
+        
+        let actionCell = th.cloneNode()
+        actionCell.innerText = "Action"
+        tr.append(actionCell)
+        
+        thead.append(tr)
+        
+        return thead
+    }
+    
+    #createTableBody() {
+        const tbody = document.createElement("tbody")
+        
+        return tbody
+    }
+    
+    #emptyTableBody() {
+        this.#tbody.innerHTML = null
+    }
+    
+    async #addRows(tbody) {
+        let data = await this.#data
+        
+        const tr = document.createElement("tr")
+        const td = document.createElement("td")
+        const input = document.createElement("input")
+        input.setAttribute("type", "checkbox")
+        
+        // What does OD stand for?
+        // Origin / Destination?
+        let uniqueOD = []
+        
+        let dates = []
+        for(const date in data.date){
+            if (Number.isInteger(parseInt(date))) {
+                dates.push(date)
+            }
+        }
+        dates.reverse()
+        
+        let latestSchedule = data.date[dates[0]].schedule
+        
+        for (const od of latestSchedule) {
+            let row = tr.cloneNode()
+            row.id = od.origin+od.destination
+            
+            // ODs for analysis
+            uniqueOD.push(od.od)
+            
+            this.#addGeneralCells(od, row, td, input)
+            this.#addDateCells()
+            
+            tbody.append(row)
+        }
+        
+        // Analysis columns
+        // Get unique ODs
+        uniqueOD = [...new Set(uniqueOD)]
+        for (const [index, pair] of uniqueOD.entries()) {
+            let cell = td.cloneNode()
+            let origin = uniqueOD[index].substring(0, 3)
+            let destination = uniqueOD[index].substring(3, 6)
+            let keys = {
+                inbound: server+airline.code+destination+origin+'routeAnalysis',
+                outbound: server+airline.code+origin+destination+'routeAnalysis'
+            }
+            
+            cell.innerText = origin
+            
+            // row.append(cell)
+        }
+    }
+    
+    #addGeneralCells(pair, row, td, input) {
+        // Get values flight numbers and total frequency
+        let fltNr = 0
+        let paxFreq = 0
+        let cargoFreq = 0
+        for (const flight in pair.flightNumber) {
+            cargoFreq += pair.flightNumber[flight].cargoFreq,
+            paxFreq += pair.flightNumber[flight].paxFreq,
+            fltNr++
+        }
+        let totalFreq = cargoFreq + paxFreq;
+        
+        // Hub
+        let hub = pair.od.slice(0, 3);
+        let cellValue = {
+          origin: pair.origin,
+          destination: pair.destination,
+          odName: pair.od,
+          direction: pair.direction,
+          fltNr: fltNr,
+          paxFreq: paxFreq,
+          cargoFreq: cargoFreq,
+          totalFreq: totalFreq,
+          hub: hub
+        }
+        
+        let checkboxCell = td.cloneNode()
+        checkboxCell.append(input.cloneNode())
+        row.append(checkboxCell)
+        
+        for (const column of this.#columns) {
+            if (!column.show) {
+                continue
+            }
+            
+            let cell = td.cloneNode()
+            cell.className = column.class
+            
+            if (column.value) {
+                cell.innerText = cellValue[column.value]
+            }
+        
+            row.append(cell)
+        }
+    }
+    
+    #addDateCells() {
+        
+    }
+    
+    #getColumns(data) {
+        return settings.routeManagement.tableCollumns
     }
     
     get container() {

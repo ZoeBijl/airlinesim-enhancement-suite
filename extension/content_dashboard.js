@@ -1013,10 +1013,12 @@ function getRouteAnalysisImportantDates(dates){
   let analysisDates = [];
   let pricingDates = []
   for(let date in dates) {
-    if(dates[date].pricingUpdated){
-      pricingDates.push(date);
+    if (Number.isInteger(parseInt(date))) {
+      if(dates[date].pricingUpdated){
+        pricingDates.push(date);
+      }
+      analysisDates.push(date);
     }
-    analysisDates.push(date);
   }
   analysisDates.reverse();
   pricingDates.reverse();

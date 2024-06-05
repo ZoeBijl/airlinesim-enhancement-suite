@@ -798,12 +798,12 @@ function updateRouteAnalysisCollumns(data,dates,routeIndex){
     if(dates.analysis){
       //Analysis date
 
-      $(rowId+' .aes-analysisDate').text(formatDate(dates.analysis));
+      $(rowId+' .aes-analysisDate').text(AES.formatDateString(dates.analysis));
 
 
       //Pricing date
       if(dates.pricing){
-        $(rowId+' .aes-pricingDate').text(formatDate(dates.pricing));
+        $(rowId+' .aes-pricingDate').text(AES.formatDateString(dates.pricing));
       }
 
       //Pax Load
@@ -822,7 +822,7 @@ function updateRouteAnalysisCollumns(data,dates,routeIndex){
 
       if(dates.analysisOneBefore){
         //Previous analysis date
-        $(rowId+' .aes-analysisPreDate').text(formatDate(dates.analysisOneBefore));
+        $(rowId+' .aes-analysisPreDate').text(AES.formatDateString(dates.analysisOneBefore));
 
         //Pax Load Delta
         $(rowId+' .aes-paxLoadDelta').html(displayRouteAnalysisLoadDelta(data.date[dates.analysis].data,data.date[dates.analysisOneBefore].data,'pax'));
@@ -877,7 +877,7 @@ function updateRouteAnalysisCollumns(data,dates,routeIndex){
 
   outDates = getInvPricingAnalaysisPricingDate(dataOut.date);
   if(outDates.analysis){
-    $('#aes-row-invPricing-'+origin+dest+'-analysis',tbody).text(formatDate(outDates.analysis));
+    $('#aes-row-invPricing-'+origin+dest+'-analysis',tbody).text(AES.formatDateString(outDates.analysis));
     outIndex = dataOut.date[outDates.analysis].routeIndex;
     let td = $('#aes-row-invPricing-'+origin+dest+'-OWindex',tbody);
     td.html(displayIndex(outIndex));
@@ -887,7 +887,7 @@ function updateRouteAnalysisCollumns(data,dates,routeIndex){
     }
   }
   if(outDates.pricing){
-    $('#aes-row-invPricing-'+origin+dest+'-pricing',tbody).text(formatDate(outDates.pricing));
+    $('#aes-row-invPricing-'+origin+dest+'-pricing',tbody).text(AES.formatDateString(outDates.pricing));
   }
 
 }
@@ -1171,7 +1171,7 @@ function displayCompetitorMonitoringAirlinesTable(div){
         if(dates.length){
           data.airlineCode = value.tab0[dates[0]].code;
           data.airlineName = value.tab0[dates[0]].displayName;
-          data.overviewDate = formatDate(dates[0]);
+          data.overviewDate = AES.formatDateString(dates[0]);
           data.overviewRating = value.tab0[dates[0]].rating;
           data.overviewTotalPax = value.tab0[dates[0]].pax;
           data.overviewTotalCargo = value.tab0[dates[0]].cargo;
@@ -1180,7 +1180,7 @@ function displayCompetitorMonitoringAirlinesTable(div){
           data.overviewStaff = value.tab0[dates[0]].employees;
           //If previous date exists
           if(dates[1]){
-            data.overviewPreDate = formatDate(dates[1]);
+            data.overviewPreDate = AES.formatDateString(dates[1]);
             data.overviewRatingDelta = getDelta(getRatingNr(data.overviewRating),getRatingNr(value.tab0[dates[1]].rating));
             data.overviewTotalPaxDelta = getDelta(data.overviewTotalPax,value.tab0[dates[1]].pax);
             data.overviewTotalCargoDelta = getDelta(data.overviewTotalCargo,value.tab0[dates[1]].cargo);
@@ -1224,7 +1224,7 @@ function displayCompetitorMonitoringAirlinesTable(div){
           if(dates.length){
             let hubs = {};
             //For display
-            data.scheduleDate = formatDate(dates[0]);
+            data.scheduleDate = AES.formatDateString(dates[0]);
             //For table
             data.scheduleDateUse = dates[0];
             data.scheduleCargoFreq = 0;
@@ -1267,7 +1267,7 @@ function displayCompetitorMonitoringAirlinesTable(div){
 
             //Previous schedule data
             if(dates[1]){
-              data.scheduleDatePre = formatDate(dates[1]);
+              data.scheduleDatePre = AES.formatDateString(dates[1]);
               data.scheduleCargoFreqPre = 0;
               data.schedulePAXFreqPre = 0;
               data.scheduleFltNrPre = 0;
@@ -2187,7 +2187,7 @@ function displayAircraftProfitability(){
         profit.finishedFlights=value.profit.finishedFlights;
         profit.profitFlights=value.profit.profitFlights;
         profit.profit=value.profit.profit;
-        profit.dateProfit=formatDate(value.profit.date)+' '+value.profit.time;
+        profit.dateProfit=AES.formatDateString(value.profit.date)+' '+value.profit.time;
       }
       data.push({
         aircraftId:value.aircraftId,
@@ -2198,7 +2198,7 @@ function displayAircraftProfitability(){
         note:value.note,
         age:value.age,
         maintenance:value.maintanance,
-        dateAircraft:formatDate(value.date)+' '+value.time,
+        dateAircraft:AES.formatDateString(value.date)+' '+value.time,
         totalFlights:profit.totalFlights,
         finishedFlights:profit.finishedFlights,
         profitFlights:profit.profitFlights,
@@ -2694,7 +2694,7 @@ function generalAddScheduleRow(tbody){
     if(scheduleData){
       let lastUpdate = getDate('schedule',scheduleData.date);
       let diff = getDateDiff(todayDate.date,lastUpdate);
-      let span = $('<span></span>').text('Last schedule extract '+formatDate(lastUpdate)+' ('+diff+' days ago). Extract new schedule if there are new routes.');
+      let span = $('<span></span>').text('Last schedule extract '+AES.formatDateString(lastUpdate)+' ('+diff+' days ago). Extract new schedule if there are new routes.');
       if(diff >= 0 && diff < 7){
         span.addClass('good');
       } else {
@@ -2741,7 +2741,7 @@ function generalAddPersonelManagementRow(tbody){
     if(personelManagementData){
       let lastUpdate = personelManagementData.date;
       let diff = getDateDiff(todayDate.date,lastUpdate);
-      let span = $('<span></span>').text('Last personnel salary update: '+formatDate(lastUpdate)+' ('+diff+' days ago).');
+      let span = $('<span></span>').text('Last personnel salary update: '+AES.formatDateString(lastUpdate)+' ('+diff+' days ago).');
       if(diff >= 0 && diff < 7){
         span.addClass('good');
       } else {
@@ -2881,13 +2881,10 @@ function getDate(type, scheduleData){
 }
 function getDateDiff(date1,date2){
   //Returns day differnece between date1 - date2
-  let d1 = new Date(formatDate(date1)+'T12:00:00Z');
-  let d2 = new Date(formatDate(date2)+'T12:00:00Z');
+  let d1 = new Date(AES.formatDateString(date1)+'T12:00:00Z');
+  let d2 = new Date(AES.formatDateString(date2)+'T12:00:00Z');
   let diff = Math.round((d1 - d2)/(1000 * 60 * 60 * 24));
   return diff;
-}
-function formatDate(date){
-  return date.substring(0, 4)+'-'+date.substring(4, 6)+'-'+date.substring(6, 8);
 }
 function formatWeekDate(date){
   let a = date.toString();

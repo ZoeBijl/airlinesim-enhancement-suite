@@ -75,6 +75,10 @@ class AES {
      * @returns {string} "2024-05-24" | "error: invalid format for AES.formatDateString"
      */
     static formatDateString(date) {
+        if (!date) {
+            return
+        }
+        
         const correctLength = date.length === 8
         const isInteger = Number.isInteger(parseInt(date))
         let result = "error: invalid format for AES.formatDateString"

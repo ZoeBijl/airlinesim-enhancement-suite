@@ -2693,7 +2693,7 @@ function generalAddScheduleRow(tbody){
     let scheduleData = result[scheduleKey];
     if(scheduleData){
       let lastUpdate = getDate('schedule',scheduleData.date);
-      let diff = getDateDiff(todayDate.date,lastUpdate);
+      let diff = AES.getDateDiff([todayDate.date, lastUpdate]);
       let span = $('<span></span>').text('Last schedule extract '+AES.formatDateString(lastUpdate)+' ('+diff+' days ago). Extract new schedule if there are new routes.');
       if(diff >= 0 && diff < 7){
         span.addClass('good');
@@ -2740,7 +2740,7 @@ function generalAddPersonelManagementRow(tbody){
     let personelManagementData = result[key];
     if(personelManagementData){
       let lastUpdate = personelManagementData.date;
-      let diff = getDateDiff(todayDate.date,lastUpdate);
+      let diff = AES.getDateDiff([todayDate.date, lastUpdate]);
       let span = $('<span></span>').text('Last personnel salary update: '+AES.formatDateString(lastUpdate)+' ('+diff+' days ago).');
       if(diff >= 0 && diff < 7){
         span.addClass('good');
@@ -2878,11 +2878,4 @@ function getDate(type, scheduleData){
     default:
       return 0;
   }
-}
-function getDateDiff(date1,date2){
-  //Returns day differnece between date1 - date2
-  let d1 = new Date(AES.formatDateString(date1)+'T12:00:00Z');
-  let d2 = new Date(AES.formatDateString(date2)+'T12:00:00Z');
-  let diff = Math.round((d1 - d2)/(1000 * 60 * 60 * 24));
-  return diff;
 }

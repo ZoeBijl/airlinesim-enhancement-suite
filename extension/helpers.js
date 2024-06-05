@@ -109,4 +109,17 @@ class AES {
         
         return result
     }
+    
+    /**
+     * Returns the difference between dates in days
+     * @param {array} ["20240520", "20240524"]
+     * @returns {integer} 4
+     */
+    static getDateDiff(dates) {
+        let dateA = new Date(`${this.formatDateString(dates[0])}T12:00:00Z`)
+        let dateB = new Date(`${this.formatDateString(dates[1])}T12:00:00Z`)
+        let result = Math.round((dateA - dateB)/(1000 * 60 * 60 * 24))
+        
+        return result
+    }
 }

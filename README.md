@@ -1,6 +1,6 @@
 # AirlineSim Enhancement Suite
 
-The AirlineSime Enhancement Suite (AES) offers a set of tools to help CEOs build their airlines.
+The AirlineSim Enhancement Suite (AES) offers a set of tools to help CEOs build their airlines.
 
 ## Features
 
@@ -33,3 +33,4 @@ Sources: the [original forum thread](https://forums.airlinesim.aero/t/introducin
 - Marcipanas for the original development
 - racsofp for their update and installation documentation
 - Robert73 for the updated manifest file
+- Zoë Bijl for the continued development

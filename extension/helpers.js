@@ -89,5 +89,24 @@ class AES {
         
         return result
     }
-
+    /**
+     * Returns a formatted date (week) string
+     * @param {string} "212024"
+     * @returns {string} "21/2014 | "error: invalid format for AES.formatDateStringWeek"
+     */
+    static formatDateStringWeek(date) {
+        const correctLength = date.toString().length === 6
+        const isInteger = Number.isInteger(parseInt(date))
+        let result = "error: invalid format for AES.formatDateStringWeek"
+        
+        if (correctLength && isInteger) {
+            const DateAsString = date.toString()
+            const week = DateAsString.substring(0, 2)
+            const year = DateAsString.substring(2, 6)
+            
+            result = `${week}/${year}`
+        }
+        
+        return result
+    }
 }

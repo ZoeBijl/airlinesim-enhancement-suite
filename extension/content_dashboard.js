@@ -4,8 +4,8 @@
 var settings,airline,server,todayDate;
 $(function(){
   todayDate = (getDate('today',0));
-  airline = getAirlineCode();
-  server = getServerName();
+  airline = AES.getAirlineCode();
+  server = AES.getServerName();
   chrome.storage.local.get(['settings'], function(result) {
     settings = result.settings;
 
@@ -2885,18 +2885,6 @@ function getDateDiff(date1,date2){
   let d2 = new Date(formatDate(date2)+'T12:00:00Z');
   let diff = Math.round((d1 - d2)/(1000 * 60 * 60 * 24));
   return diff;
-}
-function getAirlineCode(){
-  //code
-  let airline = $("#enterprise-dashboard table tr:eq(1) td").text();
-  //name
-  let name = $("#as-navbar-main-collapse ul li:eq(0) a:eq(0)").text().trim().replace(/[^A-Za-z0-9]/g, '');
-  return {code:airline,name:name};
-}
-function getServerName(){
-  let server = window.location.hostname
-  server = server.split('.');
-  return server[0];
 }
 function formatDate(date){
   return date.substring(0, 4)+'-'+date.substring(4, 6)+'-'+date.substring(6, 8);

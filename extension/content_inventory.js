@@ -2,7 +2,7 @@
 //MAIN
 //Global vars
 var settings, pricingData, todayDate, analysis;
-var aesmodule = { valid: 1, error: [] };
+var aesmodule = { valid: true, error: [] };
 
 window.addEventListener("load", async (event) => {
     settings = await getSettings()
@@ -416,7 +416,7 @@ function getAnalysis(flights, prices, storedData) {
                 analysis.data[cmp].useCurrentPrice = 1;
                 analysis.data[cmp].analysisPrice = price;
                 analysis.data[cmp].analysisPricePoint = Math.round(price / prices[cmp].defaultPrice * 100);
-                analysis.data[cmp].valid = 1;
+                analysis.data[cmp].valid = true;
             } else {
                 //Check if historical data available
 
@@ -429,7 +429,7 @@ function getAnalysis(flights, prices, storedData) {
                         analysis.data[cmp].useCurrentPrice = 0;
                         analysis.data[cmp].analysisPrice = mostRecentData.data[cmp].analysisPrice;
                         analysis.data[cmp].analysisPricePoint = Math.round(mostRecentData.data[cmp].analysisPrice / prices[cmp].defaultPrice * 100);
-                        analysis.data[cmp].valid = 1;
+                        analysis.data[cmp].valid = true;
                     }
                 }
             }
@@ -927,7 +927,7 @@ function validateAllOptions() {
     //Check if all flight numbers selected
     let valid = $('.col-md-10 > div > .as-panel:eq(1) > ul:eq(0) li:eq(0)').hasClass("active");
     if (!valid) {
-        aesmodule.valid = 0;
+        aesmodule.valid = false;
         aesmodule.error.push('Please select All Flight Numbers under Current Inventory');
         return;
     }
@@ -936,25 +936,25 @@ function validateAllOptions() {
         switch (index) {
             case 0:
                 if (!this.checked) {
-                    aesmodule.valid = 0;
+                    aesmodule.valid = false;
                     aesmodule.error.push('Please check Airport Pair under Apply settings to in Settings panel');
                 }
                 break;
             case 1:
                 if (!this.checked) {
-                    aesmodule.valid = 0;
+                    aesmodule.valid = false;
                     aesmodule.error.push('Please check Flight Numbers under Apply settings to in Settings panel');
                 }
                 break;
             case 2:
                 if (this.checked) {
-                    aesmodule.valid = 0;
+                    aesmodule.valid = false;
                     aesmodule.error.push('Please uncheck Return Airport Pair under Apply settings to in Settings panel');
                 }
                 break;
             case 3:
                 if (this.checked) {
-                    aesmodule.valid = 0;
+                    aesmodule.valid = false;
                     aesmodule.error.push('Please uncheck Return Flight Numbers under Apply settings to in Settings panel');
                 }
                 break;
@@ -965,7 +965,7 @@ function validateAllOptions() {
     //Service classes
     $('fieldset:eq(0) label', dataDiv).each(function() {
         if (!$('input', this)[0].checked) {
-            aesmodule.valid = 0;
+            aesmodule.valid = false;
             aesmodule.error.push('Please check ' + $(this).text() + ' under Service Classes in Data panel');
         }
     });
@@ -973,7 +973,7 @@ function validateAllOptions() {
     $('fieldset:eq(1) label', dataDiv).each(function(index) {
         if (index == 1 || index == 2) {
             if (!$('input', this)[0].checked) {
-                aesmodule.valid = 0;
+                aesmodule.valid = false;
                 aesmodule.error.push('Please check ' + $(this).text() + ' under Flight Status in Data panel');
             }
         }
@@ -983,20 +983,20 @@ function validateAllOptions() {
         if (!index) {
             //Minimum
             if (parseInt($('select option:selected', this).text(), 10) != 0) {
-                aesmodule.valid = 0;
+                aesmodule.valid = false;
                 aesmodule.error.push('Please select 0 for ' + $('label', this).text() + ' under Load in Data panel');
             }
         } else {
             //Max
             if (parseInt($('select option:selected', this).text(), 10) != 100) {
-                aesmodule.valid = 0;
+                aesmodule.valid = false;
                 aesmodule.error.push('Please select 100 for ' + $('label', this).text() + ' under Load in Data panel');
             }
         }
     });
     //Settings Group by flight
     if ($('fieldset:eq(3) input', dataDiv)[0].checked) {
-        aesmodule.valid = 0;
+        aesmodule.valid = false;
         aesmodule.error.push('Please uncheck ' + $('fieldset:eq(3) label', dataDiv).text() + ' under Settings in Data panel');
     }
 }

@@ -779,43 +779,43 @@ function buildHistoryTable() {
             }
         }
     }
-    dates.reverse();
     if (numberOfDates) {
         dates = dates.slice(0, numberOfDates);
     }
     dates.sort();
+    dates.reverse();
     if (dates.length) {
 
         //Headrows
         let th = ['<th></th>'];
         let th1 = ['<th>SC</th>'];
+        if (showNow) {
+            //Now
+            th.push($('<th colspan="4"></th>').text('Now'));
+            th1.push('<th class="text-nowrap aes-text-right">Price</th>');
+            th1.push('<th class="text-nowrap">&Delta; %</th>');
+            th1.push('<th class="text-nowrap">Load</th>');
+            th1.push('<th class="text-nowrap">&Delta; %</th>');
+            //index
+            th1.push('<th class="text-nowrap aes-text-right">Index</th>');
+        }
         for (let i = 0; i < dates.length; i++) {
             let date = dates[i];
             if (i) {
                 th.push($('<th colspan="5"></th>').text(formatDate(date)));
-                th1.push('<th class="aes-text-right">Price</th>');
-                th1.push('<th>&Delta; %</th>');
-                th1.push('<th>Load</th>');
-                th1.push('<th>&Delta; %</th>');
+                th1.push('<th class="text-nowrap aes-text-right">Price</th>');
+                th1.push('<th class="text-nowrap text-right">&Delta; %</th>');
+                th1.push('<th class="text-nowrap text-right">Load</th>');
+                th1.push('<th class="text-nowrap text-right">&Delta; %</th>');
                 //Index
-                th1.push('<th class="aes-text-right">Index</th>');
+                th1.push('<th class="text-nowrap text-right">Index</th>');
             } else {
                 th.push($('<th colspan="3"></th>').text(formatDate(date)));
-                th1.push('<th class="aes-text-right">Price</th>');
-                th1.push('<th>Load</th>');
+                th1.push('<th class="text-nowrap text-right">Price</th>');
+                th1.push('<th class="text-nowrap text-right">Load</th>');
                 //Index
-                th1.push('<th class="aes-text-right">Index</th>');
+                th1.push('<th class="text-nowrap text-right">Index</th>');
             }
-        }
-        if (showNow) {
-            //Now
-            th.push($('<th colspan="4"></th>').text('Now'));
-            th1.push('<th class="aes-text-right">Price</th>');
-            th1.push('<th>&Delta; %</th>');
-            th1.push('<th>Load</th>');
-            th1.push('<th>&Delta; %</th>');
-            //index
-            th1.push('<th class="aes-text-right">Index</th>');
         }
 
         let headRow = $('<tr></tr>').append(th);
@@ -830,6 +830,17 @@ function buildHistoryTable() {
         compartments.forEach(function(cmp) {
             let td = [];
             td.push($('<td></td>').text(cmp));
+            if (showNow) {
+                //Now TDs
+                let data = analysis.data[cmp];
+                let prevData = pricingData.date[dates[dates.length - 1]].data[cmp];
+                td.push($('<td class="text-nowrap text-right"></td>').html(displayHistoryPrice(data)));
+                td.push($('<td class="text-nowrap text-right"></td>').html(displayDifference(data, prevData).price));
+                td.push($('<td class="text-nowrap text-right"></td>').html(displayHistoryLoad(data)));
+                td.push($('<td class="text-nowrap text-right"></td>').html(displayDifference(data, prevData).load));
+                //Index
+                td.push($('<td class="text-nowrap text-right"></td>').html(historyDisplayIndex(data, 0)));
+            }
             //Historical tds
             for (let i = 0; i < dates.length; i++) {
                 let date = dates[i];
@@ -837,30 +848,19 @@ function buildHistoryTable() {
                 if (i) {
                     let prevData = pricingData.date[dates[i - 1]].data[cmp];
                     //Not first data point
-                    td.push($('<td></td>').html(displayHistoryPrice(data)));
-                    td.push($('<td class="aes-text-right"></td>').html(displayDifference(data, prevData).price));
-                    td.push($('<td></td>').html(displayHistoryLoad(data)));
-                    td.push($('<td></td>').html(displayDifference(data, prevData).load));
+                    td.push($('<td class="text-nowrap text-right"></td>').html(displayHistoryPrice(data)));
+                    td.push($('<td class="text-nowrap text-right"></td>').html(displayDifference(data, prevData).price));
+                    td.push($('<td class="text-nowrap text-right"></td>').html(displayHistoryLoad(data)));
+                    td.push($('<td class="text-nowrap text-right"></td>').html(displayDifference(data, prevData).load));
                     //index
-                    td.push($('<td class="aes-text-right"></td>').html(historyDisplayIndex(data, 0)));
+                    td.push($('<td class="text-nowrap text-right"></td>').html(historyDisplayIndex(data, 0)));
                 } else {
                     //First data point
-                    td.push($('<td class="aes-text-right"></td>').html(displayHistoryPrice(data)));
-                    td.push($('<td></td>').html(displayHistoryLoad(data)));
+                    td.push($('<td class="text-nowrap text-right"></td>').html(displayHistoryPrice(data)));
+                    td.push($('<td class="text-nowrap text-right"></td>').html(displayHistoryLoad(data)));
                     //index
-                    td.push($('<td class="aes-text-right"></td>').html(historyDisplayIndex(data, 0)));
+                    td.push($('<td class="text-nowrap text-right"></td>').html(historyDisplayIndex(data, 0)));
                 }
-            }
-            if (showNow) {
-                //Now TDs
-                let data = analysis.data[cmp];
-                let prevData = pricingData.date[dates[dates.length - 1]].data[cmp];
-                td.push($('<td class="aes-text-right"></td>').html(displayHistoryPrice(data)));
-                td.push($('<td></td>').html(displayDifference(data, prevData).price));
-                td.push($('<td></td>').html(displayHistoryLoad(data)));
-                td.push($('<td></td>').html(displayDifference(data, prevData).load));
-                //Index
-                td.push($('<td class="aes-text-right"></td>').html(historyDisplayIndex(data, 0)));
             }
 
             //Finish row
@@ -877,6 +877,15 @@ function buildHistoryTable() {
         footerRows.forEach(function(type) {
             let tf = [];
             tf.push($('<th></th>').text(historyDisplayTotalText(type)));
+            if (showNow) {
+                //Now
+                let data = analysis.data;
+                tf.push('<td colspan="2"></td>');
+                tf.push($('<td></td>').html(historyDisplayTotal(data, type)));
+                tf.push('<td></td>');
+                //index
+                tf.push($('<td class="aes-text-right"></td>').html(historyDisplayIndex(data, type)));
+            }
             for (let i = 0; i < dates.length; i++) {
                 let date = dates[i];
                 let data = pricingData.date[date].data;
@@ -892,15 +901,6 @@ function buildHistoryTable() {
                     //index
                     tf.push($('<td class="aes-text-right"></td>').html(historyDisplayIndex(data, type)));
                 }
-            }
-            if (showNow) {
-                //Now
-                let data = analysis.data;
-                tf.push('<td colspan="2"></td>');
-                tf.push($('<td></td>').html(historyDisplayTotal(data, type)));
-                tf.push('<td></td>');
-                //index
-                tf.push($('<td class="aes-text-right"></td>').html(historyDisplayIndex(data, type)));
             }
 
             footRow.push($('<tr></tr>').append(tf));

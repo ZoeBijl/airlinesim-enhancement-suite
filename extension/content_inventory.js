@@ -143,9 +143,9 @@ function getPriceDetails() {
             cmp = 'Cargo';
         }
         prices[cmp] = {
-            currentPrice: cleanInteger($(row[1]).text()),
+            currentPrice: AES.cleanInteger($(row[1]).text()),
             newPriceInput: $(row[2]).find("input"),
-            defaultPrice: cleanInteger($(row[4]).text().replace(/\s+/g, '')),
+            defaultPrice: AES.cleanInteger($(row[4]).text().replace(/\s+/g, '')),
             currentPricePoint: function() {
                 return Math.round((this.currentPrice / this.defaultPrice) * 100);
             }
@@ -1112,13 +1112,6 @@ function formatDate(date) {
 
 function formatCurrency(value) {
     return Intl.NumberFormat().format(value)
-}
-
-function cleanInteger(a) {
-    a = a.replace(',', '');
-    a = a.replace('.', '');
-    a = a.replace(' AS$', '');
-    return parseInt(a, 10);
 }
 
 function getPricingInventoryKey() {

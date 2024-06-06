@@ -328,7 +328,9 @@ function getAnalysis(flights, prices, storedData){
     var mostRecentDate;
     let dates = [];
     for(let date in storedData) {
-      dates.push(date)
+      if (Number.isInteger(parseInt(date))) {
+        dates.push(date)
+      }
     }
     dates.reverse();
     var mostRecentDate = dates[0];
@@ -632,7 +634,9 @@ function displayHistory(analysis){
   let dates = [];
   //Get valid dates can add function here
   for(let date in pricingData.date) {
-    dates.push(date)
+    if (Number.isInteger(parseInt(date))) {
+      dates.push(date)
+    }
   }
   dates.sort();
   //If historical data exist then build
@@ -727,10 +731,14 @@ function buildHistoryTable(){
   for(let date in pricingData.date) {
     if(showOnlyPricing){
       if(pricingData.date[date].pricingUpdated){
-        dates.push(date);
+        if (Number.isInteger(parseInt(date))) {
+          dates.push(date)
+        }
       }
     } else {
-      dates.push(date);
+      if (Number.isInteger(parseInt(date))) {
+        dates.push(date)
+      }
     }
   }
   dates.reverse();

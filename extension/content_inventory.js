@@ -150,26 +150,53 @@ function getCompCode(text) {
     return text
 }
 
-//Get Prices
+/**
+ * Get Prices
+ * @returns {object} prices
+ */
 function getPriceDetails() {
-    let pricingRows = $(".pricing table tbody tr");
-    let prices = {};
-    for (let i = 0; i < pricingRows.length; i++) {
-        let row = $(pricingRows[i]).find('td');
-        let cmp = $(row[0]).text();
-        if (cmp == 'Fracht') {
-            cmp = 'Cargo';
-        }
-        prices[cmp] = {
-            currentPrice: AES.cleanInteger($(row[1]).text()),
-            newPriceInput: $(row[2]).find("input"),
-            defaultPrice: AES.cleanInteger($(row[4]).text().replace(/\s+/g, '')),
-            currentPricePoint: function() {
-                return Math.round((this.currentPrice / this.defaultPrice) * 100);
-            }
-        };
+    const pricingRows = document.querySelectorAll(".pricing table tbody tr")
+    const prices = {}
+    
+    for (const row of pricingRows) {
+        const cells = row.querySelectorAll("td")
+        const cmp = getCompCode(cells[0].innerText)
+        const price = getPrice(cells)
+        
+        prices[cmp] = price
     }
-    return prices;
+
+    return prices
+}
+
+/**
+ * Get price
+ * @param {array} cells
+ * @returns {object} price
+ */
+function getPrice(cells) {
+    const currentPrice = AES.cleanInteger(cells[1].innerText)
+    const defaultPrice = AES.cleanInteger(cells[4].innerText.replace(/\s+/g, ''))
+    const currentPricePoint = getCurrentPricePoint(currentPrice, defaultPrice)
+    const newPriceInput = cells[2].querySelector("input")
+    
+    const price = {
+        currentPrice: currentPrice,
+        defaultPrice: defaultPrice,
+        currentPricePoint: currentPricePoint,
+        newPriceInput: newPriceInput
+    }
+    
+    return price
+}
+
+/**
+ * @param {string} currentPrice
+ * @param {string} defaultPrice
+ * @returns {integer}
+ */
+function getCurrentPricePoint(currentPrice, defaultPrice) {
+    return Math.round((currentPrice / defaultPrice) * 100)
 }
 
 //Get Analysis
@@ -364,7 +391,7 @@ function getAnalysis(flights, prices, storedData) {
             analysisPricePoint: 0,
             useCurrentPrice: 0,
             currentPrice: prices[cmp].currentPrice,
-            currentPricePoint: prices[cmp].currentPricePoint()
+            currentPricePoint: prices[cmp].currentPricePoint
         };
         let price = prices[cmp].currentPrice;
         //Only cmp flights
@@ -431,7 +458,7 @@ function generateRecommendation(analysis, prices) {
                     }
                 }
                 //Find new price point
-                let newPricePoint = prices[cmp].currentPricePoint() + step.step;
+                let newPricePoint = prices[cmp].currentPricePoint + step.step;
                 //See if new price in bounds for Drop
                 if (step.step < 0) {
                     analysis.data[cmp].recType = 'bad';
@@ -448,7 +475,7 @@ function generateRecommendation(analysis, prices) {
                 }
                 //see if already at highest/lowest price point
                 if (step.step != 0) {
-                    if (newPricePoint == prices[cmp].currentPricePoint()) {
+                    if (newPricePoint == prices[cmp].currentPricePoint) {
                         if (newPricePoint == settings.invPricing.recommendation[cmp].minPrice) {
                             //Already at lowest point
                             analysis.data[cmp].recommendation = 'Already at lowest price!';
@@ -607,7 +634,7 @@ function displayAnalysis(analysis, prices) {
             //Modify new price input
             for (let cmp in analysis.data) {
                 if (analysis.data[cmp].newPrice) {
-                    prices[cmp].newPriceInput.val(analysis.data[cmp].newPrice);
+                    prices[cmp].newPriceInput.value = analysis.data[cmp].newPrice;
                 }
             }
         }

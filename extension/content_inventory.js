@@ -210,7 +210,8 @@ function getCurrentPricePoint(currentPrice, defaultPrice) {
 //Get Analysis
 function getAnalysis(flights, prices, storedData) {
     //Setup object
-
+    let mostRecentDate
+    let mostRecentData
     let data = {
         Y: 0,
         C: 0,
@@ -375,18 +376,15 @@ function getAnalysis(flights, prices, storedData) {
     //Check historical data
     if (storedData) {
         //Shouldbe function inside storage object
-        var mostRecentDate;
-        let dates = [];
+        let dates = []
         for (let date in storedData) {
             if (Number.isInteger(parseInt(date))) {
                 dates.push(date)
             }
         }
         dates.reverse();
-        var mostRecentDate = dates[0];
-        var mostRecentData = storedData[mostRecentDate];
-    } else {
-        var mostRecentData = 0;
+        mostRecentDate = dates[0]
+        mostRecentData = storedData[mostRecentDate]
     }
 
     //extract each cmp analysis
@@ -409,29 +407,24 @@ function getAnalysis(flights, prices, storedData) {
         //if no cmp flights
         if (cmpFlights.length) {
             //Check if current price flights avaialble
-            let flightsArray = cmpFlights
-            // let flightsArray = cmpFlights.filter(function(flight) {
-            //     return (flight.price == price);
-            // });
+            let flightsArray = cmpFlights.filter(function(flight) {
+                return (flight.price == price);
+            });
             if (flightsArray.length) {
                 analysis.data[cmp].useCurrentPrice = 1;
                 analysis.data[cmp].analysisPrice = price;
                 analysis.data[cmp].analysisPricePoint = Math.round(price / prices[cmp].defaultPrice * 100);
                 analysis.data[cmp].valid = true;
-            } else {
-                //Check if historical data available
-
-
-                if (mostRecentData) {
-                    flightsArray = cmpFlights.filter(function(flight) {
-                        return flight.price == mostRecentData.data[cmp].analysisPrice;
-                    });
-                    if (flightsArray.length) {
-                        analysis.data[cmp].useCurrentPrice = 0;
-                        analysis.data[cmp].analysisPrice = mostRecentData.data[cmp].analysisPrice;
-                        analysis.data[cmp].analysisPricePoint = Math.round(mostRecentData.data[cmp].analysisPrice / prices[cmp].defaultPrice * 100);
-                        analysis.data[cmp].valid = true;
-                    }
+            } else if (mostRecentData) {
+                // flightsArray = cmpFlights.filter(function(flight) {
+                //     return flight.price == mostRecentData.data[cmp].analysisPrice;
+                // });
+                flightsArray = cmpFlights
+                if (flightsArray.length) {
+                    analysis.data[cmp].useCurrentPrice = 0;
+                    analysis.data[cmp].analysisPrice = mostRecentData.data[cmp].analysisPrice;
+                    analysis.data[cmp].analysisPricePoint = Math.round(mostRecentData.data[cmp].analysisPrice / prices[cmp].defaultPrice * 100);
+                    analysis.data[cmp].valid = true;
                 }
             }
             if (analysis.data[cmp].valid) {

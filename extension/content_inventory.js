@@ -6,13 +6,13 @@ var aesmodule = { valid: true, error: [] };
 
 window.addEventListener("load", async (event) => {
     settings = await getSettings()
-    
-    if (aesmodule.valid) {
-        displayInventory()
-    } else {
     aesmodule = new Validation()
+
+    if (!aesmodule.valid) {
         displayValidationError()
+        return
     }
+    displayInventory()
 })
 
 /**

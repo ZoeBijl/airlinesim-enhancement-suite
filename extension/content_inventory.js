@@ -84,54 +84,72 @@ $(function() {
     }
 });
 
-//Get Flights
+/**
+ * Get Flights
+ * @returns {array} flights - array of flight objects
+ */
 function getFlights() {
-    let flightRows = $("#inventory-grouped-table tbody tr");
-    if (!flightRows.length) {
-        flightRows = $("#inventory-table tbody tr");
-    }
-    let flights = [];
-    for (let i = 0; i < flightRows.length; i++) {
-        let flight;
-        let row = $(flightRows[i]).find('td');
-        //Get variables
-        if (row.length == 12) {
-            //cargo fix for german
-            let compCode = $(row[5]).text();
-            if (compCode == 'Fracht') {
-                compCode = 'Cargo';
-            }
-            flight = {
-                fltNr: $(row[1]).find("a:first").text(),
-                date: $(row[2]).text(),
-                cmp: compCode,
-                cap: cleanInteger($(row[6]).text()),
-                bkd: cleanInteger($(row[7]).text()),
-                price: cleanInteger($(row[9]).text()),
-                status: $(row[10]).text().replace(/\s+/g, '')
-            };
+    const flights = []
+    // TODO: also support grouped mode (#inventory-grouped-table)
+    const flightRows = document.querySelectorAll("#inventory-table tbody tr")
 
-        }
-        if (row.length == 5) {
-            //cargo fix for german
-            let compCode = $(row[0]).text();
-            if (compCode == 'Fracht') {
-                compCode = 'Cargo';
-            }
-            flight = {
-                fltNr: flight.fltNr,
-                date: flight.date,
-                cmp: compCode,
-                cap: cleanInteger($(row[1]).text()),
-                bkd: cleanInteger($(row[2]).text()),
-                price: cleanInteger($(row[4]).text()),
-                status: flight.status
-            };
-        }
-        flights.push(flight);
+    if (!flightRows) {
+        throw new Error("\"Group by flight\" needs to be unchecked")
     }
-    return flights;
+    
+    for (const row of flightRows) {
+        const flight = getFlight(row)
+        flights.push(flight)
+    }
+
+    return flights
 }
+
+/**
+ * Get flight information and return as an object
+ * @param {HTMLElement} row - the <tr> with flight information
+ * @returns {object} flight - object with the parsed flight information
+ */
+function getFlight(row) {
+    const cells = row.querySelectorAll("td")
+    const flightNumber = cells[1].querySelector("a[href*=numbers").innerText
+    const date = cells[2].innerText
+    const compCode = getCompCode(cells[5].innerText)
+    const capacity = cells[6].innerText
+    const booked = cells[7].innerText
+    const price = cells[9].innerText
+    const status = cells[10].innerText.replace(/\s+/g, "")
+
+    const flight = {
+        fltNr: flightNumber,
+        date: date,
+        cmp: compCode,
+        cap: AES.cleanInteger(capacity),
+        bkd: AES.cleanInteger(booked),
+        price: AES.cleanInteger(price),
+        status: status
+    }
+    
+    return flight
+}
+
+/**
+ * Checks if the string is longer than one character and returns a string of "Cargo"
+ * @param {string} text - localised word for "Cargo"
+ * @returns {string} text - either passthrough of the input or "Cargo"
+ */
+function getCompCode(text) {
+    if (!text) {
+        throw new Error("no value provided for getCompCode")
+    }
+    
+    if (text.length > 1) {
+        return "Cargo"
+    }
+    
+    return text
+}
+
 //Get Prices
 function getPriceDetails() {
     let pricingRows = $(".pricing table tbody tr");

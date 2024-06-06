@@ -5,6 +5,7 @@ var settings, pricingData, todayDate, analysis;
 var aesmodule = { valid: 1, error: [] };
 
 window.addEventListener("load", async (event) => {
+    settings = await getSettings()
     validateAllOptions()
     
     if (aesmodule.valid) {
@@ -14,10 +15,16 @@ window.addEventListener("load", async (event) => {
     }
 })
 
-async function displayInventory() {
-    const settingsData = await chrome.storage.local.get(['settings'])
-    settings = settingsData.settings
+/**
+ * Get settings from local storage
+ * @returns {object} data.settings
+ */
+async function getSettings() {
+    const data = await chrome.storage.local.get(['settings'])
+    return data.settings
+}
 
+async function displayInventory() {
     todayDate = parseInt(getCurrentDateTime().date, 10);
     //Get flights
     let flights = getFlights();

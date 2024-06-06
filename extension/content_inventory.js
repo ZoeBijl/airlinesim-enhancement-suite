@@ -6,11 +6,11 @@ var aesmodule = { valid: true, error: [] };
 
 window.addEventListener("load", async (event) => {
     settings = await getSettings()
-    validateAllOptions()
     
     if (aesmodule.valid) {
         displayInventory()
     } else {
+    aesmodule = new Validation()
         displayValidationError()
     }
 })
@@ -409,9 +409,10 @@ function getAnalysis(flights, prices, storedData) {
         //if no cmp flights
         if (cmpFlights.length) {
             //Check if current price flights avaialble
-            let flightsArray = cmpFlights.filter(function(flight) {
-                return (flight.price == price);
-            });
+            let flightsArray = cmpFlights
+            // let flightsArray = cmpFlights.filter(function(flight) {
+            //     return (flight.price == price);
+            // });
             if (flightsArray.length) {
                 analysis.data[cmp].useCurrentPrice = 1;
                 analysis.data[cmp].analysisPrice = price;
@@ -921,90 +922,10 @@ function buildHistoryTable() {
     }
 }
 
-//Validate
-function validateAllOptions() {
-    //Get all options
-    //Check if all flight numbers selected
-    let valid = $('.col-md-10 > div > .as-panel:eq(1) > ul:eq(0) li:eq(0)').hasClass("active");
-    if (!valid) {
-        aesmodule.valid = false;
-        aesmodule.error.push('Please select All Flight Numbers under Current Inventory');
-        return;
-    }
-    //Check if Apply settings to correctly set
-    $('.col-md-10 > div > .as-panel:eq(1) > div > div > div:eq(0) fieldset:eq(2) > div input').each(function(index) {
-        switch (index) {
-            case 0:
-                if (!this.checked) {
-                    aesmodule.valid = false;
-                    aesmodule.error.push('Please check Airport Pair under Apply settings to in Settings panel');
-                }
-                break;
-            case 1:
-                if (!this.checked) {
-                    aesmodule.valid = false;
-                    aesmodule.error.push('Please check Flight Numbers under Apply settings to in Settings panel');
-                }
-                break;
-            case 2:
-                if (this.checked) {
-                    aesmodule.valid = false;
-                    aesmodule.error.push('Please uncheck Return Airport Pair under Apply settings to in Settings panel');
-                }
-                break;
-            case 3:
-                if (this.checked) {
-                    aesmodule.valid = false;
-                    aesmodule.error.push('Please uncheck Return Flight Numbers under Apply settings to in Settings panel');
-                }
-                break;
-        }
-    });
-    //Check if Data settings correctly set
-    let dataDiv = $('.col-md-10 > div > .as-panel:eq(1) > div > div > div:eq(1) .layout-col-md-3');
-    //Service classes
-    $('fieldset:eq(0) label', dataDiv).each(function() {
-        if (!$('input', this)[0].checked) {
-            aesmodule.valid = false;
-            aesmodule.error.push('Please check ' + $(this).text() + ' under Service Classes in Data panel');
-        }
-    });
-    //Flight Status
-    $('fieldset:eq(1) label', dataDiv).each(function(index) {
-        if (index == 1 || index == 2) {
-            if (!$('input', this)[0].checked) {
-                aesmodule.valid = false;
-                aesmodule.error.push('Please check ' + $(this).text() + ' under Flight Status in Data panel');
-            }
-        }
-    });
-    //Load
-    $('fieldset:eq(2) div', dataDiv).each(function(index) {
-        if (!index) {
-            //Minimum
-            if (parseInt($('select option:selected', this).text(), 10) != 0) {
-                aesmodule.valid = false;
-                aesmodule.error.push('Please select 0 for ' + $('label', this).text() + ' under Load in Data panel');
-            }
-        } else {
-            //Max
-            if (parseInt($('select option:selected', this).text(), 10) != 100) {
-                aesmodule.valid = false;
-                aesmodule.error.push('Please select 100 for ' + $('label', this).text() + ' under Load in Data panel');
-            }
-        }
-    });
-    //Settings Group by flight
-    if ($('fieldset:eq(3) input', dataDiv)[0].checked) {
-        aesmodule.valid = false;
-        aesmodule.error.push('Please uncheck ' + $('fieldset:eq(3) label', dataDiv).text() + ' under Settings in Data panel');
-    }
-}
-
 function displayValidationError() {
     let p = [];
     p.push($('<p></p>').text('AES Inventory Pricing Module could not be loaded because of errors:'));
-    aesmodule.error.forEach(function(error) {
+    aesmodule.errors.forEach(function(error) {
         p.push($('<p class="bad"></p>').html('<b>' + error + '</b>'));
     });
     p.push($('<p class="warning"></p>').html('Refresh the page after making adjustments.'));

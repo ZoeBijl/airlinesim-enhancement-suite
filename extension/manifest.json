@@ -27,7 +27,10 @@
             "matches": ["https://*.airlinesim.aero/app/*", "https://*.airlinesim.aero/action/*"]
         },
         {
-            "js": ["content_inventory.js"],
+            "js": [
+                "content_inventory.js",
+                "modules/inventory/validation.js"
+            ],
             "matches": ["https://*.airlinesim.aero/app/com/inventory/*"]
         },
         {

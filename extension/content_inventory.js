@@ -3,86 +3,89 @@
 //Global vars
 var settings, pricingData, todayDate, analysis;
 var aesmodule = { valid: 1, error: [] };
-$(function() {
-    validateAllOptions();
+
+window.addEventListener("load", async (event) => {
+    validateAllOptions()
+    
     if (aesmodule.valid) {
-        //Options correct
-        chrome.storage.local.get(['settings'], function(result) {
-            settings = result.settings;
-            todayDate = parseInt(getCurrentDateTime().date, 10);
-            //Get flights
-            let flights = getFlights();
-            let prices = getPriceDetails();
+        displayInventory()
+    } else {
+        displayValidationError()
+    }
+})
 
-            let storageKey = getPricingInventoryKey();
-
-            //Check if any snapshots saved
-            let defaultPricingData = {
-                server: storageKey.server,
-                airline: storageKey.airline,
-                type: storageKey.type,
-                origin: storageKey.origin,
-                destination: storageKey.destination,
-                key: storageKey.key,
-                date: {}
-            }
-            chrome.storage.local.get({
-                [storageKey.key]: defaultPricingData }, function(result) {
-                pricingData = result[storageKey.key];
-                //Do Analysis
-                analysis = getAnalysis(flights, prices, pricingData.date);
-                //Display analysis
-                displayAnalysis(analysis, prices);
-                //Display history
-                displayHistory(analysis);
-
-
-                //Automation
-                //Check if valid analysis exists
-
-                if (analysis.hasValue('valid')) {
-                    //CHeck if updated todayDate
-                    if (pricingData.date[todayDate]) {
-                        //Today update exists
-                        //Check if pricing updated today
-                        if (pricingData.date[todayDate].pricingUpdated) {
-                            //Pricing updated today
-                            //Do nothing
-                        } else {
-                            //Pricing not updated today
-                            //Check if new price avaialble
-                            if (analysis.hasValue('newPrice')) {
-                                //Update price
-                                if (settings.invPricing.autoPriceUpdate) {
-                                    $('#aes-btn-invPricing-apply-new-prices').click();
-                                }
-                            }
-                        }
+function displayInventory() {
+    chrome.storage.local.get(['settings'], function(result) {
+        settings = result.settings;
+        todayDate = parseInt(getCurrentDateTime().date, 10);
+        //Get flights
+        let flights = getFlights();
+        let prices = getPriceDetails();
+        let storageKey = getPricingInventoryKey();
+    
+        //Check if any snapshots saved
+        let defaultPricingData = {
+            server: storageKey.server,
+            airline: storageKey.airline,
+            type: storageKey.type,
+            origin: storageKey.origin,
+            destination: storageKey.destination,
+            key: storageKey.key,
+            date: {}
+        }
+        chrome.storage.local.get({
+            [storageKey.key]: defaultPricingData }, function(result) {
+            pricingData = result[storageKey.key];
+            //Do Analysis
+            analysis = getAnalysis(flights, prices, pricingData.date);
+            //Display analysis
+            displayAnalysis(analysis, prices);
+            //Display history
+            displayHistory(analysis);
+    
+    
+            //Automation
+            //Check if valid analysis exists
+    
+            if (analysis.hasValue('valid')) {
+                //CHeck if updated todayDate
+                if (pricingData.date[todayDate]) {
+                    //Today update exists
+                    //Check if pricing updated today
+                    if (pricingData.date[todayDate].pricingUpdated) {
+                        //Pricing updated today
+                        //Do nothing
                     } else {
-                        //Today update does not exists
+                        //Pricing not updated today
                         //Check if new price avaialble
                         if (analysis.hasValue('newPrice')) {
                             //Update price
                             if (settings.invPricing.autoPriceUpdate) {
                                 $('#aes-btn-invPricing-apply-new-prices').click();
-                            } else if (settings.invPricing.autoAnalysisSave) {
-                                $('#aes-btn-invPricing-save-snapshot').click();
-                            }
-                        } else {
-                            //Update data
-                            if (settings.invPricing.autoAnalysisSave) {
-                                $('#aes-btn-invPricing-save-snapshot').click();
                             }
                         }
                     }
+                } else {
+                    //Today update does not exists
+                    //Check if new price avaialble
+                    if (analysis.hasValue('newPrice')) {
+                        //Update price
+                        if (settings.invPricing.autoPriceUpdate) {
+                            $('#aes-btn-invPricing-apply-new-prices').click();
+                        } else if (settings.invPricing.autoAnalysisSave) {
+                            $('#aes-btn-invPricing-save-snapshot').click();
+                        }
+                    } else {
+                        //Update data
+                        if (settings.invPricing.autoAnalysisSave) {
+                            $('#aes-btn-invPricing-save-snapshot').click();
+                        }
+                    }
                 }
-            });
+            }
         });
-    } else {
-        //Options not correct
-        displayValidationError();
-    }
-});
+    });
+}
 
 /**
  * Get Flights

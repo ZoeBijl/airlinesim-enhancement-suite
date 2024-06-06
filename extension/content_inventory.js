@@ -1173,18 +1173,12 @@ function getPricingInventoryKey() {
     let org = $(x[0]).text();
     let dest = $(x[1]).text();
     //get server
-    let server = getServerName();
+    let server = AES.getServerName();
     //get airline code
     let airline = getAirlineCode();
     //create key
     let key = server + airline + org + dest + 'routeAnalysis';
     return { key: key, server: server, airline: airline, type: "routeAnalysis", origin: org, destination: dest }
-}
-
-function getServerName() {
-    let server = window.location.hostname
-    server = server.split('.');
-    return server[0];
 }
 
 function getAirlineCode() {

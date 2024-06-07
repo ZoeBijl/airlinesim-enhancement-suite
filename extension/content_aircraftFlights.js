@@ -119,7 +119,7 @@ function displayFlightProfit(){
 
     if(value.data){
       td.push(formatMoney(value.data.money.CM5.Total));
-      td.push($('<td></td>').text(formatDate(value.data.date)+' '+value.data.time));
+      td.push($('<td></td>').text(AES.formatDateString(value.data.date)+' '+value.data.time));
     } else {
       td.push('<td></td>');
       td.push('<td></td>');
@@ -137,7 +137,7 @@ function buildTable(){
   row.push($('<tr></tr>').append('<th>Total flights</th>','<td>'+aircraftFlightData.totalFlights+'</td>'));
   row.push($('<tr></tr>').append('<th>Finished flights</th>','<td>'+aircraftFlightData.finishedFlights+'</td>'));
   row.push($('<tr></tr>').append('<th>Finished flights with profit/loss extract</th>','<td>'+aircraftFlightData.profitFlights+'</td>'));
-  row.push($('<tr></tr>').append('<th>Data save time</th>','<td>'+formatDate(aircraftFlightData.date)+' '+aircraftFlightData.time+'</td>'));
+  row.push($('<tr></tr>').append('<th>Data save time</th>','<td>'+AES.formatDateString(aircraftFlightData.date)+' '+aircraftFlightData.time+'</td>'));
 
   let tbody = $('<tbody></tbody>').append(row);
   return $('<table class="table table-bordered table-striped table-hover"></table>').append(tbody);
@@ -234,9 +234,6 @@ function formatMoney(value){
   container.append(indicatorEl, valueEl, currencyEl)
   
   return container
-}
-function formatDate(date){
-  return date.substring(0, 4)+'-'+date.substring(4, 6)+'-'+date.substring(6, 8);
 }
 function getServerName(){
   let server = window.location.hostname

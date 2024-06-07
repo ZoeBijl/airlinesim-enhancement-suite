@@ -92,7 +92,7 @@ function displayPersonelManagement(){
   let key = server+airline+"personelManagement";
   chrome.storage.local.get([key], function(result) {
     if(result[key]){
-      p.after($('<p></p>').text('Last time updated on '+formatDate(result[key].date)+' '+result[key].time));
+      p.after($('<p></p>').text('Last time updated on '+AES.formatDateString(result[key].date)+' '+result[key].time));
     } else {
       p.after($('<p></p>').text('No previous personel management data found.'));
     }
@@ -166,7 +166,4 @@ function getServerName(){
   let server = window.location.hostname
   server = server.split('.');
   return server[0];
-}
-function formatDate(date){
-  return date.substring(0, 4)+'-'+date.substring(4, 6)+'-'+date.substring(6, 8);
 }

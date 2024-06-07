@@ -92,7 +92,7 @@ function buildTable(){
   tf.push('<th>Flight Id:</th>');
   tf.push('<th>'+flightInfoData.flightId+'</th>');
   tf.push('<th>Date:</th>');
-  tf.push('<th>'+formatDate(flightInfoData.date)+' '+flightInfoData.time+'</th>');
+  tf.push('<th>'+AES.formatDateString(flightInfoData.date)+' '+flightInfoData.time+'</th>');
   tf.push('<th></th>');
   tf.push('<th></th>');
   tf.push('<th></th>');
@@ -114,9 +114,6 @@ function formatMoney(value){
   text = text + value + ' AS$';
   span.text(text);
   return span;
-}
-function formatDate(date){
-  return date.substring(0, 4)+'-'+date.substring(4, 6)+'-'+date.substring(6, 8);
 }
 function getFinancials(){
   let data = {};

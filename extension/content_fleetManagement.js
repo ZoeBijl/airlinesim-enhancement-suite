@@ -189,7 +189,7 @@ function fltmng_displayAircraftProfit(){
     let td = [];
     if(date){
       td.push(fltmng_formatMoney(profit));
-      td.push($('<td></td>').html(fltmng_formatDate(date)+'<br>'+time));
+      td.push($('<td></td>').html(AES.formatDateString(date)+'<br>'+time));
     } else {
       td.push('<td></td>','<td></td>');
     }
@@ -234,7 +234,4 @@ function fltmng_formatMoney(value){
   container.append(indicatorEl, valueEl, currencyEl)
   
   return container
-}
-function fltmng_formatDate(date){
-  return date.substring(0, 4)+'-'+date.substring(4, 6)+'-'+date.substring(6, 8);
 }

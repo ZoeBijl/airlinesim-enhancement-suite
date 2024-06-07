@@ -115,29 +115,26 @@ class AES {
      * @returns {object} datetime - { date: "20240607", time: "16:24 UTC" }
      */
     static getServerDate() {
-        const source = document.querySelector(".as-navbar-bottom span:has(.fa-clock-o) span[title]")
-        const titleAttribute = source.title
+        const source = document.querySelector(".as-navbar-bottom span:has(.fa-clock-o)").innerText.trim()
+        const sourceAsNumbers = this.cleanInteger(source).toString()
         
-        // The title-attribute is always formatted like so:
-        // "2024-06-07 16:23 UTC / 2024-06-08 02:23 HT"
-        // Which is 42 characters long
-        const expectedLength = 42
-        if (titleAttribute.length != expectedLength) {
-            throw new Error("Unexpected length for source. There might’ve been a UI update. Check AES.getServerDate()")
+        // The source always consists of 12 numbers
+        const expectedLength = 12
+        if (sourceAsNumbers.length != expectedLength) {
+            throw new Error(`Unexpected length for source (${sourceAsNumbers.length}). There might’ve been a UI update. Check AES.getServerDate()`)
         }
         
-        const data = titleAttribute.split("/")[0].trim()
         // Splits the date component from the data,
         // then splits that into an array for the year, month, and day
-        let dateArray = data.split(" ")[0].split(/\D+/)
+        let dateArray = source.split(" ")[0].split(/\D+/)
         if (dateArray[0].length === 2) {
             dateArray.reverse()
         }
         let date = dateArray[0]+dateArray[1]+dateArray[2]
         
         // Strip the date component from the data
-        // leaving only the time in UTC
-        let time = data.replace(/.{10}\s/, "")
+        // leaving only the time
+        let time = source.replace(/.{10}\s/, "")
         
         const datetime = {
             date: date,
@@ -167,7 +164,7 @@ class AES {
      */
     static cleanInteger(value) {
         // \D matches any character that's not a digit
-        value.replace(/\D+/g)
-        return parseInt(value, 10)
+        let result = value.replaceAll(/\D+/g, "")
+        return parseInt(result, 10)
     }
 }

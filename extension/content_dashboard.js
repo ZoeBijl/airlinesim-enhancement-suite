@@ -973,39 +973,53 @@ function updateRouteAnalysisCollumns(data, dates, routeIndex) {
 }
 
 function displayRouteAnalysisLoadDelta(dataCurrent, dataPrevious, type) {
-    let load = getRouteAnalysisLoad(dataCurrent, type);
-    let preLoad = getRouteAnalysisLoad(dataPrevious, type);
+    const load = getRouteAnalysisLoad(dataCurrent, type)
+    const preLoad = getRouteAnalysisLoad(dataPrevious, type)
+    const span = document.createElement("span")
+    span.innerText = "-"
+    let className = "warning"
+    
+    if (!load) {
+        return span
+    }
+
     if (load && preLoad) {
-        let diff = load - preLoad;
-        let span = $('<span></span>');
+        let diff = load - preLoad
         if (diff > 0) {
-            span.addClass('good').text('+' + diff + "%");
-            return span;
+            className = "good"
         }
         if (diff < 0) {
-            span.addClass('bad').text(diff + "%");
-            return span;
+            className = "bad"
         }
-        span.addClass('warning').text(diff + "%");
+        
+        span.innerText = `${diff}%`
+        span.className = className
         return span;
     }
 }
 
 function displayRouteAnalysisIndexDelta(dataCurrent, dataPrevious, type) {
-    let index = getRouteAnalysisIndex(dataCurrent, type);
-    let preIndex = getRouteAnalysisIndex(dataPrevious, type);
+    const index = getRouteAnalysisIndex(dataCurrent, type);
+    const preIndex = getRouteAnalysisIndex(dataPrevious, type);
+    const span = document.createElement("span")
+    span.innerText = "-"
+    let className = "warning"
+    
+    if (!index) {
+        return span
+    }
+    
     if (index && preIndex) {
-        let diff = index - preIndex;
-        let span = $('<span></span>');
+        let diff = index - preIndex
         if (diff > 0) {
-            span.addClass('good').text('+' + diff);
-            return span;
+            className = "good"
         }
         if (diff < 0) {
-            span.addClass('bad').text(diff);
-            return span;
+            className = "bad"
         }
-        span.addClass('warning').text(diff);
+        
+        span.innerText = `${diff}%`
+        span.className = className
         return span;
     }
 }
@@ -1041,19 +1055,24 @@ function getRouteAnalysisLoad(data, type) {
 }
 
 function displayLoad(load) {
-    if (load) {
-        let span = $('<span></span>');
-        if (load >= 70) {
-            span.addClass('good').text(load + "%");
-            return span;
-        }
-        if (load < 40) {
-            span.addClass('bad').text(load + "%");
-            return span;
-        }
-        span.addClass('warning').text(load + "%");
-        return span;
+    const span = document.createElement("span")
+    span.innerText = "-"
+    let className = "warning"
+    
+    if (!load) {
+        return span
     }
+    
+    if (load >= 70) {
+        className = "good"
+    }
+    if (load < 40) {
+        className = "bad"
+    }
+    
+    span.innerText = `${load}%`
+    span.className = className
+    return span
 }
 
 function getRouteAnalysisIndex(data, type) {
@@ -1124,24 +1143,45 @@ function getRouteAnalysisImportantDates(dates) {
 }
 
 function displayIndex(index) {
-    let span = $('<span></span>');
+    const span = document.createElement("span")
+    span.innerText = "-"
+    let className = "warning"
+    
+    if (!index) {
+        return span
+    }
     if (index >= 90) {
-        return span.addClass('good').text(index);
+        className = "good"
     }
     if (index <= 50) {
-        return span.addClass('bad').text(index);
+        className = "bad"
     }
-    return span.addClass('warning').text(index);
+    
+    span.innerText = index
+    span.className = className
+    return span
 }
 
 function displayIndexChange(index) {
+    const span = document.createElement("span")
+    span.innerText = "-"
+    
+    if (!index) {
+        return span
+    }
+    
+    let className = ""
+
     if (index > 0) {
-        return ' (<span class="good">+' + index + '</span>)';
+        className = "good"
     }
     if (index < 0) {
-        return ' (<span class="bad">' + index + '</span>)';
+        className = "bad"
     }
-    return ' (<span class="warning">' + index + '</span>)';
+
+    span.innerText = index
+    span.className = className
+    return span
 }
 //Display General
 function displayGeneral() {
@@ -2450,25 +2490,26 @@ function generateTable(tableOptionsRule) {
 
     function masterCellFormat(type, value) {
         if (!value) {
-            return '';
+            return "-"
         }
+
         switch (type) {
             case 'money':
-                let span = $('<span></span>');
-                let text = '';
+                let span = $('<span></span>')
+                let text = ''
                 if (value > 0) {
-                    span.addClass('good');
+                    span.addClass('good')
                     text = '+'
                 }
                 if (value < 0) {
-                    span.addClass('bad');
+                    span.addClass('bad')
                 }
-                text = text + new Intl.NumberFormat().format(value) + ' AS$';
-                span.text(text);
-                return span;
-                break;
+                text = text + new Intl.NumberFormat().format(value) + ' AS$'
+                span.text(text)
+                return span
+                break
             default:
-                return value;
+                return value
         }
     }
 

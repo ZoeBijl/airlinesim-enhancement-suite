@@ -684,7 +684,11 @@ function generateRouteManagementTable(scheduleData) {
             sort.click(function() {
                 routeManagementSortTable(col.class, col.number);
             });
-            th.push($('<th style="cursor: pointer;"></th>').html(sort));
+            let heading = $('<th style="cursor: pointer;"></th>')
+            if (col.number) {
+                heading.addClass("text-right")
+            }
+            th.push(heading.html(sort));
         }
     });
     //Add open inventory column
@@ -727,11 +731,17 @@ function generateRouteManagementTable(scheduleData) {
         //Schedule
         collumns.forEach(function(col) {
             if (col.show) {
-                if (col.value) {
-                    cell.push($('<td></td>').addClass(col.class).text(cellValue[col.value]));
-                } else {
-                    cell.push($('<td></td>').addClass(col.class));
+                const td = $('<td>-</td>')
+                if (col.class) {
+                    td.addClass(col.class)
                 }
+                if (col.number) {
+                    td.addClass("text-right")
+                }
+                if (col.value) {
+                    td.text(cellValue[col.value])
+                }
+                cell.push(td)
             }
         });
         let rowId = od.origin + od.destination;

@@ -2,162 +2,216 @@
 //MAIN
 //Global vars
 var settings, pricingData, todayDate, analysis;
-var aesmodule = { valid: 1, error: [] };
-$(function() {
-    validateAllOptions();
-    if (aesmodule.valid) {
-        //Options correct
-        chrome.storage.local.get(['settings'], function(result) {
-            settings = result.settings;
-            todayDate = parseInt(getCurrentDateTime().date, 10);
-            //Get flights
-            let flights = getFlights();
-            let prices = getPriceDetails();
+var aesmodule = { valid: true, error: [] };
 
-            let storageKey = getPricingInventoryKey();
+window.addEventListener("load", async (event) => {
+    settings = await getSettings()
+    aesmodule = new Validation()
 
-            //Check if any snapshots saved
-            let defaultPricingData = {
-                server: storageKey.server,
-                airline: storageKey.airline,
-                type: storageKey.type,
-                origin: storageKey.origin,
-                destination: storageKey.destination,
-                key: storageKey.key,
-                date: {}
-            }
-            chrome.storage.local.get({
-                [storageKey.key]: defaultPricingData }, function(result) {
-                pricingData = result[storageKey.key];
-                //Do Analysis
-                analysis = getAnalysis(flights, prices, pricingData.date);
-                //Display analysis
-                displayAnalysis(analysis, prices);
-                //Display history
-                displayHistory(analysis);
+    if (!aesmodule.valid) {
+        displayValidationError()
+        return
+    }
+    displayInventory()
+})
+
+/**
+ * Get settings from local storage
+ * @returns {object} data.settings
+ */
+async function getSettings() {
+    const data = await chrome.storage.local.get(['settings'])
+    return data.settings
+}
+
+async function displayInventory() {
+    todayDate = parseInt(getCurrentDateTime().date, 10);
+    //Get flights
+    let flights = getFlights();
+    let prices = getPriceDetails();
+    let storageKey = getPricingInventoryKey();
+    
+    //Check if any snapshots saved
+    let defaultPricingData = {
+        server: storageKey.server,
+        airline: storageKey.airline,
+        type: storageKey.type,
+        origin: storageKey.origin,
+        destination: storageKey.destination,
+        key: storageKey.key,
+        date: {}
+    }
+    const storageData = await chrome.storage.local.get({[storageKey.key]: defaultPricingData})
+    pricingData = storageData[storageKey.key]
+        
+    //Do Analysis
+    analysis = getAnalysis(flights, prices, pricingData.date);
+    //Display analysis
+    displayAnalysis(analysis, prices);
+    //Display history
+    displayHistory(analysis);
 
 
-                //Automation
-                //Check if valid analysis exists
-
-                if (analysis.hasValue('valid')) {
-                    //CHeck if updated todayDate
-                    if (pricingData.date[todayDate]) {
-                        //Today update exists
-                        //Check if pricing updated today
-                        if (pricingData.date[todayDate].pricingUpdated) {
-                            //Pricing updated today
-                            //Do nothing
-                        } else {
-                            //Pricing not updated today
-                            //Check if new price avaialble
-                            if (analysis.hasValue('newPrice')) {
-                                //Update price
-                                if (settings.invPricing.autoPriceUpdate) {
-                                    $('#aes-btn-invPricing-apply-new-prices').click();
-                                }
-                            }
-                        }
-                    } else {
-                        //Today update does not exists
-                        //Check if new price avaialble
-                        if (analysis.hasValue('newPrice')) {
-                            //Update price
-                            if (settings.invPricing.autoPriceUpdate) {
-                                $('#aes-btn-invPricing-apply-new-prices').click();
-                            } else if (settings.invPricing.autoAnalysisSave) {
-                                $('#aes-btn-invPricing-save-snapshot').click();
-                            }
-                        } else {
-                            //Update data
-                            if (settings.invPricing.autoAnalysisSave) {
-                                $('#aes-btn-invPricing-save-snapshot').click();
-                            }
-                        }
+    //Automation
+    //Check if valid analysis exists
+    if (analysis.hasValue('valid')) {
+        //CHeck if updated todayDate
+        if (pricingData.date[todayDate]) {
+            //Today update exists
+            //Check if pricing updated today
+            if (pricingData.date[todayDate].pricingUpdated) {
+                //Pricing updated today
+                //Do nothing
+            } else {
+                //Pricing not updated today
+                //Check if new price avaialble
+                if (analysis.hasValue('newPrice')) {
+                    //Update price
+                    if (settings.invPricing.autoPriceUpdate) {
+                        $('#aes-btn-invPricing-apply-new-prices').click();
                     }
                 }
-            });
-        });
-    } else {
-        //Options not correct
-        displayValidationError();
-    }
-});
-
-//Get Flights
-function getFlights() {
-    let flightRows = $("#inventory-grouped-table tbody tr");
-    if (!flightRows.length) {
-        flightRows = $("#inventory-table tbody tr");
-    }
-    let flights = [];
-    for (let i = 0; i < flightRows.length; i++) {
-        let flight;
-        let row = $(flightRows[i]).find('td');
-        //Get variables
-        if (row.length == 12) {
-            //cargo fix for german
-            let compCode = $(row[5]).text();
-            if (compCode == 'Fracht') {
-                compCode = 'Cargo';
             }
-            flight = {
-                fltNr: $(row[1]).find("a:first").text(),
-                date: $(row[2]).text(),
-                cmp: compCode,
-                cap: cleanInteger($(row[6]).text()),
-                bkd: cleanInteger($(row[7]).text()),
-                price: cleanInteger($(row[9]).text()),
-                status: $(row[10]).text().replace(/\s+/g, '')
-            };
-
-        }
-        if (row.length == 5) {
-            //cargo fix for german
-            let compCode = $(row[0]).text();
-            if (compCode == 'Fracht') {
-                compCode = 'Cargo';
+        } else {
+            //Today update does not exists
+            //Check if new price avaialble
+            if (analysis.hasValue('newPrice')) {
+                //Update price
+                if (settings.invPricing.autoPriceUpdate) {
+                    $('#aes-btn-invPricing-apply-new-prices').click();
+                } else if (settings.invPricing.autoAnalysisSave) {
+                    $('#aes-btn-invPricing-save-snapshot').click();
+                }
+            } else {
+                //Update data
+                if (settings.invPricing.autoAnalysisSave) {
+                    $('#aes-btn-invPricing-save-snapshot').click();
+                }
             }
-            flight = {
-                fltNr: flight.fltNr,
-                date: flight.date,
-                cmp: compCode,
-                cap: cleanInteger($(row[1]).text()),
-                bkd: cleanInteger($(row[2]).text()),
-                price: cleanInteger($(row[4]).text()),
-                status: flight.status
-            };
         }
-        flights.push(flight);
     }
-    return flights;
 }
-//Get Prices
-function getPriceDetails() {
-    let pricingRows = $(".pricing table tbody tr");
-    let prices = {};
-    for (let i = 0; i < pricingRows.length; i++) {
-        let row = $(pricingRows[i]).find('td');
-        let cmp = $(row[0]).text();
-        if (cmp == 'Fracht') {
-            cmp = 'Cargo';
-        }
-        prices[cmp] = {
-            currentPrice: cleanInteger($(row[1]).text()),
-            newPriceInput: $(row[2]).find("input"),
-            defaultPrice: cleanInteger($(row[4]).text().replace(/\s+/g, '')),
-            currentPricePoint: function() {
-                return Math.round((this.currentPrice / this.defaultPrice) * 100);
-            }
-        };
+
+/**
+ * Get Flights
+ * @returns {array} flights - array of flight objects
+ */
+function getFlights() {
+    const flights = []
+    // TODO: also support grouped mode (#inventory-grouped-table)
+    const flightRows = document.querySelectorAll("#inventory-table tbody tr")
+
+    if (!flightRows) {
+        throw new Error("\"Group by flight\" needs to be unchecked")
     }
-    return prices;
+    
+    for (const row of flightRows) {
+        const flight = getFlight(row)
+        flights.push(flight)
+    }
+
+    return flights
+}
+
+/**
+ * Get flight information and return as an object
+ * @param {HTMLElement} row - the <tr> with flight information
+ * @returns {object} flight - object with the parsed flight information
+ */
+function getFlight(row) {
+    const cells = row.querySelectorAll("td")
+    const flightNumber = cells[1].querySelector("a[href*=numbers").innerText
+    const date = cells[2].innerText
+    const compCode = getCompCode(cells[5].innerText)
+    const capacity = cells[6].innerText
+    const booked = cells[7].innerText
+    const price = cells[9].innerText
+    const status = cells[10].innerText.replace(/\s+/g, "")
+
+    const flight = {
+        fltNr: flightNumber,
+        date: date,
+        cmp: compCode,
+        cap: AES.cleanInteger(capacity),
+        bkd: AES.cleanInteger(booked),
+        price: AES.cleanInteger(price),
+        status: status
+    }
+    
+    return flight
+}
+
+/**
+ * Checks if the string is longer than one character and returns a string of "Cargo"
+ * @param {string} text - localised word for "Cargo"
+ * @returns {string} text - either passthrough of the input or "Cargo"
+ */
+function getCompCode(text) {
+    if (!text) {
+        throw new Error("no value provided for getCompCode")
+    }
+    
+    if (text.length > 1) {
+        return "Cargo"
+    }
+    
+    return text
+}
+
+/**
+ * Get Prices
+ * @returns {object} prices
+ */
+function getPriceDetails() {
+    const pricingRows = document.querySelectorAll(".pricing table tbody tr")
+    const prices = {}
+    
+    for (const row of pricingRows) {
+        const cells = row.querySelectorAll("td")
+        const cmp = getCompCode(cells[0].innerText)
+        const price = getPrice(cells)
+        
+        prices[cmp] = price
+    }
+
+    return prices
+}
+
+/**
+ * Get price
+ * @param {array} cells
+ * @returns {object} price
+ */
+function getPrice(cells) {
+    const currentPrice = AES.cleanInteger(cells[1].innerText)
+    const defaultPrice = AES.cleanInteger(cells[4].innerText.replace(/\s+/g, ''))
+    const currentPricePoint = getCurrentPricePoint(currentPrice, defaultPrice)
+    const newPriceInput = cells[2].querySelector("input")
+    
+    const price = {
+        currentPrice: currentPrice,
+        defaultPrice: defaultPrice,
+        currentPricePoint: currentPricePoint,
+        newPriceInput: newPriceInput
+    }
+    
+    return price
+}
+
+/**
+ * @param {string} currentPrice
+ * @param {string} defaultPrice
+ * @returns {integer}
+ */
+function getCurrentPricePoint(currentPrice, defaultPrice) {
+    return Math.round((currentPrice / defaultPrice) * 100)
 }
 
 //Get Analysis
 function getAnalysis(flights, prices, storedData) {
     //Setup object
-
+    let mostRecentDate
+    let mostRecentData
     let data = {
         Y: 0,
         C: 0,
@@ -322,18 +376,15 @@ function getAnalysis(flights, prices, storedData) {
     //Check historical data
     if (storedData) {
         //Shouldbe function inside storage object
-        var mostRecentDate;
-        let dates = [];
+        let dates = []
         for (let date in storedData) {
             if (Number.isInteger(parseInt(date))) {
                 dates.push(date)
             }
         }
         dates.reverse();
-        var mostRecentDate = dates[0];
-        var mostRecentData = storedData[mostRecentDate];
-    } else {
-        var mostRecentData = 0;
+        mostRecentDate = dates[0]
+        mostRecentData = storedData[mostRecentDate]
     }
 
     //extract each cmp analysis
@@ -346,7 +397,7 @@ function getAnalysis(flights, prices, storedData) {
             analysisPricePoint: 0,
             useCurrentPrice: 0,
             currentPrice: prices[cmp].currentPrice,
-            currentPricePoint: prices[cmp].currentPricePoint()
+            currentPricePoint: prices[cmp].currentPricePoint
         };
         let price = prices[cmp].currentPrice;
         //Only cmp flights
@@ -363,21 +414,17 @@ function getAnalysis(flights, prices, storedData) {
                 analysis.data[cmp].useCurrentPrice = 1;
                 analysis.data[cmp].analysisPrice = price;
                 analysis.data[cmp].analysisPricePoint = Math.round(price / prices[cmp].defaultPrice * 100);
-                analysis.data[cmp].valid = 1;
-            } else {
-                //Check if historical data available
-
-
-                if (mostRecentData) {
-                    flightsArray = cmpFlights.filter(function(flight) {
-                        return flight.price == mostRecentData.data[cmp].analysisPrice;
-                    });
-                    if (flightsArray.length) {
-                        analysis.data[cmp].useCurrentPrice = 0;
-                        analysis.data[cmp].analysisPrice = mostRecentData.data[cmp].analysisPrice;
-                        analysis.data[cmp].analysisPricePoint = Math.round(mostRecentData.data[cmp].analysisPrice / prices[cmp].defaultPrice * 100);
-                        analysis.data[cmp].valid = 1;
-                    }
+                analysis.data[cmp].valid = true;
+            } else if (mostRecentData) {
+                // flightsArray = cmpFlights.filter(function(flight) {
+                //     return flight.price == mostRecentData.data[cmp].analysisPrice;
+                // });
+                flightsArray = cmpFlights
+                if (flightsArray.length) {
+                    analysis.data[cmp].useCurrentPrice = 0;
+                    analysis.data[cmp].analysisPrice = mostRecentData.data[cmp].analysisPrice;
+                    analysis.data[cmp].analysisPricePoint = Math.round(mostRecentData.data[cmp].analysisPrice / prices[cmp].defaultPrice * 100);
+                    analysis.data[cmp].valid = true;
                 }
             }
             if (analysis.data[cmp].valid) {
@@ -413,7 +460,7 @@ function generateRecommendation(analysis, prices) {
                     }
                 }
                 //Find new price point
-                let newPricePoint = prices[cmp].currentPricePoint() + step.step;
+                let newPricePoint = prices[cmp].currentPricePoint + step.step;
                 //See if new price in bounds for Drop
                 if (step.step < 0) {
                     analysis.data[cmp].recType = 'bad';
@@ -430,7 +477,7 @@ function generateRecommendation(analysis, prices) {
                 }
                 //see if already at highest/lowest price point
                 if (step.step != 0) {
-                    if (newPricePoint == prices[cmp].currentPricePoint()) {
+                    if (newPricePoint == prices[cmp].currentPricePoint) {
                         if (newPricePoint == settings.invPricing.recommendation[cmp].minPrice) {
                             //Already at lowest point
                             analysis.data[cmp].recommendation = 'Already at lowest price!';
@@ -589,7 +636,7 @@ function displayAnalysis(analysis, prices) {
             //Modify new price input
             for (let cmp in analysis.data) {
                 if (analysis.data[cmp].newPrice) {
-                    prices[cmp].newPriceInput.val(analysis.data[cmp].newPrice);
+                    prices[cmp].newPriceInput.value = analysis.data[cmp].newPrice;
                 }
             }
         }
@@ -733,43 +780,43 @@ function buildHistoryTable() {
             }
         }
     }
-    dates.reverse();
     if (numberOfDates) {
         dates = dates.slice(0, numberOfDates);
     }
     dates.sort();
+    dates.reverse();
     if (dates.length) {
 
         //Headrows
         let th = ['<th></th>'];
         let th1 = ['<th>SC</th>'];
+        if (showNow) {
+            //Now
+            th.push($('<th colspan="4"></th>').text('Now'));
+            th1.push('<th class="text-nowrap aes-text-right">Price</th>');
+            th1.push('<th class="text-nowrap">&Delta; %</th>');
+            th1.push('<th class="text-nowrap">Load</th>');
+            th1.push('<th class="text-nowrap">&Delta; %</th>');
+            //index
+            th1.push('<th class="text-nowrap aes-text-right">Index</th>');
+        }
         for (let i = 0; i < dates.length; i++) {
             let date = dates[i];
             if (i) {
                 th.push($('<th colspan="5"></th>').text(formatDate(date)));
-                th1.push('<th class="aes-text-right">Price</th>');
-                th1.push('<th>&Delta; %</th>');
-                th1.push('<th>Load</th>');
-                th1.push('<th>&Delta; %</th>');
+                th1.push('<th class="text-nowrap aes-text-right">Price</th>');
+                th1.push('<th class="text-nowrap text-right">&Delta; %</th>');
+                th1.push('<th class="text-nowrap text-right">Load</th>');
+                th1.push('<th class="text-nowrap text-right">&Delta; %</th>');
                 //Index
-                th1.push('<th class="aes-text-right">Index</th>');
+                th1.push('<th class="text-nowrap text-right">Index</th>');
             } else {
                 th.push($('<th colspan="3"></th>').text(formatDate(date)));
-                th1.push('<th class="aes-text-right">Price</th>');
-                th1.push('<th>Load</th>');
+                th1.push('<th class="text-nowrap text-right">Price</th>');
+                th1.push('<th class="text-nowrap text-right">Load</th>');
                 //Index
-                th1.push('<th class="aes-text-right">Index</th>');
+                th1.push('<th class="text-nowrap text-right">Index</th>');
             }
-        }
-        if (showNow) {
-            //Now
-            th.push($('<th colspan="4"></th>').text('Now'));
-            th1.push('<th class="aes-text-right">Price</th>');
-            th1.push('<th>&Delta; %</th>');
-            th1.push('<th>Load</th>');
-            th1.push('<th>&Delta; %</th>');
-            //index
-            th1.push('<th class="aes-text-right">Index</th>');
         }
 
         let headRow = $('<tr></tr>').append(th);
@@ -784,6 +831,17 @@ function buildHistoryTable() {
         compartments.forEach(function(cmp) {
             let td = [];
             td.push($('<td></td>').text(cmp));
+            if (showNow) {
+                //Now TDs
+                let data = analysis.data[cmp];
+                let prevData = pricingData.date[dates[dates.length - 1]].data[cmp];
+                td.push($('<td class="text-nowrap text-right"></td>').html(displayHistoryPrice(data)));
+                td.push($('<td class="text-nowrap text-right"></td>').html(displayDifference(data, prevData).price));
+                td.push($('<td class="text-nowrap text-right"></td>').html(displayHistoryLoad(data)));
+                td.push($('<td class="text-nowrap text-right"></td>').html(displayDifference(data, prevData).load));
+                //Index
+                td.push($('<td class="text-nowrap text-right"></td>').html(historyDisplayIndex(data, 0)));
+            }
             //Historical tds
             for (let i = 0; i < dates.length; i++) {
                 let date = dates[i];
@@ -791,30 +849,19 @@ function buildHistoryTable() {
                 if (i) {
                     let prevData = pricingData.date[dates[i - 1]].data[cmp];
                     //Not first data point
-                    td.push($('<td></td>').html(displayHistoryPrice(data)));
-                    td.push($('<td class="aes-text-right"></td>').html(displayDifference(data, prevData).price));
-                    td.push($('<td></td>').html(displayHistoryLoad(data)));
-                    td.push($('<td></td>').html(displayDifference(data, prevData).load));
+                    td.push($('<td class="text-nowrap text-right"></td>').html(displayHistoryPrice(data)));
+                    td.push($('<td class="text-nowrap text-right"></td>').html(displayDifference(data, prevData).price));
+                    td.push($('<td class="text-nowrap text-right"></td>').html(displayHistoryLoad(data)));
+                    td.push($('<td class="text-nowrap text-right"></td>').html(displayDifference(data, prevData).load));
                     //index
-                    td.push($('<td class="aes-text-right"></td>').html(historyDisplayIndex(data, 0)));
+                    td.push($('<td class="text-nowrap text-right"></td>').html(historyDisplayIndex(data, 0)));
                 } else {
                     //First data point
-                    td.push($('<td class="aes-text-right"></td>').html(displayHistoryPrice(data)));
-                    td.push($('<td></td>').html(displayHistoryLoad(data)));
+                    td.push($('<td class="text-nowrap text-right"></td>').html(displayHistoryPrice(data)));
+                    td.push($('<td class="text-nowrap text-right"></td>').html(displayHistoryLoad(data)));
                     //index
-                    td.push($('<td class="aes-text-right"></td>').html(historyDisplayIndex(data, 0)));
+                    td.push($('<td class="text-nowrap text-right"></td>').html(historyDisplayIndex(data, 0)));
                 }
-            }
-            if (showNow) {
-                //Now TDs
-                let data = analysis.data[cmp];
-                let prevData = pricingData.date[dates[dates.length - 1]].data[cmp];
-                td.push($('<td class="aes-text-right"></td>').html(displayHistoryPrice(data)));
-                td.push($('<td></td>').html(displayDifference(data, prevData).price));
-                td.push($('<td></td>').html(displayHistoryLoad(data)));
-                td.push($('<td></td>').html(displayDifference(data, prevData).load));
-                //Index
-                td.push($('<td class="aes-text-right"></td>').html(historyDisplayIndex(data, 0)));
             }
 
             //Finish row
@@ -831,6 +878,15 @@ function buildHistoryTable() {
         footerRows.forEach(function(type) {
             let tf = [];
             tf.push($('<th></th>').text(historyDisplayTotalText(type)));
+            if (showNow) {
+                //Now
+                let data = analysis.data;
+                tf.push('<td colspan="2"></td>');
+                tf.push($('<td></td>').html(historyDisplayTotal(data, type)));
+                tf.push('<td></td>');
+                //index
+                tf.push($('<td class="aes-text-right"></td>').html(historyDisplayIndex(data, type)));
+            }
             for (let i = 0; i < dates.length; i++) {
                 let date = dates[i];
                 let data = pricingData.date[date].data;
@@ -847,15 +903,6 @@ function buildHistoryTable() {
                     tf.push($('<td class="aes-text-right"></td>').html(historyDisplayIndex(data, type)));
                 }
             }
-            if (showNow) {
-                //Now
-                let data = analysis.data;
-                tf.push('<td colspan="2"></td>');
-                tf.push($('<td></td>').html(historyDisplayTotal(data, type)));
-                tf.push('<td></td>');
-                //index
-                tf.push($('<td class="aes-text-right"></td>').html(historyDisplayIndex(data, type)));
-            }
 
             footRow.push($('<tr></tr>').append(tf));
         });
@@ -868,90 +915,10 @@ function buildHistoryTable() {
     }
 }
 
-//Validate
-function validateAllOptions() {
-    //Get all options
-    //Check if all flight numbers selected
-    let valid = $('.col-md-10 > div > .as-panel:eq(1) > ul:eq(0) li:eq(0)').hasClass("active");
-    if (!valid) {
-        aesmodule.valid = 0;
-        aesmodule.error.push('Please select All Flight Numbers under Current Inventory');
-        return;
-    }
-    //Check if Apply settings to correctly set
-    $('.col-md-10 > div > .as-panel:eq(1) > div > div > div:eq(0) fieldset:eq(2) > div input').each(function(index) {
-        switch (index) {
-            case 0:
-                if (!this.checked) {
-                    aesmodule.valid = 0;
-                    aesmodule.error.push('Please check Airport Pair under Apply settings to in Settings panel');
-                }
-                break;
-            case 1:
-                if (!this.checked) {
-                    aesmodule.valid = 0;
-                    aesmodule.error.push('Please check Flight Numbers under Apply settings to in Settings panel');
-                }
-                break;
-            case 2:
-                if (this.checked) {
-                    aesmodule.valid = 0;
-                    aesmodule.error.push('Please uncheck Return Airport Pair under Apply settings to in Settings panel');
-                }
-                break;
-            case 3:
-                if (this.checked) {
-                    aesmodule.valid = 0;
-                    aesmodule.error.push('Please uncheck Return Flight Numbers under Apply settings to in Settings panel');
-                }
-                break;
-        }
-    });
-    //Check if Data settings correctly set
-    let dataDiv = $('.col-md-10 > div > .as-panel:eq(1) > div > div > div:eq(1) .layout-col-md-3');
-    //Service classes
-    $('fieldset:eq(0) label', dataDiv).each(function() {
-        if (!$('input', this)[0].checked) {
-            aesmodule.valid = 0;
-            aesmodule.error.push('Please check ' + $(this).text() + ' under Service Classes in Data panel');
-        }
-    });
-    //Flight Status
-    $('fieldset:eq(1) label', dataDiv).each(function(index) {
-        if (index == 1 || index == 2) {
-            if (!$('input', this)[0].checked) {
-                aesmodule.valid = 0;
-                aesmodule.error.push('Please check ' + $(this).text() + ' under Flight Status in Data panel');
-            }
-        }
-    });
-    //Load
-    $('fieldset:eq(2) div', dataDiv).each(function(index) {
-        if (!index) {
-            //Minimum
-            if (parseInt($('select option:selected', this).text(), 10) != 0) {
-                aesmodule.valid = 0;
-                aesmodule.error.push('Please select 0 for ' + $('label', this).text() + ' under Load in Data panel');
-            }
-        } else {
-            //Max
-            if (parseInt($('select option:selected', this).text(), 10) != 100) {
-                aesmodule.valid = 0;
-                aesmodule.error.push('Please select 100 for ' + $('label', this).text() + ' under Load in Data panel');
-            }
-        }
-    });
-    //Settings Group by flight
-    if ($('fieldset:eq(3) input', dataDiv)[0].checked) {
-        aesmodule.valid = 0;
-        aesmodule.error.push('Please uncheck ' + $('fieldset:eq(3) label', dataDiv).text() + ' under Settings in Data panel');
-    }
-}
-
 function displayValidationError() {
     let p = [];
     p.push($('<p></p>').text('AES Inventory Pricing Module could not be loaded because of errors:'));
-    aesmodule.error.forEach(function(error) {
+    aesmodule.errors.forEach(function(error) {
         p.push($('<p class="bad"></p>').html('<b>' + error + '</b>'));
     });
     p.push($('<p class="warning"></p>').html('Refresh the page after making adjustments.'));
@@ -1114,31 +1081,18 @@ function formatCurrency(value) {
     return Intl.NumberFormat().format(value)
 }
 
-function cleanInteger(a) {
-    a = a.replace(',', '');
-    a = a.replace('.', '');
-    a = a.replace(' AS$', '');
-    return parseInt(a, 10);
-}
-
 function getPricingInventoryKey() {
     //Get Origin and Destination
     let x = $("h2:first a");
     let org = $(x[0]).text();
     let dest = $(x[1]).text();
     //get server
-    let server = getServerName();
+    let server = AES.getServerName();
     //get airline code
     let airline = getAirlineCode();
     //create key
     let key = server + airline + org + dest + 'routeAnalysis';
     return { key: key, server: server, airline: airline, type: "routeAnalysis", origin: org, destination: dest }
-}
-
-function getServerName() {
-    let server = window.location.hostname
-    server = server.split('.');
-    return server[0];
 }
 
 function getAirlineCode() {

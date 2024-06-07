@@ -122,4 +122,17 @@ class AES {
         
         return result
     }
+    
+    /**
+     * Cleans a string of punctuation to returns an integer
+     * @param {string} "2,000 AS$" | "2.000 AS$"
+     * @returns {integer} 2000
+     */
+    static cleanInteger(value) {
+        value = value.replace(",", "")
+        value = value.replace(".", "")
+        value = value.replace(" AS$", "")
+
+        return parseInt(value, 10)
+    }
 }

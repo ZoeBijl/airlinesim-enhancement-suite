@@ -3,7 +3,7 @@
 //Global vars
 var settings,airline,server,todayDate;
 $(function(){
-  todayDate = (getDate('today',0));
+  todayDate = AES.getServerDate();
   airline = AES.getAirlineCode();
   server = AES.getServerName();
   chrome.storage.local.get(['settings'], function(result) {
@@ -2852,29 +2852,6 @@ function getDate(type, scheduleData){
       }
       dates.reverse();
       return dates[0];
-    case 'today':
-      let a = $(".as-footer-line-element:has('.fa-clock-o')").text().trim();
-      let b = a.split(" ");
-      //For date
-      let dateTemp = b[0].split("-");
-      let date;
-      if(dateTemp.length == 1){
-        //German
-        dateTemp = dateTemp[0].split(".");
-        date = dateTemp.map(function(value){
-          return value.replace(/[^A-Za-z0-9]/g, '');
-        });
-        date = date[2] + date[1] + date[0];
-      } else {
-        //English
-        date = dateTemp.map(function(value){
-          return value.replace(/[^A-Za-z0-9]/g, '');
-        });
-        date = date[0] + date[1] + date[2];
-      }
-      //For time
-      let time = b[b.length-2] +' '+b[b.length-1];
-      return {date:date,time:time};
     default:
       return 0;
   }

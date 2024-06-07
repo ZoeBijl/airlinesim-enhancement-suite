@@ -147,7 +147,7 @@ function displayTab0(actionBar){
   btnSave.click(function(){
     btnSave.remove();
     span.removeClass().addClass('warning').text('saving data...');
-    let time = getDate();
+    let time = AES.getServerDate()
 
     compData.tab0[time.date] = data;
     compData.tab0[time.date].updateTime = time.time;
@@ -193,7 +193,7 @@ function displayTab2(actionBar){
     btnSave.click(function(){
       btnSave.remove();
       span.removeClass().addClass('warning').text('saving data...');
-      let time = getDate();
+      let time = AES.getServerDate()
 
       compData.tab2[time.date] = data;
       compData.tab2[time.date].updateTime = time.time;
@@ -233,7 +233,7 @@ function displayOverviewRow(){
   }
   dates.sort(function(a, b){return b-a});
   if(dates.length){
-    let diff = getDateDiff(getDate().date,dates[0]);
+    let diff = getDateDiff(AES.getServerDate().date,dates[0]);
     span.text('Last overview extract '+formatDate(dates[0])+' ('+diff+' days ago)');
     if(diff >= 0 && diff < 7){
       span.addClass('good');
@@ -253,7 +253,7 @@ function displayFactsAndFiguresRow(){
   }
   dates.sort(function(a, b){return b-a});
   if(dates.length){
-    let diff = getDateDiff(getDate().date,dates[0]);
+    let diff = getDateDiff(AES.getServerDate().date,dates[0]);
     span.text('Last facts and figures extract for week '+formatWeekDate(compData.tab2[dates[0]].week)+' done on '+formatDate(dates[0])+' ('+diff+' days ago)');
     if(diff >= 0 && diff < 7){
       span.addClass('good');
@@ -285,7 +285,7 @@ function displayScheduleRow(){
           }
         }
         scheduleDates.reverse();
-        let diff = getDateDiff(getDate().date,scheduleDates[0]);
+        let diff = getDateDiff(AES.getServerDate().date,scheduleDates[0]);
         span.text('Last schedule extract '+formatDate(dates[0])+' ('+diff+' days ago)');
         if(diff >= 0 && diff < 7){
           span.addClass('good');
@@ -359,30 +359,6 @@ function getServerName(){
   let server = window.location.hostname
   server = server.split('.');
   return server[0];
-}
-function getDate(){
-  let a = $(".as-footer-line-element:has('.fa-clock-o')").text().trim();
-  let b = a.split(" ");
-  //For date
-  let dateTemp = b[0].split("-");
-  let date;
-  if(dateTemp.length == 1){
-    //German
-    dateTemp = dateTemp[0].split(".");
-    date = dateTemp.map(function(value){
-      return value.replace(/[^A-Za-z0-9]/g, '');
-    });
-    date = date[2] + date[1] + date[0];
-  } else {
-    //English
-    date = dateTemp.map(function(value){
-      return value.replace(/[^A-Za-z0-9]/g, '');
-    });
-    date = date[0] + date[1] + date[2];
-  }
-  //For time
-  let time = b[b.length-2] +' '+b[b.length-1];
-  return {date:date,time:time};
 }
 function getDateDiff(date1,date2){
   //Returns day differnece between date1 - date2

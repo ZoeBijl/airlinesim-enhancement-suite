@@ -21,7 +21,7 @@ function fltmng_fleetManagementPageOpen(){
 function fltmng_getData(){
   //Global
   server = fltmng_getServerName();
-  let date = fltmng_getDate();
+  let date = AES.getServerDate()
   //Aircraft
   let table = $('.as-page-fleet-management > .row > .col-md-9 > .as-panel:eq(0) table');
   let fleet = $('.as-page-fleet-management > .row > .col-md-9 > h2:eq(0)').text();
@@ -203,30 +203,6 @@ function fltmng_displaySavedAircrafts(){
 function fltmng_displayNewUpdates(){
   let span = $('<span class="good"></span>').text('Updated aircraft data for '+aircraftData.length+ ' from '+aircraftData[0].fleet);
   return span;
-}
-function fltmng_getDate(){
-  let a = $(".as-footer-line-element:has('.fa-clock-o')").text().trim();
-  let b = a.split(" ");
-  //For date
-  let dateTemp = b[0].split("-");
-  let date;
-  if(dateTemp.length == 1){
-    //German
-    dateTemp = dateTemp[0].split(".");
-    date = dateTemp.map(function(value){
-      return value.replace(/[^A-Za-z0-9]/g, '');
-    });
-    date = date[2] + date[1] + date[0];
-  } else {
-    //English
-    date = dateTemp.map(function(value){
-      return value.replace(/[^A-Za-z0-9]/g, '');
-    });
-    date = date[0] + date[1] + date[2];
-  }
-  //For time
-  let time = b[b.length-2] +' '+b[b.length-1];
-  return {date:date,time:time};
 }
 function fltmng_getServerName(){
   let server = window.location.hostname

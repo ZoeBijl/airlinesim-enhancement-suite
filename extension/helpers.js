@@ -111,6 +111,43 @@ class AES {
     }
     
     /**
+     * Gets the server’s current date and time
+     * @returns {object} datetime - { date: "20240607", time: "16:24 UTC" }
+     */
+    static getServerDate() {
+        const source = document.querySelector(".as-navbar-bottom span:has(.fa-clock-o) span[title]")
+        const titleAttribute = source.title
+        
+        // The title-attribute is always formatted like so:
+        // "2024-06-07 16:23 UTC / 2024-06-08 02:23 HT"
+        // Which is 42 characters long
+        const expectedLength = 42
+        if (titleAttribute.length != expectedLength) {
+            throw new Error("Unexpected length for source. There might’ve been a UI update. Check AES.getServerDate()")
+        }
+        
+        const data = titleAttribute.split("/")[0].trim()
+        // Splits the date component from the data,
+        // then splits that into an array for the year, month, and day
+        let dateArray = data.split(" ")[0].split(/\D+/)
+        if (dateArray[0].length === 2) {
+            dateArray.reverse()
+        }
+        let date = dateArray[0]+dateArray[1]+dateArray[2]
+        
+        // Strip the date component from the data
+        // leaving only the time in UTC
+        let time = data.replace(/.{10}\s/, "")
+        
+        const datetime = {
+            date: date,
+            time: time
+        }
+        
+        return datetime
+    }
+    
+    /**
      * Returns the difference between dates in days
      * @param {array} ["20240520", "20240524"]
      * @returns {integer} 4

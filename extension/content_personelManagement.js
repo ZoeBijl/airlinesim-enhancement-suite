@@ -142,7 +142,7 @@ function priceUpdate(span){
 
         //Save into memory
 
-        let today = getDate();
+        let today = AES.getServerDate()
         let key = server + airline + 'personelManagement';
         let personelManagementData = {
           server:server,
@@ -163,30 +163,6 @@ function cleanInteger(a){
   a = a.replace('.','');
   a = a.replace(' AS$','');
   return parseInt(a, 10);
-}
-function getDate(){
-  let a = $(".as-footer-line-element:has('.fa-clock-o')").text().trim();
-  let b = a.split(" ");
-  //For date
-  let dateTemp = b[0].split("-");
-  let date;
-  if(dateTemp.length == 1){
-    //German
-    dateTemp = dateTemp[0].split(".");
-    date = dateTemp.map(function(value){
-      return value.replace(/[^A-Za-z0-9]/g, '');
-    });
-    date = date[2] + date[1] + date[0];
-  } else {
-    //English
-    date = dateTemp.map(function(value){
-      return value.replace(/[^A-Za-z0-9]/g, '');
-    });
-    date = date[0] + date[1] + date[2];
-  }
-  //For time
-  let time = b[b.length-2] +' '+b[b.length-1];
-  return {date:date,time:time};
 }
 function getAirline(){
    let airline = $("#as-navbar-main-collapse ul li:eq(0) a:eq(0)").text().trim().replace(/[^A-Za-z0-9]/g, '');

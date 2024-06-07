@@ -44,7 +44,7 @@ function correctTabOpen(){
 function getData(){
   //Flight ID
   let flightId = getFlightId();
-  let date = getDate();
+  let date = AES.getServerDate()
   let money = getFinancials();
   let server = getServerName();
   return {
@@ -159,30 +159,6 @@ function getFlightId(){
   let a = url.split('id=');
   let b = a[1].split('&');
   return parseInt(b[0],10);
-}
-function getDate(){
-  let a = $(".as-footer-line-element:has('.fa-clock-o')").text().trim();
-  let b = a.split(" ");
-  //For date
-  let dateTemp = b[0].split("-");
-  let date;
-  if(dateTemp.length == 1){
-    //German
-    dateTemp = dateTemp[0].split(".");
-    date = dateTemp.map(function(value){
-      return value.replace(/[^A-Za-z0-9]/g, '');
-    });
-    date = date[2] + date[1] + date[0];
-  } else {
-    //English
-    date = dateTemp.map(function(value){
-      return value.replace(/[^A-Za-z0-9]/g, '');
-    });
-    date = date[0] + date[1] + date[2];
-  }
-  //For time
-  let time = b[b.length-2] +' '+b[b.length-1];
-  return {date:date,time:time};
 }
 function cleanInteger(a){
   a = a.replace(',','');

@@ -25,7 +25,7 @@ async function getSettings() {
 }
 
 async function displayInventory() {
-    todayDate = parseInt(getCurrentDateTime().date, 10);
+    todayDate = parseInt(AES.getServerDate().date, 10);
     //Get flights
     let flights = getFlights();
     let prices = getPriceDetails();
@@ -600,7 +600,7 @@ function displayAnalysis(analysis, prices) {
             $(this).closest("li").remove();
             invPricingAnalysisBarSpan.text('Saving analysis data...');
             //Get updated time
-            let updateTime = getCurrentDateTime().time;
+            let updateTime = AES.getServerDate().time;
             pricingData.date[todayDate] = analysis;
             pricingData.date[todayDate].updateTime = updateTime;
             pricingData.date[todayDate].date = todayDate;
@@ -621,7 +621,7 @@ function displayAnalysis(analysis, prices) {
             $(this).closest("ul").find("li button").closest("li").remove();
             invPricingAnalysisBarSpan.text('Updating prices...');
             //Get updated time
-            let updateTime = getCurrentDateTime().time;
+            let updateTime = AES.getServerDate().time;
             pricingData.date[todayDate] = analysis;
             pricingData.date[todayDate].updateTime = updateTime;
             pricingData.date[todayDate].date = todayDate;
@@ -1101,29 +1101,4 @@ function getAirlineCode() {
         airline = $("#inventory-table tbody a:first").text().split(" ");
     }
     return airline[0];
-}
-
-function getCurrentDateTime() {
-    let a = $(".as-footer-line-element:has('.fa-clock-o')").text().trim();
-    let b = a.split(" ");
-    //For date
-    let dateTemp = b[0].split("-");
-    let date;
-    if (dateTemp.length == 1) {
-        //German
-        dateTemp = dateTemp[0].split(".");
-        date = dateTemp.map(function(value) {
-            return value.replace(/[^A-Za-z0-9]/g, '');
-        });
-        date = date[2] + date[1] + date[0];
-    } else {
-        //English
-        date = dateTemp.map(function(value) {
-            return value.replace(/[^A-Za-z0-9]/g, '');
-        });
-        date = date[0] + date[1] + date[2];
-    }
-    //For time
-    let time = b[b.length - 2] + ' ' + b[b.length - 1];
-    return { date: date, time: time };
 }

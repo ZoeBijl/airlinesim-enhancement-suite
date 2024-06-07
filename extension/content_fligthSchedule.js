@@ -109,7 +109,7 @@ function extractSchedule(){
     }
   });
   //Save to storage
-  let dateTime = getDate();
+  let dateTime = AES.getServerDate()
   let server = getServerName();
   let airline = getAirlineCode();
   let newScheduleData = {
@@ -177,30 +177,6 @@ function extractSchedule(){
   }
 }
 //Helper Functions
-function getDate(){
-  let a = $(".as-footer-line-element:has('.fa-clock-o')").text().trim();
-  let b = a.split(" ");
-  //For date
-  let dateTemp = b[0].split("-");
-  let date;
-  if(dateTemp.length == 1){
-    //German
-    dateTemp = dateTemp[0].split(".");
-    date = dateTemp.map(function(value){
-      return value.replace(/[^A-Za-z0-9]/g, '');
-    });
-    date = date[2] + date[1] + date[0];
-  } else {
-    //English
-    date = dateTemp.map(function(value){
-      return value.replace(/[^A-Za-z0-9]/g, '');
-    });
-    date = date[0] + date[1] + date[2];
-  }
-  //For time
-  let time = b[b.length-2] +' '+b[b.length-1];
-  return {date:date,time:time};
-}
 function getServerName(){
   let server = window.location.hostname
   server = server.split('.');

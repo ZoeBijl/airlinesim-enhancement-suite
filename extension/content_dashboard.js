@@ -21,7 +21,7 @@ function displayDashboard() {
     let mainDiv = $("#enterprise-dashboard");
     mainDiv.before(
         `
-    <h3>AirlineSim Enhancement Suite Dashboard</h3>
+    <h2 class="h3">AirlineSim Enhancement Suite Dashboard</h2>
     <div class="as-panel">
       <div class="form-group">
         <label class="control-label">
@@ -67,6 +67,7 @@ function dashboardHandle() {
             displayDefault();
     }
 }
+
 //Route Management Dashbord
 function displayRouteManagement() {
     //Check ROute Managemetn seetings
@@ -78,8 +79,23 @@ function displayRouteManagement() {
     //Build layout
     mainDiv.empty();
     let title = $('<h3></h3>').text('Route Management');
-    let div = $('<div id="aes-div-dashboard-routeManagement" class="as-panel"></div>');
+    let div = $('<div id="aes-div-dashboard-routeManagement"></div>');
     mainDiv.append(title, div);
+    
+    // Layout
+    let sidebar = document.createElement("div")
+    sidebar.className = "row col-lg-3"
+    
+    let tableContainer = document.createElement("div")
+    tableContainer.id = "aes-route-management-table-target"
+    tableContainer.className = "col-lg-9"
+    
+    let layout = document.createElement("div")
+    layout.className = "row"
+    layout.append(sidebar, tableContainer)
+    
+    div.append(layout)
+    
     //Get schedule
     let scheduleKey = server + airline.code + 'schedule';
     chrome.storage.local.get([scheduleKey], function(result) {
@@ -89,9 +105,13 @@ function displayRouteManagement() {
             generateRouteManagementTable(scheduleData);
 
             // Option buttons
-            let fieldsetEl = document.createElement("fieldset")
-            let legendEl = document.createElement("legend")
+            const optionsContainer = document.createElement("div")
+            optionsContainer.className = "as-panel"
             let buttonGroupEl = document.createElement("div")
+            buttonGroupEl.classList.add("btn-group")
+            optionsContainer.append(buttonGroupEl)
+            let target = document.querySelector("#aes-route-management-table-target")
+            target.prepend(optionsContainer)
 
             let buttonElements = {
                 "selectFirstTen": {
@@ -131,13 +151,6 @@ function displayRouteManagement() {
                 buttonObj.element = buttonEl
                 buttonGroupEl.append(buttonEl)
             }
-
-            legendEl.innerText = "Options"
-            buttonGroupEl.classList.add("btn-group")
-
-            fieldsetEl.append(legendEl, buttonGroupEl)
-
-            let optionsDiv = $('<div class="col-md-4"></div>').append(fieldsetEl);
 
             // Button actions
 
@@ -183,8 +196,12 @@ function displayRouteManagement() {
             buttonElements["reloadTable"].element.addEventListener("click", function() {
                 generateRouteManagementTable(scheduleData);
             });
-            let divRow = $('<div class="row"></div>').append(optionsDiv, displayRouteManagementFilters(), displayRouteManagementCollumns())
-            div.prepend(divRow);
+            
+            sidebar.append(
+                displayRouteManagementFilters(),
+                displayRouteManagementCollumns()
+            )
+
             //Collumns selector Checkbox listener
             $('#aes-table-routeManagement-collumns input').change(function() {
                 let show;
@@ -466,8 +483,6 @@ function displayRouteManagementFilters() {
     });
     let select1 = $('<select id="aes-select-routeManagement-filter-collumn" class="form-control"></select>').append(option1);
 
-
-
     //Select value
     let option = [];
     option.push('<option>=</option>');
@@ -499,23 +514,47 @@ function displayRouteManagementFilters() {
     tf.push($('<td></td>').append(btn));
     let tfoot = $('<tfoot></tfoot>').append($('<tr></tr>').append(tf));
     let table = $('<table class="table table-bordered table-striped table-hover" id="aes-table-routeManagement-filter"></table>').append(thead, tbody, tfoot);
-    let divTable = $('<div id="aes-div-routeManagement-filter" class="as-table-well"></div>').append(table);
+    let tableWell = $('<div class="as-table-well"></div>').append(table)
+    let divTable = $('<div id="aes-div-routeManagement-filter"></div>').append(tableWell);
+    let mql = window.matchMedia("(min-width: 1200px)")
+    
+    function setVisibility() {
+        if (!mql.matches) {
+            divTable.addClass("hidden")
+        }
+        if (mql.matches) {
+            divTable.removeClass("hidden")
+        }
+    }
+    
+    setVisibility()
+    mql.addEventListener("change", setVisibility)
 
 
     //
     let saveBtn = $('<button class="btn btn-default">apply filter</button>');
     let saveSpan = $('<span></span>');
+    
+    divTable.append(saveBtn, saveSpan)
 
-    //Closable legend
-    let link = $('<a style="cursor: pointer;"></a>').text('Filters');
-    let legend = $('<legend></legend>').html(link);
-    link.click(function() {
-        divForAll.toggle();
-    });
-
-    let divForAll = $('<div style="display: none;"></div>').append(divTable, saveBtn, saveSpan);
-    let fieldset = $('<fieldset></fieldset>').append(legend, divForAll);
-    let div = $('<div class="col-md-4"></div>').append(fieldset);
+    let button = document.createElement("button")
+    button.setAttribute("type", "button")
+    button.innerText = "Filters"
+    button.className = "btn-link"
+    button.addEventListener("click", (event) => {
+        const target = document.querySelector("#aes-div-routeManagement-filter")
+        target.classList.toggle("hidden")
+    })
+    let heading = document.createElement("h4")
+    heading.append(button)
+    
+    const filters = document.createElement("div")
+    filters.className = "as-panel aes-rm-filters"
+    filters.append(divTable[0])
+    
+    const container = document.createElement("div")
+    container.className = "col-sm-6 col-md-4 col-lg-12"
+    container.append(heading, filters)
 
     //Delete row for filter row
     table.on("click", ".aes-a-routeManagement-filter-delete-row", function() {
@@ -542,7 +581,7 @@ function displayRouteManagementFilters() {
         });
     });
 
-    return div;
+    return container
 }
 
 function displayRouteManagementCollumns() {
@@ -568,18 +607,41 @@ function displayRouteManagementCollumns() {
     });
 
     let table = $('<table class="table table-bordered table-striped table-hover" id="aes-table-routeManagement-collumns"></table>').append(thead, tbody);
-    let divTable = $('<div id="aes-div-routeManagement-collumns" class="as-table-well" style="display: none;"></div>').append(table);
-
-    //Closable legend
-    let link = $('<a style="cursor: pointer;"></a>').text('Columns');
-    let legend = $('<legend></legend>').html(link);
-    link.click(function() {
-        $('#aes-div-routeManagement-collumns').toggle();
-    });
-
-    let fieldset = $('<fieldset></fieldset>').append(legend, divTable);
-    let div = $('<div class="col-md-4"></div>').append(fieldset);
-    return div;
+    let divTable = $('<div id="aes-div-routeManagement-collumns" class="as-table-well"></div>').append(table);
+    let mql = window.matchMedia("(min-width: 1200px)")
+    
+    function setVisibility() {
+        if (!mql.matches) {
+            divTable.addClass("hidden")
+        }
+        if (mql.matches) {
+            divTable.removeClass("hidden")
+        }
+    }
+    
+    setVisibility()
+    mql.addEventListener("change", setVisibility)
+    
+    let button = document.createElement("button")
+    button.setAttribute("type", "button")
+    button.innerText = "Columns"
+    button.className = "btn-link"
+    button.addEventListener("click", (event) => {
+        const target = document.querySelector("#aes-div-routeManagement-collumns")
+        target.classList.toggle("hidden")
+    })
+    let heading = document.createElement("h4")
+    heading.append(button)
+    
+    const filters = document.createElement("div")
+    filters.className = "as-panel aes-rm-columns"
+    filters.append(divTable[0])
+    
+    const container = document.createElement("div")
+    container.className = "col-sm-6 col-md-4 col-lg-12"
+    container.append(heading, filters)
+    
+    return container
 }
 
 function generateRouteManagementTable(scheduleData) {
@@ -681,9 +743,24 @@ function generateRouteManagementTable(scheduleData) {
         let row = $('<tr id="aes-row-' + rowId + '"></tr>').append(cell);
         tbody.append(row);
     });
-    let table = $('<table class="table table-bordered table-striped table-hover" id="aes-table-routeManagement"></table>').append(thead, tbody);
-    let divTable = $('<div id="aes-div-routeManagement" class="as-table-well"></div>').append(table);
-    $('#aes-div-dashboard-routeManagement').append(divTable)
+    let table = document.createElement("table")
+    table.id = "aes-table-routeManagement"
+    table.className = "table table-bordered table-striped table-hover"
+    table.append(thead[0], tbody[0])
+    
+    let tableWell = document.createElement("div")
+    tableWell.className = "as-table-well"
+    tableWell.style = "overflow-x: auto"
+    tableWell.append(table)
+    
+    let divTable = document.createElement("div")
+    divTable.id = "aes-div-routeManagement"
+    divTable.className = "as-panel"
+    divTable.append(tableWell)
+    
+    let target = document.querySelector("#aes-route-management-table-target")
+    target.append(divTable)
+    
     //Analysis collumns
     //Get unique ODs
     uniqueOD = [...new Set(uniqueOD)];

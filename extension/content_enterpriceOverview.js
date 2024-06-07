@@ -233,8 +233,8 @@ function displayOverviewRow(){
   }
   dates.sort(function(a, b){return b-a});
   if(dates.length){
-    let diff = getDateDiff(AES.getServerDate().date,dates[0]);
-    span.text('Last overview extract '+formatDate(dates[0])+' ('+diff+' days ago)');
+    let diff = AES.getDateDiff([AES.getServerDate().date, dates[0]]);
+    span.text('Last overview extract '+AES.formatDateString(dates[0])+' ('+diff+' days ago)');
     if(diff >= 0 && diff < 7){
       span.addClass('good');
     } else {
@@ -253,8 +253,8 @@ function displayFactsAndFiguresRow(){
   }
   dates.sort(function(a, b){return b-a});
   if(dates.length){
-    let diff = getDateDiff(AES.getServerDate().date,dates[0]);
-    span.text('Last facts and figures extract for week '+formatWeekDate(compData.tab2[dates[0]].week)+' done on '+formatDate(dates[0])+' ('+diff+' days ago)');
+    let diff = AES.getDateDiff([AES.getServerDate().date, dates[0]]);
+    span.text('Last facts and figures extract for week '+formatWeekDate(compData.tab2[dates[0]].week)+' done on '+AES.formatDateString(dates[0])+' ('+diff+' days ago)');
     if(diff >= 0 && diff < 7){
       span.addClass('good');
     } else {
@@ -285,8 +285,8 @@ function displayScheduleRow(){
           }
         }
         scheduleDates.reverse();
-        let diff = getDateDiff(AES.getServerDate().date,scheduleDates[0]);
-        span.text('Last schedule extract '+formatDate(dates[0])+' ('+diff+' days ago)');
+        let diff = AES.getDateDiff([AES.getServerDate().date, scheduleDates[0]]);
+        span.text('Last schedule extract '+AES.formatDateString(dates[0])+' ('+diff+' days ago)');
         if(diff >= 0 && diff < 7){
           span.addClass('good');
         } else {
@@ -359,16 +359,6 @@ function getServerName(){
   let server = window.location.hostname
   server = server.split('.');
   return server[0];
-}
-function getDateDiff(date1,date2){
-  //Returns day differnece between date1 - date2
-  let d1 = new Date(formatDate(date1)+'T12:00:00Z');
-  let d2 = new Date(formatDate(date2)+'T12:00:00Z');
-  let diff = Math.round((d1 - d2)/(1000 * 60 * 60 * 24));
-  return diff;
-}
-function formatDate(date){
-  return date.substring(0, 4)+'-'+date.substring(4, 6)+'-'+date.substring(6, 8);
 }
 function formatWeekDate(date){
   let a = date.toString();

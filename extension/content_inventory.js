@@ -803,7 +803,7 @@ function buildHistoryTable() {
         for (let i = 0; i < dates.length; i++) {
             let date = dates[i];
             if (i) {
-                th.push($('<th colspan="5"></th>').text(formatDate(date)));
+                th.push($('<th colspan="5"></th>').text(AES.formatDateString(date)));
                 th1.push('<th class="text-nowrap aes-text-right">Price</th>');
                 th1.push('<th class="text-nowrap text-right">&Delta; %</th>');
                 th1.push('<th class="text-nowrap text-right">Load</th>');
@@ -811,7 +811,7 @@ function buildHistoryTable() {
                 //Index
                 th1.push('<th class="text-nowrap text-right">Index</th>');
             } else {
-                th.push($('<th colspan="3"></th>').text(formatDate(date)));
+                th.push($('<th colspan="3"></th>').text(AES.formatDateString(date)));
                 th1.push('<th class="text-nowrap text-right">Price</th>');
                 th1.push('<th class="text-nowrap text-right">Load</th>');
                 //Index
@@ -1073,10 +1073,6 @@ function displayPerc(perc, type) {
     }
 }
 //Helper functions
-function formatDate(date) {
-    return date.substring(0, 4) + '-' + date.substring(4, 6) + '-' + date.substring(6, 8);
-}
-
 function formatCurrency(value) {
     return Intl.NumberFormat().format(value)
 }

@@ -166,10 +166,8 @@ class AES {
      * @returns {integer} 2000
      */
     static cleanInteger(value) {
-        value = value.replace(",", "")
-        value = value.replace(".", "")
-        value = value.replace(" AS$", "")
-
+        // \D matches any character that's not a digit
+        value.replace(/\D+/g)
         return parseInt(value, 10)
     }
 }

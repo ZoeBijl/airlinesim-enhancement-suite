@@ -92,7 +92,7 @@ function buildTable(){
   tf.push('<th>Flight Id:</th>');
   tf.push('<th>'+flightInfoData.flightId+'</th>');
   tf.push('<th>Date:</th>');
-  tf.push('<th>'+formatDate(flightInfoData.date)+' '+flightInfoData.time+'</th>');
+  tf.push('<th>'+AES.formatDateString(flightInfoData.date)+' '+flightInfoData.time+'</th>');
   tf.push('<th></th>');
   tf.push('<th></th>');
   tf.push('<th></th>');
@@ -114,9 +114,6 @@ function formatMoney(value){
   text = text + value + ' AS$';
   span.text(text);
   return span;
-}
-function formatDate(date){
-  return date.substring(0, 4)+'-'+date.substring(4, 6)+'-'+date.substring(6, 8);
 }
 function getFinancials(){
   let data = {};
@@ -145,7 +142,7 @@ function getFinancials(){
           cmp = 'Total'
           break;
       }
-      let value = cleanInteger($(this).text());
+      let value = AES.cleanInteger($(this).text());
       if(!data[contMargin]){
         data[contMargin] = {}
       }
@@ -159,12 +156,6 @@ function getFlightId(){
   let a = url.split('id=');
   let b = a[1].split('&');
   return parseInt(b[0],10);
-}
-function cleanInteger(a){
-  a = a.replace(',','');
-  a = a.replace('.','');
-  a = a.replace(' AS$','');
-  return parseInt(a, 10);
 }
 function getServerName(){
   let server = window.location.hostname

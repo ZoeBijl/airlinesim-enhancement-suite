@@ -886,10 +886,12 @@ function updateRouteAnalysisCollumns(data, dates, routeIndex) {
 
         if (dates.analysis) {
             //Analysis date
+            $(rowId + ' .aes-analysisDate').addClass("text-nowrap")
             $(rowId + ' .aes-analysisDate').text(AES.formatDateString(dates.analysis));
 
             //Pricing date
             if (dates.pricing) {
+                $(rowId + ' .aes-pricingDate').addClass("text-nowrap")
                 $(rowId + ' .aes-pricingDate').text(AES.formatDateString(dates.pricing));
             }
 
@@ -913,6 +915,7 @@ function updateRouteAnalysisCollumns(data, dates, routeIndex) {
 
             if (dates.analysisOneBefore) {
                 //Previous analysis date
+                $(rowId + ' .aes-analysisPreDate').addClass("text-nowrap")
                 $(rowId + ' .aes-analysisPreDate').text(AES.formatDateString(dates.analysisOneBefore));
 
                 //Pax Load Delta

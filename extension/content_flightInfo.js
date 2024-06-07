@@ -145,7 +145,7 @@ function getFinancials(){
           cmp = 'Total'
           break;
       }
-      let value = cleanInteger($(this).text());
+      let value = AES.cleanInteger($(this).text());
       if(!data[contMargin]){
         data[contMargin] = {}
       }
@@ -159,12 +159,6 @@ function getFlightId(){
   let a = url.split('id=');
   let b = a[1].split('&');
   return parseInt(b[0],10);
-}
-function cleanInteger(a){
-  a = a.replace(',','');
-  a = a.replace('.','');
-  a = a.replace(' AS$','');
-  return parseInt(a, 10);
 }
 function getServerName(){
   let server = window.location.hostname

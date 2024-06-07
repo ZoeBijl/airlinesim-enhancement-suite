@@ -238,12 +238,6 @@ function formatMoney(value){
 function formatDate(date){
   return date.substring(0, 4)+'-'+date.substring(4, 6)+'-'+date.substring(6, 8);
 }
-function cleanInteger(a){
-  a = a.replace(',','');
-  a = a.replace('.','');
-  a = a.replace(' AS$','');
-  return parseInt(a, 10);
-}
 function getServerName(){
   let server = window.location.hostname
   server = server.split('.');

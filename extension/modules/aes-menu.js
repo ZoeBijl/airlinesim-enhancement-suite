@@ -78,21 +78,31 @@ class AESMenu {
      */
     #createMenuItem(content) {
         const menuItem = document.createElement("li")
-        let menuItemContent
+        let menuItemContent, icon
+        if (content.isDivider) {
+            menuItem.className = "divider"
+            return menuItem
+        }
+        if (content.isHeader) {
+            menuItem.className = "dropdown-header"
+            menuItemContent = content.label
+        }
+        if (content.icon || content.newWindow) {
+            icon = document.createElement("span")
+            icon.setAttribute("aria-hidden", "true")
+        }
+        if (content.icon) {
+            icon.className = `fa ${content.icon.className}`
+        }
         if (content.href) {
             const link = document.createElement("a")
             link.setAttribute("href", content.href)
-            let icon
-            if (content.icon || content.newWindow) {
-                icon = document.createElement("span")
+            if (content.newWindow && !content.icon) {
+                icon.className = "fa fa-external-link"
             }
-            if (content.icon) {
-                icon.className = content.icon.className
-            }
-            if (content.newWindow) {
+            if (content.newWindon) {
                 link.setAttribute("target", "_blank")
                 link.setAttribute("rel", "noreferrer noopener")
-                icon.className = "fa fa-external-link"
             }
             if (icon) {
                 link.append(icon)

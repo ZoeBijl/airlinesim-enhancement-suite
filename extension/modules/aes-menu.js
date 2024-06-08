@@ -78,6 +78,15 @@ class AESMenu {
             href: "https://github.com/ZoeBijl/airlinesim-enhancement-suite",
             newWindow: true,
             icon: { className: "fa-github" }
+        },{
+            isDivider: true
+        },{
+            label: "About AES",
+            icon: { className: "fa-info" },
+            data: {
+                toggle: "modal",
+                target: "#aes-about-dialog"
+            }
         }]
         for (const item of content) {
             let menuItem = this.#createMenuItem(item)

@@ -26,7 +26,8 @@
             "js": [
                 "js/jquery-3.4.1.min.js",
                 "helpers.js",
-                "modules/aes-menu.js"
+                "modules/aes-menu.js",
+                "modules/about-dialog.js"
             ],
             "matches": ["https://*.airlinesim.aero/app/*", "https://*.airlinesim.aero/action/*"]
         },
@@ -72,5 +73,9 @@
     ],
     "key": "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAlgUt+9pr5xsoJIdZtv2s/miPjNaUMf5NdIRH6wQzgWpGzMCwf46cUSL0FbpnIo6E9d6pITalABU8Dx72/isyas/da0EQNCQkYxhvu2YakUyUMyzKg0jPuxR+VyaEzDMVQKyVD1xZb/jjOkHXvGew/EHPw9BzCdhKRptRqo4gqdgifS0/xQFiqneA35Hhqwo9bh5zfhZpdMsssMHH3uGGm1f4Yeq+j2ZUtvf74v8pWR5+sVI/dFhTSpQaT60sWFYkPVwtpQ5jUwqm9vDyAH0obZxVtBqI5UkmjEJsCXmQW6QdC4+gRwTgrKc137SH+mUVRHfcXogMSa72+szX63pMUQIDAQAB",
     "permissions": ["activeTab", "declarativeContent", "storage", "unlimitedStorage"],
-    "host_permissions": ["https://*.airlinesim.aero/"]
+    "host_permissions": ["https://*.airlinesim.aero/"],
+    "web_accessible_resources": [{
+        "resources": ["/images/*"],
+        "matches": ["https://*.airlinesim.aero/*"]
+    }]
 }

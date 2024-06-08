@@ -52,13 +52,32 @@ class AESMenu {
         menu.className = "dropdown-menu"
         const menuItems = []
         const content = [{
+            label: "Community",
+            isHeader: true
+        },{
             label: "Forum Topic",
             href: "https://forums.airlinesim.aero/t/introducing-airlinesim-enhancement-suite-beta/",
             newWindow: true
         },{
+            isDivider: true
+        },{
+            label: "Support",
+            isHeader: true
+        },{
             label: "Report a Bug",
             href: `https://github.com/ZoeBijl/airlinesim-enhancement-suite/issues/new?body=AES: v${chrome.runtime.getManifest().version}%0AChrome: v${window.navigator.userAgent.match(/Chrom(?:e|ium)\/([0-9]+)/)[1]}%0A%0A`,
-            newWindow: true
+            newWindow: true,
+            icon: { className: "fa-bug" }
+        },{
+            label: "Handbook",
+            href: "https://docs.google.com/document/d/1hzMHb3hTBXSZNtuDKoBuvx1HP9CgB7wVYR59yDYympg/",
+            newWindow: true,
+            icon: { className: "fa-book" }
+        },{
+            label: "GitHub",
+            href: "https://github.com/ZoeBijl/airlinesim-enhancement-suite",
+            newWindow: true,
+            icon: { className: "fa-github" }
         }]
         for (const item of content) {
             let menuItem = this.#createMenuItem(item)

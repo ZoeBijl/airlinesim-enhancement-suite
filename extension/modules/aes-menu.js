@@ -98,13 +98,15 @@ class AESMenu {
     #createMenuItem(content) {
         const menuItem = document.createElement("li")
         let menuItemContent, icon
+        if (content.label) {
+            menuItemContent = content.label
+        }
         if (content.isDivider) {
             menuItem.className = "divider"
             return menuItem
         }
         if (content.isHeader) {
             menuItem.className = "dropdown-header"
-            menuItemContent = content.label
         }
         if (content.icon || content.newWindow) {
             icon = document.createElement("span")
@@ -113,19 +115,32 @@ class AESMenu {
         if (content.icon) {
             icon.className = `fa ${content.icon.className}`
         }
+        if (content.data?.toggle) {
+            const button = document.createElement("a")
+            button.setAttribute("role", "button")
+            button.setAttribute("tabindex", "0")
+            button.style = "cursor: pointer"
+            if (icon) {
+                button.append(icon)
+            }
+            button.append(content.label)
+            for (const attribute in content.data) {
+                button.dataset[attribute] = content.data[attribute]
+            }
+            menuItemContent = button
+        }
         if (content.href) {
             const link = document.createElement("a")
             link.setAttribute("href", content.href)
             if (content.newWindow && !content.icon) {
                 icon.className = "fa fa-external-link"
             }
-            if (content.newWindon) {
+            if (content.newWindow) {
                 link.setAttribute("target", "_blank")
                 link.setAttribute("rel", "noreferrer noopener")
             }
             if (icon) {
                 link.append(icon)
-                link.append(" ")
             }
             link.append(content.label)
             menuItemContent = link

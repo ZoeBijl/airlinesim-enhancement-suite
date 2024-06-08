@@ -22,6 +22,22 @@
     white-space: nowrap;
 }
 
+/**
+ * General UI improvements
+ */
+
+/* Align icons and text in menu items */
+.dropdown-menu > li > a:has(.fa) {
+    display: grid;
+    grid-template-columns: 1em auto;
+    gap: .5em;
+    align-items: center;
+}
+
+.dropdown-menu > li > a > .fa {
+    justify-self: center;
+}
+
 /* Dark Mode fixes */
 head:has(link[href^="/dist/assets/theme-dark"]) + body .bad {
     color: #ffb8b6;

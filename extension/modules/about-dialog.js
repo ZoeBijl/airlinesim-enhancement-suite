@@ -3,19 +3,15 @@ class AboutDialog {
     #container
     #modalDialog
     #modalContent
-    #header
-    #heading
     #closeButton
     #body
 
     constructor() {
-        this.#body = this.#createBody()
-        this.#heading = this.#createHeading()
         this.#closeButton = this.#createCloseButton()
-        this.#header = this.#createHeader()
-        this.#header.append(this.#closeButton, this.#heading)
+        this.#body = this.#createBody()
+        this.#body.prepend(this.#closeButton)
         this.#modalContent = this.#createModalContent()
-        this.#modalContent.append(this.#header, this.#body)
+        this.#modalContent.append(this.#body)
         this.#modalDialog = this.#createModalDialog()
         this.#modalDialog.append(this.#modalContent)
         this.#container = this.#createContainer()
@@ -31,6 +27,8 @@ class AboutDialog {
         const container = document.createElement("div")
         container.class = "modal"
         container.id = "aes-about-dialog"
+        container.setAttribute("role", "dialog")
+        container.setAttribute("aria-modal", "true")
         container.setAttribute("aria-hidden", "true")
         container.style = "display: none"
 
@@ -51,21 +49,6 @@ class AboutDialog {
         return modalContent
     }
     
-    #createHeader() {
-        const header = document.createElement("div")
-        header.className = "modal-header"
-
-        return header
-    }
-    
-    #createHeading() {
-        const heading = document.createElement("h1")
-        heading.className = "modal-title"
-        heading.innerText = "About the AirlineSim Enhancement Suite"
-
-        return heading
-    }
-    
     #createCloseButton() {
         const icon = document.createElement("span")
         icon.setAttribute("aria-hidden", "true")
@@ -76,7 +59,7 @@ class AboutDialog {
         const button = document.createElement("button")
         button.setAttribute("type", "button")
         button.dataset.dismiss = "modal"
-        button.className = "close"
+        button.className = "btn btn-default"
         button.append(icon, label)
 
         return button

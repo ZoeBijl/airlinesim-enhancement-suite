@@ -23,7 +23,11 @@
     "content_scripts": [
         {
             "css": ["css/content.css"],
-            "js": ["js/jquery-3.4.1.min.js", "helpers.js"],
+            "js": [
+                "js/jquery-3.4.1.min.js",
+                "helpers.js",
+                "modules/aes-menu.js"
+            ],
             "matches": ["https://*.airlinesim.aero/app/*", "https://*.airlinesim.aero/action/*"]
         },
         {

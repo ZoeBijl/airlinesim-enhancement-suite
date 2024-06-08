@@ -65,7 +65,7 @@ class AESMenu {
             isHeader: true
         },{
             label: "Report a Bug",
-            href: `https://github.com/ZoeBijl/airlinesim-enhancement-suite/issues/new?body=AES: v${chrome.runtime.getManifest().version}%0AChrome: v${window.navigator.userAgent.match(/Chrom(?:e|ium)\/([0-9]+)/)[1]}%0A%0A`,
+            href: `https://github.com/ZoeBijl/airlinesim-enhancement-suite/issues/new?body=AES:%20v${chrome.runtime.getManifest().version}%0AChrome:%20v${window.navigator.userAgent.match(/Chrom(?:e|ium)\/([0-9]+)/)[1]}%0A%0A`,
             newWindow: true,
             icon: { className: "fa-bug" }
         },{

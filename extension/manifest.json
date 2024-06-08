@@ -26,7 +26,8 @@
             "js": [
                 "js/jquery-3.4.1.min.js",
                 "helpers.js",
-                "modules/aes-menu.js"
+                "modules/aes-menu.js",
+                "modules/about-dialog.js"
             ],
             "matches": ["https://*.airlinesim.aero/app/*", "https://*.airlinesim.aero/action/*"]
         },

@@ -73,6 +73,11 @@
     display: none;
 }
 
+/* Allow for scroll on tables */
+.as-table-well {
+    overflow-x: auto;
+}
+
 [class^="layout-col-md"]:has(.types):not(:has(li)) {
     display: none;
 }

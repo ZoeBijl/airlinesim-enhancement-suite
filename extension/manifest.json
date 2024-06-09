@@ -57,7 +57,10 @@
             "matches": ["https://*.airlinesim.aero/app/enterprise/dashboard*"]
         },
         {
-            "js": ["content_personelManagement.js"],
+            "js": [
+                "content_personelManagement.js",
+                "modules/personnel/salary-update-table.js"
+            ],
             "matches": ["https://*.airlinesim.aero/action/enterprise/staffOverview*"]
         },
         {

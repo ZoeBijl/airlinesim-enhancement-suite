@@ -1,34 +1,61 @@
-"use strict";
-//MAIN
-//Global vars
-var settings, server, airline;
-$(function() {
-    chrome.storage.local.get(['settings'], function(result) {
-        settings = result.settings;
-        //Default settings
-        if (!settings.personelManagement) {
-            settings.personelManagement = {
-                value: 0,
-                type: 'absolute',
-                auto: 0
-            };
-        }
-        server = AES.getServerName();
-        airline = getAirline();
+"use strict"
 
-        displayPersonelManagement();
-    });
-});
+let settings, server, airline
+
+window.addEventListener("load", async (event) => {
+    settings = await AES.getSettings()
+
+    if (!settings.personelManagement) {
+        settings.personelManagement = {
+            value: 0,
+            type: 'absolute',
+            auto: 0
+        }
+        chrome.storage.local.set({ settings: settings })
+    }
+    server = AES.getServerName()
+    airline = getAirline()
+    
+    const updateForm = createUpdateForm()
+    rebuildLayout(updateForm)
+    
+    // displayPersonelManagement()
+})
+
+function rebuildLayout(updateForm) {
+    const container = document.querySelector(".as-navbar-main + .container-fluid")
+    const table = container.querySelector(".as-panel")
+    const heading = container.querySelector("h1")
+    const sidebar = document.createElement("div")
+    sidebar.className = "col-sm-6 col-md-3"
+    sidebar.append(updateForm)
+    const main = document.createElement("div")
+    main.className = "col-sm-12 col-md-9"
+    main.append(table)
+    const row = document.createElement("div")
+    row.className = "row"
+    row.append(sidebar, main)
+    container.append(row)
+}
+
+function createUpdateForm() {
+    const container = document.createElement("div")
+    const heading = document.createElement("h2")
+    heading.className = "h3"
+    heading.innerText = "Update Salaries"
+    const panel = document.createElement("div")
+    panel.className = "as-panel"
+    const description = document.createElement("p")
+    description.innerText = "Select value (either absolute AS$ value or % value) to keep your personels salary in regards to country average. You can enter negative or positive values"
+    const table = new SalaryUpdateTable()
+    panel.append(description, table.container)
+    container.append(heading, panel)
+
+    return container
+}
 
 function displayPersonelManagement() {
-    //Header rows
-    let th = $('<tr></tr>').append('<th>Value</th>', '<th>Type</th>');
-    let thead = $('<thead></thead>').append(th);
-    //body rows
-    let td = [];
-    //Value
-    let input = $('<input type="text" id="aes-input-personelManagement-value" class="form-control number" style="min-width: 50px;">').val(settings.personelManagement.value);
-
+    
     //Select type
     let option = [];
     option.push('<option value="absolute">AS$</option>');
@@ -36,18 +63,6 @@ function displayPersonelManagement() {
     let select = $('<select id="aes-select-personelManagement-type" class="form-control"></select>').append(option);
     select.val(settings.personelManagement.type);
 
-
-    td.push($('<td></td>').html(input));
-    td.push($('<td></td>').html(select));
-
-    let bRow = $('<tr></tr>').append(td);
-    let tbody = $('<tbody></tbody>').append(bRow);
-
-
-    let table = $('<table class="table table-bordered"></table>').append(thead, tbody);
-    let tableWell = $('<div class="as-table-well"></div>').append(table);
-    //Text
-    let p = $('<p></p>').text('Select value (either absolute AS$ value or % value) to keep your personels salary in regards to country average. You can enter negative or positive values.');
 
     //buttons
     let btn = $('<button type="button" class="btn btn-default">apply salary</button>');
@@ -61,8 +76,6 @@ function displayPersonelManagement() {
     let panel = $('<div class="as-panel"></div>').append(p, row, btn, span);
 
     //Final
-    let mainDiv = $(".container-fluid:eq(2) h1");
-    mainDiv.after('<h3>AirlineSim Enhancement Suite Personel Management</h3>', panel);
 
     //actions
     select.change(function() {

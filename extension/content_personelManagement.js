@@ -69,7 +69,7 @@ function displayPersonelManagement(){
     chrome.storage.local.set({settings: settings}, function(){});
   });
   input.change(function(){
-    settings.personelManagement.value = cleanInteger(input.val());
+    settings.personelManagement.value = AES.cleanInteger(input.val());
     chrome.storage.local.set({settings: settings}, function(){});
   });
 
@@ -92,7 +92,7 @@ function displayPersonelManagement(){
   let key = server+airline+"personelManagement";
   chrome.storage.local.get([key], function(result) {
     if(result[key]){
-      p.after($('<p></p>').text('Last time updated on '+formatDate(result[key].date)+' '+result[key].time));
+      p.after($('<p></p>').text('Last time updated on '+AES.formatDateString(result[key].date)+' '+result[key].time));
     } else {
       p.after($('<p></p>').text('No previous personel management data found.'));
     }
@@ -111,8 +111,8 @@ function priceUpdate(span){
         }
 
         let salaryInput = $(this).find('form input:eq(2)');
-        let salary = cleanInteger(salaryInput.val());
-        let average = cleanInteger($(this).find('td:eq(9)').text());
+        let salary = AES.cleanInteger(salaryInput.val());
+        let average = AES.cleanInteger($(this).find('td:eq(9)').text());
         let salaryBtn = $(this).find('td:eq(8) > form .input-group-btn input');
         let newSalary;
         switch(type) {
@@ -142,7 +142,7 @@ function priceUpdate(span){
 
         //Save into memory
 
-        let today = getDate();
+        let today = AES.getServerDate()
         let key = server + airline + 'personelManagement';
         let personelManagementData = {
           server:server,
@@ -158,36 +158,6 @@ function priceUpdate(span){
     }
   });
 }
-function cleanInteger(a){
-  a = a.replace(',','');
-  a = a.replace('.','');
-  a = a.replace(' AS$','');
-  return parseInt(a, 10);
-}
-function getDate(){
-  let a = $(".as-footer-line-element:has('.fa-clock-o')").text().trim();
-  let b = a.split(" ");
-  //For date
-  let dateTemp = b[0].split("-");
-  let date;
-  if(dateTemp.length == 1){
-    //German
-    dateTemp = dateTemp[0].split(".");
-    date = dateTemp.map(function(value){
-      return value.replace(/[^A-Za-z0-9]/g, '');
-    });
-    date = date[2] + date[1] + date[0];
-  } else {
-    //English
-    date = dateTemp.map(function(value){
-      return value.replace(/[^A-Za-z0-9]/g, '');
-    });
-    date = date[0] + date[1] + date[2];
-  }
-  //For time
-  let time = b[b.length-2] +' '+b[b.length-1];
-  return {date:date,time:time};
-}
 function getAirline(){
    let airline = $("#as-navbar-main-collapse ul li:eq(0) a:eq(0)").text().trim().replace(/[^A-Za-z0-9]/g, '');
    return airline;
@@ -196,7 +166,4 @@ function getServerName(){
   let server = window.location.hostname
   server = server.split('.');
   return server[0];
-}
-function formatDate(date){
-  return date.substring(0, 4)+'-'+date.substring(4, 6)+'-'+date.substring(6, 8);
 }

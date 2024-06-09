@@ -119,7 +119,7 @@ function displayFlightProfit(){
 
     if(value.data){
       td.push(formatMoney(value.data.money.CM5.Total));
-      td.push($('<td></td>').text(formatDate(value.data.date)+' '+value.data.time));
+      td.push($('<td></td>').text(AES.formatDateString(value.data.date)+' '+value.data.time));
     } else {
       td.push('<td></td>');
       td.push('<td></td>');
@@ -137,7 +137,7 @@ function buildTable(){
   row.push($('<tr></tr>').append('<th>Total flights</th>','<td>'+aircraftFlightData.totalFlights+'</td>'));
   row.push($('<tr></tr>').append('<th>Finished flights</th>','<td>'+aircraftFlightData.finishedFlights+'</td>'));
   row.push($('<tr></tr>').append('<th>Finished flights with profit/loss extract</th>','<td>'+aircraftFlightData.profitFlights+'</td>'));
-  row.push($('<tr></tr>').append('<th>Data save time</th>','<td>'+formatDate(aircraftFlightData.date)+' '+aircraftFlightData.time+'</td>'));
+  row.push($('<tr></tr>').append('<th>Data save time</th>','<td>'+AES.formatDateString(aircraftFlightData.date)+' '+aircraftFlightData.time+'</td>'));
 
   let tbody = $('<tbody></tbody>').append(row);
   return $('<table class="table table-bordered table-striped table-hover"></table>').append(tbody);
@@ -146,7 +146,7 @@ function getData(){
   //Aircraft ID
   let aircraftId = getAircraftId();
   let aircraftInfo = getAircraftInfo();
-  let date = getDate();
+  let date = AES.getServerDate()
   let server = getServerName();
   let flights = getFlights();
   let flightsStats = getFlightsStats(flights);
@@ -234,39 +234,6 @@ function formatMoney(value){
   container.append(indicatorEl, valueEl, currencyEl)
   
   return container
-}
-function formatDate(date){
-  return date.substring(0, 4)+'-'+date.substring(4, 6)+'-'+date.substring(6, 8);
-}
-function getDate(){
-  let a = $(".as-footer-line-element:has('.fa-clock-o')").text().trim();
-  let b = a.split(" ");
-  //For date
-  let dateTemp = b[0].split("-");
-  let date;
-  if(dateTemp.length == 1){
-    //German
-    dateTemp = dateTemp[0].split(".");
-    date = dateTemp.map(function(value){
-      return value.replace(/[^A-Za-z0-9]/g, '');
-    });
-    date = date[2] + date[1] + date[0];
-  } else {
-    //English
-    date = dateTemp.map(function(value){
-      return value.replace(/[^A-Za-z0-9]/g, '');
-    });
-    date = date[0] + date[1] + date[2];
-  }
-  //For time
-  let time = b[b.length-2] +' '+b[b.length-1];
-  return {date:date,time:time};
-}
-function cleanInteger(a){
-  a = a.replace(',','');
-  a = a.replace('.','');
-  a = a.replace(' AS$','');
-  return parseInt(a, 10);
 }
 function getServerName(){
   let server = window.location.hostname

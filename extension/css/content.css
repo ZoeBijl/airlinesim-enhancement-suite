@@ -68,6 +68,16 @@
     justify-self: center;
 }
 
+/* Focus Outline */
+:focus {
+    outline: 2px solid transparent !important;
+    outline-offset: 0 !important;
+}
+
+:focus-visible {
+    outline: 2px solid #1f6feb !important;
+}
+
 /* Hide empty aircraft categories */
 .as-fieldset:has(.types):not(:has(li)) {
     display: none;

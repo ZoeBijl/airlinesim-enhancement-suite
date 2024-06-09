@@ -27,6 +27,15 @@ class AES {
     }
     
     /**
+     * Get settings from local storage
+     * @returns {object} data.settings
+     */
+    static async getSettings() {
+        const data = await chrome.storage.local.get(['settings'])
+        return data.settings
+    }
+    
+    /**
      * Formats a currency value local standards
      * @param {integer} currency value
      * @param {string} alignment: "right" | "left"

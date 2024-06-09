@@ -5,7 +5,7 @@ var settings, pricingData, todayDate, analysis;
 var aesmodule = { valid: true, error: [] };
 
 window.addEventListener("load", async (event) => {
-    settings = await getSettings()
+    settings = await AES.getSettings()
     aesmodule = new Validation()
 
     if (!aesmodule.valid) {
@@ -14,15 +14,6 @@ window.addEventListener("load", async (event) => {
     }
     displayInventory()
 })
-
-/**
- * Get settings from local storage
- * @returns {object} data.settings
- */
-async function getSettings() {
-    const data = await chrome.storage.local.get(['settings'])
-    return data.settings
-}
 
 async function displayInventory() {
     todayDate = parseInt(AES.getServerDate().date, 10);

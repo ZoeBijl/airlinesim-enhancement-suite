@@ -1,0 +1,5 @@
+class SkipLink {
+    
+}
+
+new SkipLink()

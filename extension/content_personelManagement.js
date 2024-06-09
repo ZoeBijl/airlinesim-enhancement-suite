@@ -13,7 +13,7 @@ $(function() {
                 auto: 0
             };
         }
-        server = getServerName();
+        server = AES.getServerName();
         airline = getAirline();
 
         displayPersonelManagement();
@@ -165,10 +165,4 @@ function priceUpdate(span) {
 function getAirline() {
     let airline = $("#as-navbar-main-collapse ul li:eq(0) a:eq(0)").text().trim().replace(/[^A-Za-z0-9]/g, '');
     return airline;
-}
-
-function getServerName() {
-    let server = window.location.hostname
-    server = server.split('.');
-    return server[0];
 }

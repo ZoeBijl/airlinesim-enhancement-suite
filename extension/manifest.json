@@ -9,17 +9,19 @@
     "update_url": "https://github.com/ZoeBijl/airlinesim-enhancement-suite/releases",
     "action": {
         "default_icon": {
+            "256": "images/AES-logo-256.png",
             "128": "images/AES-logo-128.png",
-            "16": "images/AES-logo-16.png",
+            "48": "images/AES-logo-48.png",
             "32": "images/AES-logo-32.png",
-            "48": "images/AES-logo-48.png"
+            "16": "images/AES-logo-16.png"
         }
     },
     "icons": {
+        "256": "images/AES-logo-256.png",
         "128": "images/AES-logo-128.png",
-        "16": "images/AES-logo-16.png",
+        "48": "images/AES-logo-48.png",
         "32": "images/AES-logo-32.png",
-        "48": "images/AES-logo-48.png"
+        "16": "images/AES-logo-16.png"
     },
     "background": {
         "service_worker": "background.js"

@@ -17,8 +17,23 @@ Marcipanas wrote [a guide](https://docs.google.com/document/d/1hzMHb3hTBXSZNtuDK
 
 ## Installation
 
-Supported platforms: chromium based browsers (Chrome, Edge, etc)
-Please follow [racsofp’s guide](https://forums.airlinesim.aero/t/manual-installation-of-the-ase-airlinesim-enhancement-suite-chrome-extension/24671)
+Supported platforms: chromium based browsers (Chrome, Edge, etc).
+This guide is based on [racsofp’s guide](https://forums.airlinesim.aero/t/manual-installation-of-the-ase-airlinesim-enhancement-suite-chrome-extension/24671).
+
+1. Download the current version from the [releases](https://github.com/ZoeBijl/airlinesim-enhancement-suite/releases) site.
+   The file you look for has the format AES.vX.X.X.zip where the _X_ is replaced with numbers. Example: AES.v0.6.8.zip
+2. Unzip it.
+3. Open your browser and go the expansion page.
+    - Chrome: [chrome://extensions](chrome://extensions)
+    - Edge: [edge://extensions](edge://extensions)
+4. In the upper right corner is a slide bar that says _enable developer_. Enable it.
+5. In the upper left should be a button that says _Load unpacked_. Click it.
+6. Find the folder (unziped!) from part 2 and select it.
+
+The extensions should be added, and you can enable it.
+
+### Please note
+Until AES is available on the chrome web store, this is a methode to install it directly.
 
 ## History
 

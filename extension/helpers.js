@@ -159,12 +159,19 @@ class AES {
     
     /**
      * Cleans a string of punctuation to returns an integer
-     * @param {string} "2,000 AS$" | "2.000 AS$"
+     * @param {string} value - "2,000 AS$" | "2.000 AS$"
      * @returns {integer} 2000
      */
     static cleanInteger(value) {
+        value = value.trim()
+        const isCurrency = value.match(/\$$/g)?.length
+        const isNegative = value.match(/^[-]/g)?.length
+
         // \D matches any character that's not a digit
         let result = value.replaceAll(/\D+/g, "")
+        if (isNegative) {
+            result = result * -1
+        }
         return parseInt(result, 10)
     }
 }

@@ -13,6 +13,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Removed
 
+## [0.6.9] - 
+
+### Added
+- Added `CHANGELOG.md` (this file!) [#50](https://github.com/ZoeBijl/airlinesim-enhancement-suite/issues/50)
+- Added installation guidance to the README [#2](https://github.com/ZoeBijl/airlinesim-enhancement-suite/issues/2)
+
+### Changed
+- Changed the logo [#37](https://github.com/ZoeBijl/airlinesim-enhancement-suite/issues/37)
+
+### Fixed
+
+### Removed
+- Removed status colour tweaks for dark mode [#56](https://github.com/ZoeBijl/airlinesim-enhancement-suite/issues/56)
+
 ## [0.6.8] - 2024-06-09
 
 ### Added
@@ -107,7 +121,8 @@ for pointing it out).
 
 _First release._
 
-[unreleased]: https://github.com/ZoeBijl/airlinesim-enhancement-suite/compare/v0.6.8...HEAD
+[unreleased]: https://github.com/ZoeBijl/airlinesim-enhancement-suite/compare/v0.6.9...HEAD
+[0.6.9]: https://github.com/ZoeBijl/airlinesim-enhancement-suite/compare/v0.6.8...v0.6.9
 [0.6.8]: https://github.com/ZoeBijl/airlinesim-enhancement-suite/compare/v0.6.7...v0.6.8
 [0.6.7]: https://github.com/ZoeBijl/airlinesim-enhancement-suite/compare/v0.6.6...v0.6.7
 [0.6.6]: https://github.com/ZoeBijl/airlinesim-enhancement-suite/compare/v0.6.5...v0.6.6

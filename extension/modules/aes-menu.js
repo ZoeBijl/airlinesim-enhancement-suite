@@ -59,6 +59,10 @@ class AESMenu {
             href: "https://forums.airlinesim.aero/t/introducing-airlinesim-enhancement-suite-beta/",
             newWindow: true
         },{
+            label: "Discord",
+            href: "https://discord.com/channels/113555701774749696/1249639537450160138",
+            newWindow: true
+        },{
             isDivider: true
         },{
             label: "Support",

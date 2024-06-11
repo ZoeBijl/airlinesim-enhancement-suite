@@ -15,7 +15,7 @@ class SalaryUpdateTable {
      */
     #createContainer() {
         const container = document.createElement("div")
-        container.className = "as-table-well"
+        container.className = "as-table-well form-group"
         
         return container
     }

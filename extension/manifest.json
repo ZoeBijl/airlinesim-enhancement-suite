@@ -59,6 +59,7 @@
         {
             "js": [
                 "content_personelManagement.js",
+                "modules/personnel/salary-update-form.js",
                 "modules/personnel/salary-update-table.js"
             ],
             "matches": ["https://*.airlinesim.aero/action/enterprise/staffOverview*"]

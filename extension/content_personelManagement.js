@@ -16,42 +16,28 @@ window.addEventListener("load", async (event) => {
     server = AES.getServerName()
     airline = getAirline()
     
-    const updateForm = createUpdateForm()
-    rebuildLayout(updateForm)
+    const updateForm = new SalaryUpdateForm()
+    rebuildLayout(updateForm.container)
     
     // displayPersonelManagement()
 })
 
 function rebuildLayout(updateForm) {
     const container = document.querySelector(".as-navbar-main + .container-fluid")
-    const table = container.querySelector(".as-panel")
+    const panels = container.querySelectorAll(".as-panel")
     const heading = container.querySelector("h1")
     const sidebar = document.createElement("div")
     sidebar.className = "col-sm-6 col-md-3"
     sidebar.append(updateForm)
     const main = document.createElement("div")
     main.className = "col-sm-12 col-md-9"
-    main.append(table)
+    for (const panel of panels) {
+        main.append(panel)
+    }
     const row = document.createElement("div")
     row.className = "row"
     row.append(sidebar, main)
     container.append(row)
-}
-
-function createUpdateForm() {
-    const container = document.createElement("div")
-    const heading = document.createElement("h2")
-    heading.className = "h3"
-    heading.innerText = "Update Salaries"
-    const panel = document.createElement("div")
-    panel.className = "as-panel"
-    const description = document.createElement("p")
-    description.innerText = "Select value (either absolute AS$ value or % value) to keep your personels salary in regards to country average. You can enter negative or positive values"
-    const table = new SalaryUpdateTable()
-    panel.append(description, table.container)
-    container.append(heading, panel)
-
-    return container
 }
 
 function displayPersonelManagement() {

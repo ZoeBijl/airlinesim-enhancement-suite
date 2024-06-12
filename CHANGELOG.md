@@ -23,6 +23,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Changed the logo [#37](https://github.com/ZoeBijl/airlinesim-enhancement-suite/issues/37)
 
 ### Fixed
+- Fixed an issue where negative integers were displayed as positive integers [#59](https://github.com/ZoeBijl/airlinesim-enhancement-suite/issues/59)
 
 ### Removed
 - Removed status colour tweaks for dark mode [#56](https://github.com/ZoeBijl/airlinesim-enhancement-suite/issues/56)

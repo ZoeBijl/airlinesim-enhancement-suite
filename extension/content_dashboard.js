@@ -7,15 +7,79 @@ $(function() {
     airline = AES.getAirlineCode();
     server = AES.getServerName();
     chrome.storage.local.get(['settings'], function(result) {
-        settings = result.settings;
+      settings = result.settings;
 
-        displayDashboard();
+      if ((settings['flightInformationsFixed'] === undefined) || (settings['flightInformationsFixed'] !== 1)) {
+        fixAndDeleteInvalidData();
+      }
+
+      displayDashboard();
+      dashboardHandle();
+      
+      $("#aes-select-dashboard-main").change(function() {
         dashboardHandle();
-        $("#aes-select-dashboard-main").change(function() {
-            dashboardHandle();
-        });
+      });
     });
 });
+
+function fixAndDeleteInvalidData() {
+  const DataToFix = [];
+
+  chrome.storage.local.get(null, async function (entries) {
+    for (const key in entries) {
+      if (key.endsWith("routeAnalysis") || key.endsWith("schedule")) {
+        const invalidDates = [];
+        for (const date in entries[key]['date']) {
+          if (!date.startsWith("20") || date.length !== 8) {
+            invalidDates.push(date);
+          }
+        }
+        if (invalidDates.length) {
+          invalidDates.forEach(date => delete entries[key]['date'][date]);
+          DataToFix.push(entries[key]);
+        }
+      } else if (key.endsWith("personelManagement") || key.includes("flightInfo")) {
+        if (entries[key]['date'] !== undefined && (!entries[key]['date'].startsWith("20") || entries[key]['date'].length !== 8)) {
+          chrome.storage.local.remove([key], function () {
+            if (chrome.runtime.lastError) {
+              throw new Error('Error deleting invalid data:' + chrome.runtime.lastError.message);
+            }
+          });
+        }
+      }
+    }
+
+    await fixInvalidData(DataToFix);
+  });
+}
+
+async function fixInvalidData(entries) {
+  let fixingSuccess = false;
+
+  if (entries.length !== 0) {
+    const promises = entries.map(entry => chrome.storage.local.set({ [entry.key]: entry }));
+
+    try {
+      await Promise.all(promises);
+      fixingSuccess = true;
+    } catch (error) {
+      throw new Error('Error fixing invalid data:' + error);
+    }
+  }
+
+  if (entries.length === 0 || fixingSuccess) {
+    chrome.storage.local.get('settings', function(result) {
+      let settings = result.settings || {};
+      settings['flightInformationsFixed'] = 1;
+
+      chrome.storage.local.set({ 'settings': settings }, function() {
+        if (chrome.runtime.lastError) {
+          throw new Error('Error saving settings:' + chrome.runtime.lastError.message);
+        }
+      });
+    });
+  }
+}
 
 function displayDashboard() {
     let mainDiv = $("#enterprise-dashboard");

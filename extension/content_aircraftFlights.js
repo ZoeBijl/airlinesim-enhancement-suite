@@ -186,23 +186,38 @@ function getFlightsStats(flights) {
     }
 }
 
+/**
+ * Get the data from “flights” table
+ * @returns {array} flights
+ */
 function getFlights() {
-    let table = $('#aircraft-flight-instances-table');
-    let flights = [];
-    $('tbody tr', table).each(function() {
-        if ($('td:eq(1) span:eq(1)', this).text() !== 'XFER') {
-            let status = $('.flightStatusPanel', this).text().trim();
-            let url = $('.text-center a', this).attr('href');
-            let a = url.split('id=');
-            let id = a[1];
-            flights.push({
-                status: status,
-                id: id,
-                row: $(this)
-            });
+    const table = document.querySelector("#aircraft-flight-instances-table")
+    const rows = table.querySelectorAll("tbody tr")
+    const flights = []
+    
+    for (const row of rows) {
+        const flight = {
+            status: null,
+            id: null,
+            row: null
         }
-    });
-    return flights;
+        const flightNumber = row.querySelector("td:nth-child(2)")?.innerText.trim()
+        if (flightNumber === "XFER" || flightNumber === undefined) {
+            continue
+        }
+        const url = row.querySelector(`[href*="action/info/flight"]`)?.href
+        if (!url) {
+            throw new Error("getFlights(): no valid value for `url`")
+            continue
+        }
+        
+        flight.status = row.querySelector(".flightStatusPanel")?.innerText.trim()
+        flight.id = url.match(/\d+/)[0]
+        flight.row = $(row)
+        flights.push(flight)
+    }
+    
+    return flights
 }
 
 function getAircraftInfo() {

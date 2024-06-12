@@ -154,7 +154,7 @@ function getData() {
     let aircraftId = getAircraftId();
     let aircraftInfo = getAircraftInfo();
     let date = AES.getServerDate()
-    let server = getServerName();
+    let server = AES.getServerName();
     let flights = getFlights();
     let flightsStats = getFlightsStats(flights);
     return {
@@ -244,10 +244,4 @@ function formatMoney(value) {
     container.append(indicatorEl, valueEl, currencyEl)
 
     return container
-}
-
-function getServerName() {
-    let server = window.location.hostname
-    server = server.split('.');
-    return server[0];
 }

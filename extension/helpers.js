@@ -116,7 +116,7 @@ class AES {
      */
     static getServerDate() {
         const source = document.querySelector(".as-navbar-bottom span:has(.fa-clock-o)").innerText.trim()
-        const sourceAsNumbers = this.cleanInteger(source).toString()
+        const sourceAsNumbers = source.toString().replace(/\D/g, "")
         
         // The source always consists of 12 numbers
         const expectedLength = 12
@@ -159,12 +159,20 @@ class AES {
     
     /**
      * Cleans a string of punctuation to returns an integer
-     * @param {string} "2,000 AS$" | "2.000 AS$"
-     * @returns {integer} 2000
+     * @param {string} value - "-2,000 AS$" | "2.000 AS$" | "256"
+     * @returns {integer} -2000 | 2000 | 256
      */
     static cleanInteger(value) {
-        // \D matches any character that's not a digit
-        let result = value.replaceAll(/\D+/g, "")
+        // TODO: create separate function for cleaning currency values
+        // value = value.trim()
+        // const isExpectedFormat = Boolean(value.match(/^-?(\d+[.,]?)+ AS\$$/))
+        // 
+        // if (!isExpectedFormat) {
+        //     throw new Error("cleanInteger(): unexpected format for value")
+        // }
+        
+        // Match any character that’s no a digit or a dash
+        const result = value.replaceAll(/[^\d-]/g, "")
         return parseInt(result, 10)
     }
 }

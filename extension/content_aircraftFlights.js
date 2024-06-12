@@ -126,12 +126,13 @@ function displayFlightProfit() {
             td.push(formatMoney(value.data.money.CM5.Total));
             td.push($('<td></td>').text(AES.formatDateString(value.data.date) + ' ' + value.data.time));
         } else {
-            td.push('<td></td>');
-            td.push('<td></td>');
+            td.push('<td class="text-center">--</td>');
+            td.push('<td class="text-center">--</td>');
         }
 
         $('td:eq(11)', value.row).after(td);
     });
+    $("tfoot td", table).attr("colspan", "15")
 }
 
 function buildTable() {

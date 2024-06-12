@@ -116,7 +116,7 @@ class AES {
      */
     static getServerDate() {
         const source = document.querySelector(".as-navbar-bottom span:has(.fa-clock-o)").innerText.trim()
-        const sourceAsNumbers = this.cleanInteger(source).toString()
+        const sourceAsNumbers = source.toString().replace(/\D/g, "")
         
         // The source always consists of 12 numbers
         const expectedLength = 12

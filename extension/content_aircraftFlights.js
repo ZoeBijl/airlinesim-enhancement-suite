@@ -207,8 +207,9 @@ function getFlights() {
             continue
         }
         
-        flight.status = row.querySelector(".flightStatusPanel")?.innerText.trim()
         flight.id = url.match(/\d+/)[0]
+        flight.flightNumber = flightNumber
+        flight.status = row.querySelector(".flightStatusPanel")?.innerText.trim()
         flight.row = $(row)
         flights.push(flight)
     }

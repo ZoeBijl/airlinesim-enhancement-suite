@@ -83,6 +83,7 @@ function saveData() {
         totalFlights: aircraftFlightData.totalFlights,
         type: aircraftFlightData.type,
     }
+    
     chrome.storage.local.set({
         [key]: saveData }, function() {
         display();
@@ -91,9 +92,6 @@ function saveData() {
 
 function display() {
     displayFlightProfit();
-    //Table
-    let tableWell = $('<div class="as-table-well" style="max-width:950px;"></div>').append(buildTable());
-    let panel = $('<div class="as-panel"></div>').append(tableWell);
     //action bar
     let btn = $('<button class="btn btn-default"></button>').text('Extract all flight profit/loss');
     let btn1 = $('<button class="btn btn-default"></button>').text('Extract finished flight profit/loss');
@@ -115,8 +113,7 @@ function display() {
         extractAllFlightProfit('finished');
     })
     //Header
-    let h = $('<h3></h3>').text('AES Aircraft Flights');
-    let div = $('<div></div>').append(h, actionBar, panel);
+    let div = $('<div></div>').append(actionBar);
     $('.as-page-aircraft > h1:eq(0)').after(div);
 }
 
@@ -156,21 +153,6 @@ function displayFlightProfit() {
         $('td:eq(11)', value.row).after(td);
     });
     $("tfoot td", table).attr("colspan", "15")
-}
-
-function buildTable() {
-    //head
-    let row = [];
-    row.push($('<tr></tr>').append('<th>Total aircraft profit/loss</th>', formatMoney(aircraftFlightData.profit)));
-    row.push($('<tr></tr>').append('<th>Aircraft Id</th>', '<td>' + aircraftFlightData.aircraftId + '</td>'));
-    row.push($('<tr></tr>').append('<th>Registration</th>', '<td>' + aircraftFlightData.registration + '</td>'));
-    row.push($('<tr></tr>').append('<th>Total flights</th>', '<td>' + aircraftFlightData.totalFlights + '</td>'));
-    row.push($('<tr></tr>').append('<th>Finished flights</th>', '<td>' + aircraftFlightData.finishedFlights + '</td>'));
-    row.push($('<tr></tr>').append('<th>Finished flights with profit/loss extract</th>', '<td>' + aircraftFlightData.profitFlights + '</td>'));
-    row.push($('<tr></tr>').append('<th>Data save time</th>', '<td>' + AES.formatDateString(aircraftFlightData.date) + ' ' + aircraftFlightData.time + '</td>'));
-
-    let tbody = $('<tbody></tbody>').append(row);
-    return $('<table class="table table-bordered table-striped table-hover"></table>').append(tbody);
 }
 
 function getFlightsStats(flights) {

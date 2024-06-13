@@ -74,6 +74,7 @@
                 "modules/aircraft-flights/aircraft-data.js",
                 "modules/aircraft-flights/aircraft-statistics-panel.js",
                 "modules/aircraft-flights/extraction-button.js",
+                "modules/aircraft-flights/info-panel.js",
                 "modules/aircraft-flights/flight-data.js"
             ],
             "matches": ["https://*.airlinesim.aero/app/fleets/aircraft/*/1*"]

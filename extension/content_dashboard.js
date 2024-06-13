@@ -23,62 +23,59 @@ $(function() {
 });
 
 function fixAndDeleteInvalidData() {
-  const DataToFix = [];
+  chrome.storage.local.get(null, function (entries) {
+    const tasks = [];
+    let settingsUpdated = false;
 
-  chrome.storage.local.get(null, async function (entries) {
-    for (const key in entries) {
-      if (key.endsWith("routeAnalysis") || key.endsWith("schedule")) {
-        const invalidDates = [];
-        for (const date in entries[key]['date']) {
-          if (!date.startsWith("20") || date.length !== 8) {
-            invalidDates.push(date);
+    function cleanAndSave(entry, key) {
+      return new Promise((resolve, reject) => {
+        if (key.endsWith("routeAnalysis") || key.endsWith("schedule")) {
+          if (entry.date) {
+            for (const dateKey in entry.date) {
+              if (!dateKey.startsWith("20") || dateKey.length !== 8) {
+                delete entry.date[dateKey];
+              }
+            }
+          }
+        } else if (key.endsWith("aircraftFleet")) {
+          entry.fleet = entry.fleet.filter(item => item.date && item.date.startsWith("20") && item.date.length === 8);
+        } else if (key.endsWith("personelManagement") || key.includes("flightInfo") || key.includes("aircraftFlights")) {
+          if (entry.date && (!entry.date.startsWith("20") || entry.date.length !== 8)) {
+            delete entries[key];
           }
         }
-        if (invalidDates.length) {
-          invalidDates.forEach(date => delete entries[key]['date'][date]);
-          DataToFix.push(entries[key]);
-        }
-      } else if (key.endsWith("personelManagement") || key.includes("flightInfo")) {
-        if (entries[key]['date'] !== undefined && (!entries[key]['date'].startsWith("20") || entries[key]['date'].length !== 8)) {
-          chrome.storage.local.remove([key], function () {
+
+        chrome.storage.local.set({ [key]: entry }, function () {
+          if (chrome.runtime.lastError) {
+            reject(new Error('Error saving cleaned data for ' + key + ': ' + chrome.runtime.lastError.message));
+          } else {
+            resolve();
+          }
+        });
+      });
+    }
+
+    Object.keys(entries).forEach(key => {
+      tasks.push(cleanAndSave(entries[key], key));
+    });
+
+    Promise.all(tasks).then(() => {
+      if (!settingsUpdated) {
+        chrome.storage.local.get('settings', function (result) {
+          const settings = result.settings || {};
+          settings.flightInformationsFixed = 1;
+          chrome.storage.local.set({ settings: settings }, function () {
             if (chrome.runtime.lastError) {
-              throw new Error('Error deleting invalid data:' + chrome.runtime.lastError.message);
+              console.error('Error setting flightInformationsFixed:', chrome.runtime.lastError.message);
             }
           });
-        }
+        });
+        settingsUpdated = true;
       }
-    }
-
-    await fixInvalidData(DataToFix);
-  });
-}
-
-async function fixInvalidData(entries) {
-  let fixingSuccess = false;
-
-  if (entries.length !== 0) {
-    const promises = entries.map(entry => chrome.storage.local.set({ [entry.key]: entry }));
-
-    try {
-      await Promise.all(promises);
-      fixingSuccess = true;
-    } catch (error) {
-      throw new Error('Error fixing invalid data:' + error);
-    }
-  }
-
-  if (entries.length === 0 || fixingSuccess) {
-    chrome.storage.local.get('settings', function(result) {
-      let settings = result.settings || {};
-      settings['flightInformationsFixed'] = 1;
-
-      chrome.storage.local.set({ 'settings': settings }, function() {
-        if (chrome.runtime.lastError) {
-          throw new Error('Error saving settings:' + chrome.runtime.lastError.message);
-        }
-      });
+    }).catch(error => {
+      console.error('Error cleaning and saving data:', error);
     });
-  }
+  });
 }
 
 function displayDashboard() {

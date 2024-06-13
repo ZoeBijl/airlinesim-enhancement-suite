@@ -65,6 +65,7 @@ function getTotalProfit() {
     aircraftFlightData.profitFlights = profitFlights;
     //Async
     saveData();
+    statisticsPanel.profit = AES.formatCurrency(profit)
 }
 
 function saveData() {
@@ -144,8 +145,9 @@ function displayFlightProfit() {
         let td = [];
 
         if (value.data) {
-            td.push(formatMoney(value.data.money.CM5.Total));
-            td.push($('<td></td>').text(AES.formatDateString(value.data.date) + ' ' + value.data.time));
+            const daysAgo = AES.getDateDiff(value.data.date)
+            td.push($('<td class="text-right"></td>').html(AES.formatCurrency(value.data.money.CM5.Total)));
+            td.push($('<td class="text-nowrap"></td>').text(AES.formatDaysAgo(daysAgo)));
         } else {
             td.push('<td class="text-center">--</td>');
             td.push('<td class="text-center">--</td>');
@@ -229,31 +231,4 @@ function getAircraftId() {
     let url = window.location.pathname;
     let a = url.split('/');
     return parseInt(a[a.length - 2], 10);
-}
-
-function formatMoney(value) {
-    let container = document.createElement("td")
-    let formattedValue = Intl.NumberFormat().format(value)
-    let indicatorEl = document.createElement("span")
-    let valueEl = document.createElement("span")
-    let currencyEl = document.createElement("span")
-
-    if (value >= 0) {
-        valueEl.classList.add("good")
-        indicatorEl.innerText = "+"
-    }
-
-    if (value < 0) {
-        valueEl.classList.add("bad")
-        indicatorEl.innerText = "-"
-        formattedValue = formattedValue.replace("-", "")
-    }
-
-    valueEl.innerText = formattedValue
-    currencyEl.innerText = " AS$"
-
-    container.classList.add("aes-text-right", "aes-no-text-wrap")
-    container.append(indicatorEl, valueEl, currencyEl)
-
-    return container
 }

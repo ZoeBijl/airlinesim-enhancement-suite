@@ -1,3 +1,4 @@
+/** Class representing data for a single aircraft */
 class Aircraft {
     id
     type

@@ -111,6 +111,21 @@ class AES {
     }
     
     /**
+     * Takes a number and adds “(day|days) ago”
+     * @param {integer} - 0 | 1 | 256
+     @ returns {string} - "0 days ago" | "1 day ago" | "256 days ago"
+     */
+    static formatDaysAgo(daysAgo) {
+        let dayOrDays = "days"
+        if (daysAgo === 1) {
+            dayOrDays = "day"
+        }
+        const result = `${daysAgo} ${dayOrDays} ago`
+
+        return result
+    }
+    
+    /**
      * Gets the server’s current date and time
      * @returns {object} datetime - { date: "20240607", time: "16:24 UTC" }
      */

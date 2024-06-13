@@ -44,7 +44,7 @@ class AES {
             containerClasses = "aes-text-right aes-no-text-wrap"
         }
         
-        if (value >= 0) {
+        if (value > 0) {
             valueEl.classList.add("good")
             indicatorEl.classList.add("good")
             indicatorEl.innerText = "+"

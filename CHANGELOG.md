@@ -8,8 +8,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
+- Added a double dash to indicate “no data” in the “Flights”-table in the aircrafts’ “Flights” tab [#65](https://github.com/ZoeBijl/airlinesim-enhancement-suite/issues/65)
 
 ### Changed
+
+### Fixed
+- Fixed an issue where an error was thrown when trying to get flight data [#65](https://github.com/ZoeBijl/airlinesim-enhancement-suite/issues/65)
+- Fixed a visual issue with “Flights”-table when viewing aircraft flights [#65](https://github.com/ZoeBijl/airlinesim-enhancement-suite/issues/65)
 
 ### Removed
 

@@ -1,53 +1,118 @@
-"use strict";
-//MAIN
-//Global vars
-var aircraftFlightData;
-$(function() {
-    aircraftFlightData = getData();
+"use strict"
 
-    //Async start
-    getStorageData();
-});
+// Global variables
+let aircraftFlightData, statisticsPanel, infoPanel
 
-function getStorageData() {
-    let keys = [];
-    for (let i = 0; i < aircraftFlightData.flights.length; i++) {
-        let key = aircraftFlightData.server + 'flightInfo' + aircraftFlightData.flights[i].id;
-        keys.push(key);
+window.addEventListener("load", async (event) => {
+    infoPanel = new InfoPanel()
+    statisticsPanel = new AircraftStatisticsPanel()
+    
+    /* 
+    0. Build layout
+    1. Get data
+    2. Process data
+    3. Display data
+    */
+    
+    aircraftFlightData = getAircraftData()
+    
+    getStorageData()
+    addButtons()
+    
+    updateAircraftInfoPanel()
+    updateStatisticsPanel()
+})
+
+/** Class representing the Aircraft Flights tab */
+class AircraftFlights {
+    #infoPanel
+    #statisticsPanel
+
+    constructor() {
+        
     }
-    chrome.storage.local.get(keys, function(result) {
-        for (let flightInfo in result) {
-            for (let i = 0; i < aircraftFlightData.flights.length; i++) {
-                if (aircraftFlightData.flights[i].id == result[flightInfo].flightId) {
-                    aircraftFlightData.flights[i].data = result[flightInfo];
-                }
-            }
-        }
+}
 
-        //Async
-        getTotalProfit();
-    });
-function getData() {
-    // Aircraft ID
-    let aircraftId = getAircraftId();
-    let aircraftInfo = getAircraftInfo();
-    let date = AES.getServerDate()
-    let server = AES.getServerName();
-    let flights = getFlights();
-    let flightsStats = getFlightsStats(flights);
-    return {
-        server: server,
-        aircraftId: aircraftId,
-        type: 'aircraftFlights',
-        date: date.date,
-        time: date.time,
+function updateAircraftInfoPanel() {
+    infoPanel.aircraftId = aircraftFlightData.aircraftId
+    infoPanel.registration = aircraftFlightData.registration
+}
+
+function updateStatisticsPanel() {
+    // statisticsPanel.profit = 
+    statisticsPanel.finishedFlights = aircraftFlightData.finishedFlights
+    statisticsPanel.totalFlights = aircraftFlightData.totalFlights
+    const savedDaysAgo = AES.getDateDiff(aircraftFlightData.date)
+    statisticsPanel.savedDaysAgo = savedDaysAgo
+}
+
+function createButtons() {
+    const buttons = [
+        new ExtractionButton("Extract finished flight profit", {extractFinished: true}),
+        new ExtractionButton("Extract all flight profit", {extractAll: true})
+    ]
+    
+    return buttons
+}
+
+function addButtons() {
+    const buttons = createButtons()
+    const listItem = document.createElement("li")
+    listItem.className = "btn-group"
+    for (const button of buttons) {
+        listItem.append(button.element)
+    }
+    const target = document.querySelector(".as-page-aircraft .as-action-bar li:first-child")
+    target.after(listItem)
+}
+
+function getAircraftData() {
+    const aircraftInfo = getAircraftInfo()
+    const flights = getFlights()
+    const flightsStats = getFlightsStats(flights)
+    const serverDate = AES.getServerDate()
+    
+    const aircraftData = {
+        date: serverDate.date,
+        time: serverDate.time,
+        server: AES.getServerName(),
+        aircraftId: getAircraftId(),
         registration: aircraftInfo.registration,
         equipment: aircraftInfo.equipment,
+        type: 'aircraftFlights',
         flights: flights,
         finishedFlights: flightsStats.finishedFlights,
         totalFlights: flightsStats.totalFlights
     }
+
+    return aircraftData
 }
+
+async function getStorageData() {
+    const storedFlights = await chrome.storage.local.get(getKeys())
+    for (const flightKey in storedFlights) {
+        const storedFlight = storedFlights[flightKey]
+        for (const flight of aircraftFlightData.flights) {
+            if (flight.id === storedFlight.flightId.toString()) {
+                flight.data = storedFlight
+            }
+        }
+    }
+    
+    getTotalProfit()
+    saveData()
+}
+
+function getKeys() {
+    const keys = []
+    for (const flight of aircraftFlightData.flights) {
+        const server = aircraftFlightData.server
+        const id = flight.id
+        const key = `${server}flightInfo${id}`
+    
+        keys.push(key)
+    }
+    return keys
 }
 
 function getTotalProfit() {
@@ -63,9 +128,9 @@ function getTotalProfit() {
     });
     aircraftFlightData.profit = profit;
     aircraftFlightData.profitFlights = profitFlights;
-    //Async
-    saveData();
+    
     statisticsPanel.profit = AES.formatCurrency(profit)
+    statisticsPanel.allExtracted = Boolean(aircraftFlightData.finishedFlights === aircraftFlightData.profitFlights)
 }
 
 function saveData() {
@@ -135,7 +200,7 @@ function displayFlightProfit() {
     //Table
     let table = $('#aircraft-flight-instances-table');
     //Head
-    let th = ['<th>Profit/Loss</th>', '<th>Extract date</th>'];
+    let th = ['<th>Profit/Loss</th>', '<th>Extracted</th>'];
     $('th:eq(9)', table).after(th);
     //body
     aircraftFlightData.flights.forEach(function(value) {

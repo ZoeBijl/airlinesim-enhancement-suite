@@ -1,3 +1,4 @@
+/** Class representing data for a single flight */
 class FlightData {
     id
     flightNumber

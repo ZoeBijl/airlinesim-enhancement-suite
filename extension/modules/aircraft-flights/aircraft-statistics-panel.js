@@ -12,6 +12,12 @@ class AircraftStatisticsPanel {
             this.#createPanel()
         )
         this.update()
+        this.#addToPage()
+    }
+    
+    #addToPage() {
+        const target = document.querySelector(".as-page-aircraft .col-md-2 h3:first-child + .as-panel")
+        target.after(this.container)
     }
     
     update() {
@@ -82,7 +88,8 @@ class AircraftStatisticsPanel {
             profit: new AircraftStatisticsRow("Profit/loss"),
             finishedFlights: new AircraftStatisticsRow("Finished flights"),
             totalFlights: new AircraftStatisticsRow("Total flights"),
-            allExtracted: new AircraftStatisticsRow("Flights extracted")
+            allExtracted: new AircraftStatisticsRow("Flights extracted"),
+            savedDaysAgo: new AircraftStatisticsRow("Saved")
         }
         
         return rows
@@ -106,6 +113,10 @@ class AircraftStatisticsPanel {
     
     set allExtracted(value) {
         this.#rows.allExtracted.value = value
+    }
+    
+    set savedDaysAgo(value) {
+        this.#rows.savedDaysAgo.value = AES.formatDaysAgo(value)
     }
 }
 

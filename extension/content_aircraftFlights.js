@@ -196,11 +196,7 @@ function getFlights() {
     const flights = []
     
     for (const row of rows) {
-        const flight = {
-            status: null,
-            id: null,
-            row: null
-        }
+        const flight = new FlightData()
         const flightNumber = row.querySelector("td:nth-child(2)")?.innerText.trim()
         if (flightNumber === "XFER" || flightNumber === undefined) {
             continue

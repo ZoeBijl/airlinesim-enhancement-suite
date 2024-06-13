@@ -1,10 +1,6 @@
 class AircraftStatisticsPanel {
     #container
     #table
-    #profitRow
-    #finishedFlightsRow
-    #totalFlightsRow
-    #allExtractedRow
     #rows
 
     constructor() {

@@ -27,6 +27,27 @@ function getStorageData() {
         //Async
         getTotalProfit();
     });
+function getData() {
+    // Aircraft ID
+    let aircraftId = getAircraftId();
+    let aircraftInfo = getAircraftInfo();
+    let date = AES.getServerDate()
+    let server = AES.getServerName();
+    let flights = getFlights();
+    let flightsStats = getFlightsStats(flights);
+    return {
+        server: server,
+        aircraftId: aircraftId,
+        type: 'aircraftFlights',
+        date: date.date,
+        time: date.time,
+        registration: aircraftInfo.registration,
+        equipment: aircraftInfo.equipment,
+        flights: flights,
+        finishedFlights: flightsStats.finishedFlights,
+        totalFlights: flightsStats.totalFlights
+    }
+}
 }
 
 function getTotalProfit() {
@@ -148,28 +169,6 @@ function buildTable() {
 
     let tbody = $('<tbody></tbody>').append(row);
     return $('<table class="table table-bordered table-striped table-hover"></table>').append(tbody);
-}
-
-function getData() {
-    //Aircraft ID
-    let aircraftId = getAircraftId();
-    let aircraftInfo = getAircraftInfo();
-    let date = AES.getServerDate()
-    let server = AES.getServerName();
-    let flights = getFlights();
-    let flightsStats = getFlightsStats(flights);
-    return {
-        server: server,
-        aircraftId: aircraftId,
-        type: 'aircraftFlights',
-        date: date.date,
-        time: date.time,
-        registration: aircraftInfo.registration,
-        equipment: aircraftInfo.equipment,
-        flights: flights,
-        finishedFlights: flightsStats.finishedFlights,
-        totalFlights: flightsStats.totalFlights
-    }
 }
 
 function getFlightsStats(flights) {

@@ -25,7 +25,6 @@ $(function() {
 function fixAndDeleteInvalidData() {
   chrome.storage.local.get(null, function (entries) {
     const tasks = [];
-    let settingsUpdated = false;
 
     function cleanAndSave(entry, key) {
       return new Promise((resolve, reject) => {
@@ -60,18 +59,15 @@ function fixAndDeleteInvalidData() {
     });
 
     Promise.all(tasks).then(() => {
-      if (!settingsUpdated) {
-        chrome.storage.local.get('settings', function (result) {
-          const settings = result.settings || {};
-          settings.flightInformationsFixed = 1;
-          chrome.storage.local.set({ settings: settings }, function () {
-            if (chrome.runtime.lastError) {
-              console.error('Error setting flightInformationsFixed:', chrome.runtime.lastError.message);
-            }
-          });
+      chrome.storage.local.get('settings', function (result) {
+        const settings = result.settings || {};
+        settings.flightInformationsFixed = 1;
+        chrome.storage.local.set({ settings: settings }, function () {
+          if (chrome.runtime.lastError) {
+            console.error('Error setting flightInformationsFixed:', chrome.runtime.lastError.message);
+          }
         });
-        settingsUpdated = true;
-      }
+      });
     }).catch(error => {
       console.error('Error cleaning and saving data:', error);
     });

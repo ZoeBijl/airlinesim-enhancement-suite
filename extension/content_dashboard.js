@@ -1,10 +1,11 @@
 "use strict";
 //MAIN
 //Global vars
-var settings, airline, server, todayDate;
+var settings, airline, airlineName, server, todayDate;
 $(function() {
     todayDate = AES.getServerDate();
     airline = AES.getAirlineCode();
+    airlineName = AES.getAirlineName();
     server = AES.getServerName();
     chrome.storage.local.get(['settings'], function(result) {
         settings = result.settings;
@@ -2108,7 +2109,7 @@ function displayAircraftProfitability() {
         });
     }
 
-    let key = server + airline.name + 'aircraftFleet';
+    let key = server + airlineName.trim().replace(/[^A-Za-z0-9]/g, '') + 'aircraftFleet';
     //Get storage fleet data
     chrome.storage.local.get(key, function(result) {
         //get aircraft flight data
@@ -2461,7 +2462,7 @@ function generateTable(tableOptionsRule) {
                         $(this).remove();
                     });
                     if (id.length) {
-                        let fleetKey = server + airline.name + 'aircraftFleet';
+                        let fleetKey = server + airlineName + 'aircraftFleet';
                         chrome.storage.local.get(fleetKey, function(result) {
                             let storedFleetData = result[fleetKey];
                             let newFleet = storedFleetData.fleet.filter(function(value) {
@@ -2735,8 +2736,9 @@ function generalAddPersonelManagementRow(tbody) {
     let row = $('<tr></tr>').append(td);
     tbody.append(row);
     //Get Status
-    let key = server + airline.name + 'personelManagement';
+    let key = server + airlineName + 'personelManagement';
     chrome.storage.local.get([key], function(result) {
+      console.log(key);
         let personelManagementData = result[key];
         if (personelManagementData) {
             let lastUpdate = personelManagementData.date;

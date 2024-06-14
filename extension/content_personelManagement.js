@@ -1,7 +1,7 @@
 "use strict";
 //MAIN
 //Global vars
-var settings,server,airline;
+var settings,serverName,airlineName;
 $(function(){
   chrome.storage.local.get(['settings'], function(result) {
     settings = result.settings;
@@ -13,8 +13,8 @@ $(function(){
         auto:0
       };
     }
-    server = getServerName();
-    airline = getAirline();
+    serverName = AES.getServerName();
+    airlineName = AES.getAirlineName();
 
     displayPersonelManagement();
   });
@@ -89,7 +89,7 @@ function displayPersonelManagement(){
   }
 
   //Previous data
-  let key = server+airline+"personelManagement";
+  let key = serverName+airlineName+"personelManagement";
   chrome.storage.local.get([key], function(result) {
     if(result[key]){
       p.after($('<p></p>').text('Last time updated on '+AES.formatDateString(result[key].date)+' '+result[key].time));
@@ -143,27 +143,22 @@ function priceUpdate(span){
         //Save into memory
 
         let today = AES.getServerDate()
-        let key = server + airline + 'personelManagement';
+        let key = serverName + airlineName + 'personelManagement';
         let personelManagementData = {
-          server:server,
-          airline:airline,
+          server:serverName,
+          airline:airlineName,
           type:'personelManagement',
           date: today.date,
           time: today.time
         }
         chrome.storage.local.set({[key]: personelManagementData}, function(){
-          span.removeClass().addClass('good').text(' all salaries at set level!');
+          if (chrome.runtime.lastError) {
+            console.error('Fehler beim Speichern der Daten:', chrome.runtime.lastError);
+          } else {
+            span.removeClass().addClass('good').text(' all salaries at set level!');
+          }
         });
       });
     }
   });
-}
-function getAirline(){
-   let airline = $("#as-navbar-main-collapse ul li:eq(0) a:eq(0)").text().trim().replace(/[^A-Za-z0-9]/g, '');
-   return airline;
-}
-function getServerName(){
-  let server = window.location.hostname
-  server = server.split('.');
-  return server[0];
 }

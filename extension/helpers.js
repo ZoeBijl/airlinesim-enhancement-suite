@@ -2,6 +2,8 @@
 class AES {
     /**
      * Returns the airline name and code from the dashboard
+     * @deprecated because works only from dashboard
+     *
      * @returns {object} {name: string, code: string}
      */
     static getAirlineCode() {
@@ -12,6 +14,21 @@ class AES {
         return {
             name: nameElement.innerText,
             code: codeElement.innerText
+        }
+    }
+
+    /**
+     * Returns the airline name from every page
+     * @returns {string} 
+     */
+    static getAirlineName() {
+        const nameElement = document.querySelector('.navbar .nav .name');
+        
+        if (nameElement) {
+          var nameText = nameElement.innerText.trim();
+          return nameText;
+        } else {
+          throw new Error(`No airline name detected. There might’ve been a UI update. Check AES.getAirlineName()`)
         }
     }
     

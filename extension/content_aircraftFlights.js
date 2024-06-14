@@ -309,7 +309,7 @@ class AircraftFlightsTab {
                 continue
             }
 
-            flight.id = url.match(/\d+/)[0]
+            flight.id = parseInt(url.match(/\d+/)[0])
             flight.flightNumber = flightNumber
             flight.status = row.querySelector(".flightStatusPanel")?.innerText.trim()
             flight.isCancellable = Boolean(row.querySelector("td:first-child input"))

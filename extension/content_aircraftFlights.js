@@ -10,7 +10,7 @@ let aircraftFlightData,
 window.addEventListener("load", async (event) => {
     aircraftFlightsTab = new AircraftFlightsTab()
     buildUI()
-    getData()
+    await getData()
     processData()
     displayData()
 })
@@ -21,17 +21,21 @@ function buildUI() {
     // addButtons()
 }
 
-function getData() {
+async function getData() {
     aircraftFlightData = getAircraftData()
+    aircraftFlightInfoData = await getAircraftFlightInfoData()
 }
 
 function processData() {
-    getStorageData()
+    addFlightInfoToAircarftData()
+    getTotalProfit()
+    saveData()
 }
 
 function displayData() {
     updateAircraftInfoPanel()
     updateStatisticsPanel()
+    display()
 }
 
 function updateAircraftInfoPanel() {
@@ -90,19 +94,23 @@ function getAircraftData() {
     return aircraftData
 }
 
-async function getStorageData() {
-    const storedFlights = await chrome.storage.local.get(getKeys())
+async function getAircraftFlightInfoData() {
+    const keys = getKeys()
+    const data = await chrome.storage.local.get(keys)
+
+    return data
+}
+
+function addFlightInfoToAircarftData() {
+    const storedFlights = aircraftFlightInfoData
     for (const flightKey in storedFlights) {
         const storedFlight = storedFlights[flightKey]
         for (const flight of aircraftFlightData.flights) {
-            if (flight.id === storedFlight.flightId.toString()) {
+            if (flight.id === storedFlight.flightId) {
                 flight.data = storedFlight
             }
         }
     }
-
-    getTotalProfit()
-    saveData()
 }
 
 function getKeys() {
@@ -167,7 +175,6 @@ function saveData() {
 
     chrome.storage.local.set({
         [key]: saveData }, function() {
-        display();
     });
 }
 

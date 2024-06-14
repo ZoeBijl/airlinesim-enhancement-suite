@@ -2108,7 +2108,7 @@ function displayAircraftProfitability() {
         });
     }
 
-    let key = server + airline.name + 'aircraftFleet';
+    let key = server + airline.name.trim().replace(/[^A-Za-z0-9]/g, '') + 'aircraftFleet';
     //Get storage fleet data
     chrome.storage.local.get(key, function(result) {
         //get aircraft flight data

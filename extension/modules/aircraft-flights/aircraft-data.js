@@ -1,14 +1,19 @@
 /** Class representing data for a single aircraft */
 class Aircraft {
-    id
-    type
-    registration
-    flights
-    datetime
+    name = "AircraftData"
     server
-    currentFlights = {
-        finished: null,
-        total: null
+    datetime
+    id
+    equipment
+    registration
+    nickname
+    flights
+    type
+    profit
+    currentSchedule = {
+        finishedFlights: null,
+        totalFlights: null,
+        profitFlights: null
     }
 
     constructor() {

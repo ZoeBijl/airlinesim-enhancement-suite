@@ -1,7 +1,11 @@
 "use strict"
 
 // Global variables
-let aircraftFlightData, statisticsPanel, infoPanel, aircraftFlightsTab
+let aircraftFlightData,
+    aircraftFlightInfoData,
+    aircraftFlightsTab,
+    statisticsPanel,
+    infoPanel
 
 window.addEventListener("load", async (event) => {
     aircraftFlightsTab = new AircraftFlightsTab()

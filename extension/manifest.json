@@ -65,7 +65,10 @@
             "matches": ["https://*.airlinesim.aero/app/info/enterprises/*"]
         },
         {
-            "js": ["content_flightInfo.js"],
+            "js": [
+                "content_flightInfo.js",
+                "modules/data-models/flight-data.js"
+            ],
             "matches": ["https://*.airlinesim.aero/action/info/flight*"]
         },
         {
@@ -75,7 +78,7 @@
                 "modules/aircraft-flights/aircraft-statistics-panel.js",
                 "modules/aircraft-flights/extraction-button.js",
                 "modules/aircraft-flights/info-panel.js",
-                "modules/aircraft-flights/flight-data.js"
+                "modules/data-models/flight-data.js"
             ],
             "matches": ["https://*.airlinesim.aero/app/fleets/aircraft/*/1*"]
         },

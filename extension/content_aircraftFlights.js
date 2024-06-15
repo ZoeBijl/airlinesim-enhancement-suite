@@ -18,6 +18,7 @@ window.addEventListener("load", async (event) => {
 function buildUI() {
     infoPanel = new InfoPanel()
     statisticsPanel = new AircraftStatisticsPanel()
+    updateTable()
     // addButtons()
 }
 
@@ -37,6 +38,35 @@ function displayData() {
     updateStatisticsPanel()
     display()
 }
+
+function updateTable() {
+    const table = document.querySelector("#aircraft-flight-instances-table")
+    const thead = table.querySelector("thead")
+    const headers = thead.querySelectorAll("th")
+
+    const profitHeader = document.createElement("th")
+    profitHeader.innerText = "Profit/Loss"
+    const extractedHeader = document.createElement("th")
+    extractedHeader.innerText = "Extracted"
+    headers[9].after(profitHeader, extractedHeader)
+
+    const tbody = table.querySelector("tbody")
+    const rows = tbody.querySelectorAll("tr")
+    for (const row of rows) {
+        const target = row.querySelector("td:nth-child(12)")
+        const profitCell = document.createElement("td")
+        profitCell.innerText = "--"
+        profitCell.className = "text-center text-nowrap"
+        const extractedCell = document.createElement("td")
+        extractedCell.innerText = "--"
+        extractedCell.className = "text-center text-nowrap"
+        target.after(profitCell, extractedCell)
+    }
+
+    const tfootCell = table.querySelector("tfoot td")
+    tfootCell.setAttribute("colspan", "15")
+}
+
 
 function updateAircraftInfoPanel() {
     infoPanel.aircraftId = aircraftFlightData.aircraftId
@@ -218,27 +248,23 @@ function extractAllFlightProfit(type) {
 }
 
 function displayFlightProfit() {
-    // Table
-    const table = $('#aircraft-flight-instances-table');
-    // Head
-    const th = ['<th>Profit/Loss</th>', '<th>Extracted</th>'];
-    $('th:eq(9)', table).after(th);
-    // Body
-    aircraftFlightData.flights.forEach(function(value) {
-        const td = [];
-
-        if (value.data) {
-            const daysAgo = AES.getDateDiff(value.data.date)
-            td.push($('<td class="text-right"></td>').html(AES.formatCurrency(value.data.money.CM5.Total)));
-            td.push($('<td class="text-nowrap"></td>').text(AES.formatDaysAgo(daysAgo)));
-        } else {
-            td.push('<td class="text-center">--</td>');
-            td.push('<td class="text-center">--</td>');
+    const table = document.querySelector("#aircraft-flight-instances-table")
+    aircraftFlightData.flights.forEach(function(flight) {
+        if (!flight.data) {
+            return
         }
 
-        $('td:eq(11)', value.row).after(td);
-    });
-    $("tfoot td", table).attr("colspan", "15")
+        const daysAgo = AES.getDateDiff(flight.data.date)
+        const profitCell = flight.row.querySelector("td:nth-child(13)")
+        profitCell.innerHTML = null
+        profitCell.classList.remove("text-center")
+        profitCell.classList.add("text-right")
+        profitCell.append(AES.formatCurrency(flight.data.money.CM5.Total))
+        const extractedCell = flight.row.querySelector("td:nth-child(14)")
+        extractedCell.innerHTML = null
+        extractedCell.classList.remove("text-center")
+        extractedCell.append(AES.formatDaysAgo(daysAgo))
+    })
 }
 
 /** Class representing the Aircraft Flights tab */

@@ -184,6 +184,9 @@ function getTotalProfit() {
     aircraftFlightData.profitFlights = profitFlights;
 
     statisticsPanel.profit = AES.formatCurrency(profit)
+    if (!profitFlights) {
+        return
+    }
     statisticsPanel.allExtracted = Boolean(aircraftFlightData.finishedFlights === aircraftFlightData.profitFlights)
 }
 

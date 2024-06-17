@@ -27,3 +27,53 @@ class FlightData {
         this.row = row
     }
 }
+
+let FlightDataExample = {
+    name: "FlightData",
+    id: 27,
+    flightNumber: "AES 1000",
+    status: "inflight",
+    row: "HTMLElement",
+    financials: {
+        CM1: {
+            Y: 100,
+            C: 100,
+            F: 0,
+            PAX: 200,
+            Cargo: 200,
+            Total: 400
+        },
+        CM2: {
+            Y: 100,
+            C: 100,
+            F: 0,
+            PAX: 200,
+            Cargo: 200,
+            Total: 400
+        },
+        CM3: {
+            Y: 100,
+            C: 100,
+            F: 0,
+            PAX: 200,
+            Cargo: 200,
+            Total: 400
+        },
+        CM4: {
+            Y: 100,
+            C: 100,
+            F: 0,
+            PAX: 200,
+            Cargo: 200,
+            Total: 400
+        },
+        CM5: {
+            Y: 100,
+            C: 100,
+            F: 0,
+            PAX: 200,
+            Cargo: 200,
+            Total: 400
+        },
+    }
+}

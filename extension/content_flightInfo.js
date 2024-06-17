@@ -46,9 +46,9 @@ function getData(){
   let flightId = getFlightId();
   let date = AES.getServerDate()
   let money = getFinancials();
-  let server = getServerName();
+  let serverName = AES.getServerName();
   return {
-    server:server,
+    server:serverName,
     flightId:flightId,
     type:'flightInfo',
     money:money,
@@ -156,9 +156,4 @@ function getFlightId(){
   let a = url.split('id=');
   let b = a[1].split('&');
   return parseInt(b[0],10);
-}
-function getServerName(){
-  let server = window.location.hostname
-  server = server.split('.');
-  return server[0];
 }

@@ -4,7 +4,7 @@
 var server,airlineId,activeTab,compData;
 $(function(){
     server = AES.getServerName();
-    airlineId = getAirlineId();
+    airlineId = AES.getAirlineId();
     activeTab = $(".nav-tabs .active").attr('class').split(" ");
     activeTab = activeTab[0];
     let key = server+airlineId+'competitorMonitoring';
@@ -352,21 +352,6 @@ function getAirline(){
   let name = displayName.replace(/[^A-Za-z0-9]/g, '');
 
   return {code:code,name:name,displayName:displayName};
-}
-/**
- * Retrieves the airline ID from the current window's URL (enterprises page).
- *
- * @returns {string} The airline ID.
- *
- * @example
- * // If the current URL is "https://*.airlinesim.aero/app/info/enterprises/123?8&tab=0",
- * // the function will return "123".
- */
-function getAirlineId(){
-  let id = window.location.pathname;
-  id = id.split("/");
-  id = id[id.length-1];
-  return id;
 }
 function formatWeekDate(date){
   let a = date.toString();

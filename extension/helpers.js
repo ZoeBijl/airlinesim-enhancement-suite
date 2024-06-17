@@ -111,6 +111,24 @@ class AES {
     }
     
     /**
+     * Retrieves the current language selected in footer.
+     *
+     * @returns {string} The current language.
+     */
+    static getASLanguage() {
+        var languages = ['Deutsch', 'English', 'español', 'français', 'Nederlands', 'polski', '中文'];
+
+        const language = document.querySelector(".as-footer-line-element.dropup a").innerText.trim();
+
+        if (languages.includes(language)) {
+            return language;
+        } else {
+            console.error(`Invalid language "${language}". There might’ve been a UI update or additional languages. Check AES.getASLanguage()`);
+            return "English";
+        }
+    }
+
+    /**
      * Gets the server’s current date and time
      * @returns {object} datetime - { date: "20240607", time: "16:24 UTC" }
      */

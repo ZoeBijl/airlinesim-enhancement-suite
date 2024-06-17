@@ -1102,6 +1102,8 @@ function displayCompetitorMonitoring() {
 }
 
 function displayCompetitorMonitoringAirlinesTable(div) {
+
+    const languageTag = AES.getASLanguageTag();
     let compAirlines = [];
     let compAirlinesSchedule = [];
     chrome.storage.local.get(null, function(items) {
@@ -1326,9 +1328,15 @@ function displayCompetitorMonitoringAirlinesTable(div) {
 
                 //Populate collumns
                 let td = [];
+                const numberFormat = new Intl.NumberFormat(languageTag);
+
                 settings.competitorMonitoring.tableColumns.forEach(function(col) {
                     if (col.visible) {
-                        td.push($('<td class="aes-' + col.field + '"></td>').html(data[col.field]));
+                        if ((col.field !== 'airlineId') && (isFinite(data[col.field]))) {
+                            td.push($('<td class="aes-' + col.field + '"></td>').html(numberFormat.format(data[col.field])));
+                        } else {
+                            td.push($('<td class="aes-' + col.field + '"></td>').html(data[col.field]));
+                        }
                     }
                 });
                 rows.push($('<tr></tr>').append(td));

@@ -18,7 +18,7 @@ class AES {
     }
 
     /**
-     * Returns the airline name from every page
+     * Returns the current airline name from airline selection dropdown menu
      * @returns {string}
      */
     static getAirlineName() {

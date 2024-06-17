@@ -30,7 +30,7 @@ async function displayInventory() {
     let flights = getFlights();
     let prices = getPriceDetails();
     let storageKey = getPricingInventoryKey();
-    
+
     //Check if any snapshots saved
     let defaultPricingData = {
         server: storageKey.server,
@@ -43,7 +43,7 @@ async function displayInventory() {
     }
     const storageData = await chrome.storage.local.get({[storageKey.key]: defaultPricingData})
     pricingData = storageData[storageKey.key]
-        
+
     //Do Analysis
     analysis = getAnalysis(flights, prices, pricingData.date);
     //Display analysis
@@ -104,7 +104,7 @@ function getFlights() {
     if (!flightRows) {
         throw new Error("\"Group by flight\" needs to be unchecked")
     }
-    
+
     for (const row of flightRows) {
         const flight = getFlight(row)
         flights.push(flight)
@@ -137,7 +137,7 @@ function getFlight(row) {
         price: AES.cleanInteger(price),
         status: status
     }
-    
+
     return flight
 }
 
@@ -150,11 +150,11 @@ function getCompCode(text) {
     if (!text) {
         throw new Error("no value provided for getCompCode")
     }
-    
+
     if (text.length > 1) {
         return "Cargo"
     }
-    
+
     return text
 }
 
@@ -165,12 +165,12 @@ function getCompCode(text) {
 function getPriceDetails() {
     const pricingRows = document.querySelectorAll(".pricing table tbody tr")
     const prices = {}
-    
+
     for (const row of pricingRows) {
         const cells = row.querySelectorAll("td")
         const cmp = getCompCode(cells[0].innerText)
         const price = getPrice(cells)
-        
+
         prices[cmp] = price
     }
 
@@ -187,14 +187,14 @@ function getPrice(cells) {
     const defaultPrice = AES.cleanInteger(cells[4].innerText.replace(/\s+/g, ''))
     const currentPricePoint = getCurrentPricePoint(currentPrice, defaultPrice)
     const newPriceInput = cells[2].querySelector("input")
-    
+
     const price = {
         currentPrice: currentPrice,
         defaultPrice: defaultPrice,
         currentPricePoint: currentPricePoint,
         newPriceInput: newPriceInput
     }
-    
+
     return price
 }
 
@@ -1091,6 +1091,11 @@ function getPricingInventoryKey() {
     return { key: key, server: server, airline: airline, type: "routeAnalysis", origin: org, destination: dest }
 }
 
+/**
+ * Retrieves the airline code from flights data table.
+ *
+ * @returns {string} The two or three digit airline code.
+ */
 function getAirlineCode() {
     let airline = $("#inventory-grouped-table tbody a:first").text().split(" ");
     if (!airline[0]) {

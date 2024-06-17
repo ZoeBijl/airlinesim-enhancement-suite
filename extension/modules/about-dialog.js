@@ -70,8 +70,12 @@ class AboutDialog {
         body.className = "modal-body"
         const manifest = chrome.runtime.getManifest()
         const description = manifest.description
-        const version = manifest.version
-        
+        const versionName = manifest.version_name
+        let version = manifest.version
+        if (versionName) {
+            version = versionName
+        }
+
         body.innerHTML = `
             <img src="${chrome.runtime.getURL('images/AES-logo-128.png')}">
             <h2>AirlineSim Enhancement Suite</h2>

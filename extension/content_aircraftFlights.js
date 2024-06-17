@@ -212,8 +212,16 @@ function saveData() {
 }
 
 function display() {
-    displayFlightProfit();
-    //action bar
+    displayFlightProfit()
+    createButtonOld()
+}
+
+function createButtonOld() {
+    const cell = document.querySelector("#aircraft-flight-instances-table td a")
+    const xfer = cell?.innerText.trim() === "XFER"
+    if (xfer) {
+        return
+    }
     let btn = $('<button class="btn btn-default"></button>').text('Extract all flight profit/loss');
     let btn1 = $('<button class="btn btn-default"></button>').text('Extract finished flight profit/loss');
 

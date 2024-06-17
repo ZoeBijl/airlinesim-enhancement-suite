@@ -8,15 +8,30 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
-- Added a double dash to indicate “no data” in the “Flights”-table in the aircrafts’ “Flights” tab [#65](https://github.com/ZoeBijl/airlinesim-enhancement-suite/issues/65)
 
 ### Changed
 
+### Removed
+
+## 0.6.9 beta
+
+### Added
+- Added `CHANGELOG.md` (this file!) [#50](https://github.com/ZoeBijl/airlinesim-enhancement-suite/issues/50)
+- Added a Discord link to the AES menu [#53](https://github.com/ZoeBijl/airlinesim-enhancement-suite/issues/53)
+- Added installation guidance to the README [#2](https://github.com/ZoeBijl/airlinesim-enhancement-suite/issues/2)
+- Added support for `version_name` [#81](https://github.com/ZoeBijl/airlinesim-enhancement-suite/issues/81)
+
+### Changed
+- Changed the logo [#37](https://github.com/ZoeBijl/airlinesim-enhancement-suite/issues/37)
+- Changed the way the AES menu is added to the UI [#79](https://github.com/ZoeBijl/airlinesim-enhancement-suite/issues/79)
+
 ### Fixed
-- Fixed an issue where an error was thrown when trying to get flight data [#65](https://github.com/ZoeBijl/airlinesim-enhancement-suite/issues/65)
-- Fixed a visual issue with “Flights”-table when viewing aircraft flights [#65](https://github.com/ZoeBijl/airlinesim-enhancement-suite/issues/65)
+- Fixed an issue where negative integers were displayed as positive integers [#59](https://github.com/ZoeBijl/airlinesim-enhancement-suite/issues/59)
+- Fixed an issue where AES would throw an error [#65](https://github.com/ZoeBijl/airlinesim-enhancement-suite/issues/65)
 
 ### Removed
+- Removed status colour tweaks for dark mode [#56](https://github.com/ZoeBijl/airlinesim-enhancement-suite/issues/56)
+
 
 ## [0.6.8] - 2024-06-09
 

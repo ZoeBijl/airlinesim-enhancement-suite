@@ -230,7 +230,6 @@ function display() {
         span.addClass('warning').text('Please reload page after all flight info pages open');
         extractAllFlightProfit('finished');
     })
-    //Header
 }
 
 function extractAllFlightProfit(type) {

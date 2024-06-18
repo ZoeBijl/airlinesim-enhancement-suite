@@ -1,37 +1,177 @@
-"use strict";
-//MAIN
-//Global vars
-var aircraftFlightData;
-$(function() {
-    aircraftFlightData = getData();
+"use strict"
 
-    //Async start
-    getStorageData();
-});
+// Global variables
+let aircraftFlightData,
+    aircraftFlightInfoData,
+    aircraftFlightsTab,
+    statisticsPanel,
+    infoPanel
 
-function getStorageData() {
-    let keys = [];
-    for (let i = 0; i < aircraftFlightData.flights.length; i++) {
-        let key = aircraftFlightData.server + 'flightInfo' + aircraftFlightData.flights[i].id;
-        keys.push(key);
+window.addEventListener("load", async (event) => {
+    aircraftFlightsTab = new AircraftFlightsTab()
+    buildUI()
+    await getData()
+    processData()
+    displayData()
+})
+
+function buildUI() {
+    infoPanel = new InfoPanel()
+    statisticsPanel = new AircraftStatisticsPanel()
+    updateTable()
+    // addButtons()
+}
+
+async function getData() {
+    aircraftFlightData = getAircraftData()
+    aircraftFlightInfoData = await getAircraftFlightInfoData()
+}
+
+function processData() {
+    addFlightInfoToAircarftData()
+    getTotalProfit()
+    saveData()
+}
+
+function displayData() {
+    updateAircraftInfoPanel()
+    updateStatisticsPanel()
+    display()
+}
+
+function updateTable() {
+    const table = document.querySelector("#aircraft-flight-instances-table")
+    const thead = table.querySelector("thead")
+    const headers = thead.querySelectorAll("th")
+
+    const profitHeader = document.createElement("th")
+    profitHeader.innerText = "Profit/Loss"
+    const extractedHeader = document.createElement("th")
+    extractedHeader.innerText = "Extracted"
+    headers[9].after(profitHeader, extractedHeader)
+
+    const tbody = table.querySelector("tbody")
+    const rows = tbody.querySelectorAll("tr")
+    for (const row of rows) {
+        const target = row.querySelector("td:nth-child(12)")
+        const profitCell = document.createElement("td")
+        profitCell.innerText = "--"
+        profitCell.className = "text-center text-nowrap"
+        const extractedCell = document.createElement("td")
+        extractedCell.innerText = "--"
+        extractedCell.className = "text-center text-nowrap"
+        target.after(profitCell, extractedCell)
     }
-    chrome.storage.local.get(keys, function(result) {
-        for (let flightInfo in result) {
-            for (let i = 0; i < aircraftFlightData.flights.length; i++) {
-                if (aircraftFlightData.flights[i].id == result[flightInfo].flightId) {
-                    aircraftFlightData.flights[i].data = result[flightInfo];
-                }
+
+    const tfootCell = table.querySelector("tfoot td")
+    tfootCell.setAttribute("colspan", "15")
+}
+
+
+function updateAircraftInfoPanel() {
+    infoPanel.aircraftId = aircraftFlightData.aircraftId
+    infoPanel.registration = aircraftFlightData.registration
+}
+
+function updateStatisticsPanel() {
+    // statisticsPanel.profit =
+    statisticsPanel.finishedFlights = aircraftFlightData.finishedFlights
+    statisticsPanel.totalFlights = aircraftFlightData.totalFlights
+    const savedDaysAgo = AES.getDateDiff(aircraftFlightData.date)
+    statisticsPanel.savedDaysAgo = savedDaysAgo
+}
+
+function createButtons() {
+    const buttons = [
+        new ExtractionButton("Extract finished flight profit", {extractFinished: true}),
+        new ExtractionButton("Extract all flight profit", {extractAll: true})
+    ]
+
+    return buttons
+}
+
+function addButtons() {
+    const buttons = createButtons()
+    const listItem = document.createElement("li")
+    listItem.className = "btn-group"
+    for (const button of buttons) {
+        listItem.append(button.element)
+    }
+    const target = document.querySelector(".as-page-aircraft .as-action-bar li:first-child")
+    target.after(listItem)
+}
+
+function getAircraftData() {
+    const aircraftInfo = aircraftFlightsTab.getAircraftInfo()
+    const flights = aircraftFlightsTab.getFlights()
+    const flightsStats = aircraftFlightsTab.data.currentSchedule
+    const serverDate = AES.getServerDate()
+
+    const aircraftData = {
+        date: serverDate.date,
+        time: serverDate.time,
+        server: AES.getServerName(),
+        aircraftId: aircraftInfo.id,
+        registration: aircraftInfo.registration,
+        equipment: aircraftInfo.equipment,
+        type: 'aircraftFlights',
+        flights: flights,
+        finishedFlights: flightsStats.finishedFlights,
+        totalFlights: flightsStats.totalFlights
+    }
+    console.log(aircraftData)
+
+    return aircraftData
+}
+
+async function getAircraftFlightInfoData() {
+    const keys = getKeys()
+    const data = await chrome.storage.local.get(keys)
+
+    return data
+}
+
+function addFlightInfoToAircarftData() {
+    const storedFlights = aircraftFlightInfoData
+    for (const flightKey in storedFlights) {
+        const storedFlight = storedFlights[flightKey]
+        for (const flight of aircraftFlightData.flights) {
+            if (flight.id === storedFlight.flightId) {
+                flight.data = storedFlight
             }
         }
+    }
+}
 
-        //Async
-        getTotalProfit();
-    });
+function getKeys() {
+    const keys = []
+    for (const flight of aircraftFlightData.flights) {
+        const server = aircraftFlightData.server
+        const id = flight.id
+        const key = `${server}flightInfo${id}`
+
+        keys.push(key)
+    }
+
+    return keys
 }
 
 function getTotalProfit() {
-    let profit = 0;
-    let profitFlights = 0;
+    let profit = 0
+    let profitFlights = 0
+
+//     let profit2 = 0
+//     let profitFlights2 = 0
+//
+//     for (const flight of aircraftFlightsTab.data.flights) {
+//         if (!flight.isCancellable && flight.data) {
+//             profit2 += flight.data.money.CM5.Total
+//             profitFlights2++
+//         }
+//     }
+
+    // console.log({profit2, profitFlights2})
+
     aircraftFlightData.flights.forEach(function(value) {
         if (value.status == 'finished' || value.status == 'inflight') {
             if (value.data) {
@@ -42,8 +182,12 @@ function getTotalProfit() {
     });
     aircraftFlightData.profit = profit;
     aircraftFlightData.profitFlights = profitFlights;
-    //Async
-    saveData();
+
+    statisticsPanel.profit = AES.formatCurrency(profit)
+    if (!profitFlights) {
+        return
+    }
+    statisticsPanel.allExtracted = Boolean(aircraftFlightData.finishedFlights === aircraftFlightData.profitFlights)
 }
 
 function saveData() {
@@ -61,41 +205,48 @@ function saveData() {
         totalFlights: aircraftFlightData.totalFlights,
         type: aircraftFlightData.type,
     }
+
     chrome.storage.local.set({
         [key]: saveData }, function() {
-        display();
     });
 }
 
 function display() {
-    displayFlightProfit();
-    //Table
-    let tableWell = $('<div class="as-table-well" style="max-width:950px;"></div>').append(buildTable());
-    let panel = $('<div class="as-panel"></div>').append(tableWell);
-    //action bar
-    let btn = $('<button class="btn btn-default"></button>').text('Extract all flight profit/loss');
-    let btn1 = $('<button class="btn btn-default"></button>').text('Extract finished flight profit/loss');
+    aircraftFlightsTab.displayProfits()
+    createButtonOld()
+}
 
-    let span = $('<span></span>');
-    let li = $('<li></li>').append(btn1, btn, span);
-    let actionBar = $('<ul class="as-panel as-action-bar"></ul>').append(li);
-    //btn click
-    btn.click(function() {
-        btn.hide();
-        btn1.hide();
-        span.addClass('warning').text('Please reload page after all flight info pages open');
-        extractAllFlightProfit('all');
-    });
-    btn1.click(function() {
-        btn.hide();
-        btn1.hide();
-        span.addClass('warning').text('Please reload page after all flight info pages open');
-        extractAllFlightProfit('finished');
+function createButtonOld() {
+    const cell = document.querySelector("#aircraft-flight-instances-table td a")
+    const xfer = cell?.innerText.trim() === "XFER"
+    if (xfer) {
+        return
+    }
+    const btn = new ExtractionButton("Extract all flight profit/loss").element
+    const btn1 = new ExtractionButton("Extract finished flight profit/loss").element
+    const span = document.createElement("span")
+    const li = document.createElement("li")
+    li.className = "btn-group"
+    li.append(btn1, btn, span)
+    const target = document.querySelector(".as-page-aircraft .as-panel.as-action-bar li:first-child")
+    target.after(li)
+
+    btn.addEventListener("click", (event) => {
+        btn.classList.add("hidden")
+        btn1.classList.add("hidden")
+        span.classList.add("warning")
+        span.innerText = "Please reload page after all flight info pages open"
+
+        extractAllFlightProfit('all')
     })
-    //Header
-    let h = $('<h3></h3>').text('AES Aircraft Flights');
-    let div = $('<div></div>').append(h, actionBar, panel);
-    $('.as-page-aircraft > h1:eq(0)').after(div);
+    btn1.addEventListener("click", (event) => {
+        btn.classList.add("hidden")
+        btn1.classList.add("hidden")
+        span.classList.add("warning")
+        span.innerText = "Please reload page after all flight info pages open"
+
+        extractAllFlightProfit('finished')
+    })
 }
 
 function extractAllFlightProfit(type) {
@@ -112,152 +263,161 @@ function extractAllFlightProfit(type) {
     });
 }
 
-function displayFlightProfit() {
-    //Table
-    let table = $('#aircraft-flight-instances-table');
-    //Head
-    let th = ['<th>Profit/Loss</th>', '<th>Extract date</th>'];
-    $('th:eq(9)', table).after(th);
-    //body
-    aircraftFlightData.flights.forEach(function(value) {
-        let td = [];
+/** Class representing the Aircraft Flights tab */
+class AircraftFlightsTab {
+    #data
+    #info
+    #infoPanel
+    #statisticsPanel
+    #currentFlights
+    #flightsTable
 
-        if (value.data) {
-            td.push(formatMoney(value.data.money.CM5.Total));
-            td.push($('<td></td>').text(AES.formatDateString(value.data.date) + ' ' + value.data.time));
-        } else {
-            td.push('<td class="text-center">--</td>');
-            td.push('<td class="text-center">--</td>');
+    constructor() {
+        this.#flightsTable = document.querySelector("#aircraft-flight-instances-table")
+        this.#info = this.getAircraftInfo()
+        this.#data = new Aircraft()
+        this.#setAircraftData()
+        console.log(this.#data)
+    }
+
+    /**
+     * Sets all the aircraft data
+     */
+    #setAircraftData() {
+        this.#data.server = AES.getServerName()
+        this.#data.equipment = this.#info.equipment
+        this.#data.registration = this.#info.registration
+        this.#data.nickname = this.#info.nickname
+        this.#data.id = this.getAircraftId()
+        this.#data.flights = this.getFlights()
+        this.#data.currentSchedule.finishedFlights = this.#data.flights.filter((flight) => !flight.isCancellable).length
+        this.#data.currentSchedule.totalFlights = this.#data.flights.length
+    }
+
+    /**
+     * Get aircraft information from the heading
+     */
+    getAircraftInfo() {
+        const spans = document.querySelectorAll(".as-page-aircraft h1 span")
+        const info = {
+            id: this.getAircraftId(),
+            registration: spans[0]?.innerText,
+            equipment: spans[1]?.innerText,
+            nickname: spans[2]?.innerText
         }
 
-        $('td:eq(11)', value.row).after(td);
-    });
-    $("tfoot td", table).attr("colspan", "15")
-}
-
-function buildTable() {
-    //head
-    let row = [];
-    row.push($('<tr></tr>').append('<th>Total aircraft profit/loss</th>', formatMoney(aircraftFlightData.profit)));
-    row.push($('<tr></tr>').append('<th>Aircraft Id</th>', '<td>' + aircraftFlightData.aircraftId + '</td>'));
-    row.push($('<tr></tr>').append('<th>Registration</th>', '<td>' + aircraftFlightData.registration + '</td>'));
-    row.push($('<tr></tr>').append('<th>Total flights</th>', '<td>' + aircraftFlightData.totalFlights + '</td>'));
-    row.push($('<tr></tr>').append('<th>Finished flights</th>', '<td>' + aircraftFlightData.finishedFlights + '</td>'));
-    row.push($('<tr></tr>').append('<th>Finished flights with profit/loss extract</th>', '<td>' + aircraftFlightData.profitFlights + '</td>'));
-    row.push($('<tr></tr>').append('<th>Data save time</th>', '<td>' + AES.formatDateString(aircraftFlightData.date) + ' ' + aircraftFlightData.time + '</td>'));
-
-    let tbody = $('<tbody></tbody>').append(row);
-    return $('<table class="table table-bordered table-striped table-hover"></table>').append(tbody);
-}
-
-function getData() {
-    //Aircraft ID
-    let aircraftId = getAircraftId();
-    let aircraftInfo = getAircraftInfo();
-    let date = AES.getServerDate()
-    let server = AES.getServerName();
-    let flights = getFlights();
-    let flightsStats = getFlightsStats(flights);
-    return {
-        server: server,
-        aircraftId: aircraftId,
-        type: 'aircraftFlights',
-        date: date.date,
-        time: date.time,
-        registration: aircraftInfo.registration,
-        equipment: aircraftInfo.equipment,
-        flights: flights,
-        finishedFlights: flightsStats.finishedFlights,
-        totalFlights: flightsStats.totalFlights
+        return info
     }
-}
 
-function getFlightsStats(flights) {
-    let finished, total;
-    finished = total = 0;
-    flights.forEach(function(value) {
-        if (value.status == 'finished' || value.status == 'inflight') {
-            finished++;
+    /**
+     * Get aircraft ID from the window location
+     */
+    getAircraftId() {
+        const pathname = window.location.pathname
+        const id = pathname.match(/(?<=\/)(?:\d+)/)[0]
+
+        return id
+    }
+
+    /**
+     * Get the data from “flights” table
+     * @returns {array} flights
+     */
+    getFlights() {
+        const table = document.querySelector("#aircraft-flight-instances-table")
+        const rows = table.querySelectorAll("tbody tr")
+        const flights = []
+
+        for (const row of rows) {
+            const flight = new FlightData()
+            const flightNumber = row.querySelector("td:nth-child(2)")?.innerText.trim()
+            if (flightNumber === "XFER" || flightNumber === undefined) {
+                continue
+            }
+            const url = row.querySelector(`[href*="action/info/flight"]`)?.href
+            if (!url) {
+                throw new Error("getFlights(): no valid value for `url`")
+                continue
+            }
+
+            flight.id = parseInt(url.match(/\d+/)[0])
+            flight.flightNumber = flightNumber
+            flight.status = row.querySelector(".flightStatusPanel")?.innerText.trim()
+            flight.isCancellable = Boolean(row.querySelector("td:first-child input"))
+            flight.row = row
+
+            flights.push(flight)
         }
-        total++;
-    });
-    return {
-        totalFlights: total,
-        finishedFlights: finished
-    }
-}
 
-/**
- * Get the data from “flights” table
- * @returns {array} flights
- */
-function getFlights() {
-    const table = document.querySelector("#aircraft-flight-instances-table")
-    const rows = table.querySelectorAll("tbody tr")
-    const flights = []
-    
-    for (const row of rows) {
-        const flight = {
-            status: null,
-            id: null,
-            row: null
+        return flights
+    }
+
+    extractFlightProfit() {
+
+    }
+
+    extractFlightProfit() {
+
+    }
+
+    /**
+     * Loops over an aircraft’s flights to display relevant data.
+     */
+    displayProfits() {
+        for (const flight of aircraftFlightData.flights) {
+            this.#displayFlightProfit(flight)
         }
-        const flightNumber = row.querySelector("td:nth-child(2)")?.innerText.trim()
-        if (flightNumber === "XFER" || flightNumber === undefined) {
-            continue
+    }
+
+    /**
+     * Loops over a flight’s data and calls functions to display it in the “Flights” table.
+     * @param {object} flight
+     */
+    #displayFlightProfit(flight) {
+        if (!flight.data) {
+            return
         }
-        const url = row.querySelector(`[href*="action/info/flight"]`)?.href
-        if (!url) {
-            throw new Error("getFlights(): no valid value for `url`")
-            continue
+
+        this.#setProfitCell(flight)
+        this.#setExtractionDateCell(flight)
+    }
+
+    /**
+     * Gets the flight’s profit and calls `#setFlightCell` to display it.
+     * @param {object} flight
+     */
+    #setProfitCell(flight) {
+        const value = AES.formatCurrency(flight.data.money.CM5.Total)
+        const cell = flight.row.querySelector("td:nth-child(13)")
+        this.#setFlightCell(cell, value, "right")
+    }
+
+    /**
+     * Gets the flight’s profit extraction date and calls `#setFlightCell` to display it.
+     * @param {object} flight
+     */
+    #setExtractionDateCell(flight) {
+        const value = AES.formatDaysAgo(AES.getDateDiff(flight.data.date))
+        const cell = flight.row.querySelector("td:nth-child(14)")
+        this.#setFlightCell(cell, value)
+    }
+
+    /**
+     * Adjusts a table cell’s attributes and appends the provided content.
+     * @param {HTMLElement} cell
+     * @param {string|HTMLElement} content
+     * @param {string} alignment - "left" | "right"
+     */
+    #setFlightCell(cell, content, alignment = "left") {
+        cell.innerHTML = null
+        cell.classList.remove("text-center")
+        if (alignment === "right") {
+            cell.classList.add("text-right")
         }
-        
-        flight.status = row.querySelector(".flightStatusPanel")?.innerText.trim()
-        flight.id = url.match(/\d+/)[0]
-        flight.row = $(row)
-        flights.push(flight)
-    }
-    
-    return flights
-}
-
-function getAircraftInfo() {
-    let span = $('h1 span');
-    return {
-        registration: $(span[0]).text().trim(),
-        equipment: $(span[1]).text().trim()
-    }
-}
-
-function getAircraftId() {
-    let url = window.location.pathname;
-    let a = url.split('/');
-    return parseInt(a[a.length - 2], 10);
-}
-
-function formatMoney(value) {
-    let container = document.createElement("td")
-    let formattedValue = Intl.NumberFormat().format(value)
-    let indicatorEl = document.createElement("span")
-    let valueEl = document.createElement("span")
-    let currencyEl = document.createElement("span")
-
-    if (value >= 0) {
-        valueEl.classList.add("good")
-        indicatorEl.innerText = "+"
+        cell.append(content)
     }
 
-    if (value < 0) {
-        valueEl.classList.add("bad")
-        indicatorEl.innerText = "-"
-        formattedValue = formattedValue.replace("-", "")
+    get data() {
+        return this.#data
     }
-
-    valueEl.innerText = formattedValue
-    currencyEl.innerText = " AS$"
-
-    container.classList.add("aes-text-right", "aes-no-text-wrap")
-    container.append(indicatorEl, valueEl, currencyEl)
-
-    return container
 }

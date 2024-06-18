@@ -44,7 +44,7 @@ class AES {
             containerClasses = "aes-text-right aes-no-text-wrap"
         }
         
-        if (value >= 0) {
+        if (value > 0) {
             valueEl.classList.add("good")
             indicatorEl.classList.add("good")
             indicatorEl.innerText = "+"
@@ -111,6 +111,21 @@ class AES {
     }
     
     /**
+     * Takes a number and adds “(day|days) ago”
+     * @param {integer} - 0 | 1 | 256
+     @ returns {string} - "0 days ago" | "1 day ago" | "256 days ago"
+     */
+    static formatDaysAgo(daysAgo) {
+        let dayOrDays = "days"
+        if (daysAgo === 1) {
+            dayOrDays = "day"
+        }
+        const result = `${daysAgo} ${dayOrDays} ago`
+
+        return result
+    }
+    
+    /**
      * Gets the server’s current date and time
      * @returns {object} datetime - { date: "20240607", time: "16:24 UTC" }
      */
@@ -146,10 +161,20 @@ class AES {
     
     /**
      * Returns the difference between dates in days
-     * @param {array} ["20240520", "20240524"]
+     * @param {array|string} ["20240520", "20240524"] | ["20240520"] | "20240520"
      * @returns {integer} 4
      */
     static getDateDiff(dates) {
+        // If a string is passed:
+        // Create an array with the string as its first item
+        if (typeof dates === "string") {
+            dates = [dates]
+        }
+        // If `dates` has only one item:
+        // Prepend the server date
+        if (dates?.length === 1) {
+            dates = [AES.getServerDate().date, dates[0]]
+        }
         let dateA = new Date(`${this.formatDateString(dates[0])}T12:00:00Z`)
         let dateB = new Date(`${this.formatDateString(dates[1])}T12:00:00Z`)
         let result = Math.round((dateA - dateB)/(1000 * 60 * 60 * 24))

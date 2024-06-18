@@ -1,19 +1,20 @@
 class AESMenu {
-    #target
     #container
     #button
     #menu
 
-    constructor() {
-        this.#target = document.querySelector("#as-navbar-main-collapse .navbar-nav > li:nth-child(5)")
+    constructor(target) {
         this.#container = this.#createContainer()
         this.#button = this.#createButton()
         this.#menu = this.#createMenu()
-        
+
         this.#container.append(this.#button, this.#menu)
-        this.#target.after(this.#container)
+        if (!target) {
+            throw new Error(`AESMenu: \`target\` is ${target}`)
+        }
+        target.after(this.#container)
     }
-    
+
     /**
      * Creates the menu container
      * @returns {HTMLElement} container
@@ -23,7 +24,7 @@ class AESMenu {
         container.className = "dropdown"
         return container
     }
-    
+
     /**
      * Creates the menu toggle button
      * @returns {HTMLElement} button
@@ -42,7 +43,7 @@ class AESMenu {
 
         return button
     }
-    
+
     /**
      * Creates the menu
      * @returns {HTMLElement} menu
@@ -99,10 +100,10 @@ class AESMenu {
         for (const item of menuItems) {
             menu.append(item)
         }
-        
+
         return menu
     }
-    
+
     /**
      * Creates a menu item
      * @param {object} content - object containing information required to build the item
@@ -163,4 +164,4 @@ class AESMenu {
     }
 }
 
-new AESMenu()
+new AESMenu(document.querySelector("#as-navbar-main-collapse .navbar-nav > li:nth-child(5)"))

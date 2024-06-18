@@ -4,24 +4,40 @@
 var settings, pricingData, todayDate, analysis;
 var aesmodule = { valid: true, error: [] };
 
-window.addEventListener("load", async (event) => {
-    settings = await getSettings()
-    aesmodule = new Validation()
+if (document.readyState === "complete") {
+  onLoad();
+} else {
+  window.addEventListener("load", onLoad);
+}
+
+async function onLoad() {
+  try {
+    settings = await getSettings();
+    aesmodule = new Validation();
 
     if (!aesmodule.valid) {
-        displayValidationError()
-        return
+      displayValidationError();
+      return;
     }
-    displayInventory()
-})
+
+    displayInventory();
+  } catch (error) {
+    console.error('Error:', error);
+  }
+}
 
 /**
  * Get settings from local storage
  * @returns {object} data.settings
  */
 async function getSettings() {
-    const data = await chrome.storage.local.get(['settings'])
-    return data.settings
+  try {
+    const data = await chrome.storage.local.get(['settings']);
+    return data.settings;
+  } catch (error) {
+    throw new Error('Error fetching settings:' + error.message);
+    return {};
+  }
 }
 
 async function displayInventory() {
@@ -30,7 +46,7 @@ async function displayInventory() {
     let flights = getFlights();
     let prices = getPriceDetails();
     let storageKey = getPricingInventoryKey();
-    
+
     //Check if any snapshots saved
     let defaultPricingData = {
         server: storageKey.server,
@@ -43,7 +59,7 @@ async function displayInventory() {
     }
     const storageData = await chrome.storage.local.get({[storageKey.key]: defaultPricingData})
     pricingData = storageData[storageKey.key]
-        
+
     //Do Analysis
     analysis = getAnalysis(flights, prices, pricingData.date);
     //Display analysis
@@ -104,7 +120,7 @@ function getFlights() {
     if (!flightRows) {
         throw new Error("\"Group by flight\" needs to be unchecked")
     }
-    
+
     for (const row of flightRows) {
         const flight = getFlight(row)
         flights.push(flight)
@@ -137,7 +153,7 @@ function getFlight(row) {
         price: AES.cleanInteger(price),
         status: status
     }
-    
+
     return flight
 }
 
@@ -150,11 +166,11 @@ function getCompCode(text) {
     if (!text) {
         throw new Error("no value provided for getCompCode")
     }
-    
+
     if (text.length > 1) {
         return "Cargo"
     }
-    
+
     return text
 }
 
@@ -165,12 +181,12 @@ function getCompCode(text) {
 function getPriceDetails() {
     const pricingRows = document.querySelectorAll(".pricing table tbody tr")
     const prices = {}
-    
+
     for (const row of pricingRows) {
         const cells = row.querySelectorAll("td")
         const cmp = getCompCode(cells[0].innerText)
         const price = getPrice(cells)
-        
+
         prices[cmp] = price
     }
 
@@ -183,18 +199,18 @@ function getPriceDetails() {
  * @returns {object} price
  */
 function getPrice(cells) {
-    const currentPrice = AES.cleanInteger(cells[1].innerText)
-    const defaultPrice = AES.cleanInteger(cells[4].innerText.replace(/\s+/g, ''))
-    const currentPricePoint = getCurrentPricePoint(currentPrice, defaultPrice)
-    const newPriceInput = cells[2].querySelector("input")
-    
+    const currentPrice = AES.cleanInteger(cells[1].innerText);
+    const defaultPrice = AES.cleanInteger(cells[4].innerText.replace(/\s+/g, ''));
+    const currentPricePoint = getCurrentPricePoint(currentPrice, defaultPrice);
+    const newPriceInput = cells[2].querySelector("input");
+
     const price = {
         currentPrice: currentPrice,
         defaultPrice: defaultPrice,
         currentPricePoint: currentPricePoint,
         newPriceInput: newPriceInput
     }
-    
+
     return price
 }
 
@@ -404,6 +420,7 @@ function getAnalysis(flights, prices, storedData) {
         let cmpFlights = flights.filter(function(flight) {
             return flight.cmp == cmp;
         });
+
         //if no cmp flights
         if (cmpFlights.length) {
             //Check if current price flights avaialble
@@ -601,13 +618,21 @@ function displayAnalysis(analysis, prices) {
             invPricingAnalysisBarSpan.text('Saving analysis data...');
             //Get updated time
             let updateTime = AES.getServerDate().time;
-            pricingData.date[todayDate] = analysis;
+console.log(analysis);
+            pricingData.date[todayDate] = {};
+            pricingData.date[todayDate].data = analysis.data; //we only need data not the methods
             pricingData.date[todayDate].updateTime = updateTime;
             pricingData.date[todayDate].date = todayDate;
             pricingData.date[todayDate].pricingUpdated = 0;
-            chrome.storage.local.set({
-                [pricingData.key]: pricingData }, function() {
-                invPricingAnalysisBarSpan.removeClass().addClass("good").text("Data Saved!");
+
+            chrome.storage.local.set({[pricingData.key]: pricingData }, function() {
+                if (chrome.runtime.lastError) {
+                    console.error("Error setting data: " + chrome.runtime.lastError.message);
+                    invPricingAnalysisBarSpan.removeClass().addClass("bad").text("Data NOT saved!");
+                } else {
+                    invPricingAnalysisBarSpan.removeClass().addClass("good").text("Data saved!");
+                }
+
                 //Automation
                 if (settings.invPricing.autoClose) {
                     close();

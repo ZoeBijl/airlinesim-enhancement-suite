@@ -222,24 +222,30 @@ function createButtonOld() {
     if (xfer) {
         return
     }
-    let btn = $('<button class="btn btn-default"></button>').text('Extract all flight profit/loss');
-    let btn1 = $('<button class="btn btn-default"></button>').text('Extract finished flight profit/loss');
+    const btn = new ExtractionButton("Extract all flight profit/loss").element
+    const btn1 = new ExtractionButton("Extract finished flight profit/loss").element
+    const span = document.createElement("span")
+    const li = document.createElement("li")
+    li.className = "btn-group"
+    li.append(btn1, btn, span)
+    const target = document.querySelector(".as-page-aircraft .as-panel.as-action-bar li:first-child")
+    target.after(li)
 
-    let span = $('<span></span>');
-    let li = $('<li class="btn-group"></li>').append(btn1, btn, span)
-    $('.as-page-aircraft .as-panel.as-action-bar li:first-child').after(li)
-    //btn click
-    btn.click(function() {
-        btn.hide();
-        btn1.hide();
-        span.addClass('warning').text('Please reload page after all flight info pages open');
-        extractAllFlightProfit('all');
-    });
-    btn1.click(function() {
-        btn.hide();
-        btn1.hide();
-        span.addClass('warning').text('Please reload page after all flight info pages open');
-        extractAllFlightProfit('finished');
+    btn.addEventListener("click", (event) => {
+        btn.classList.add("hidden")
+        btn1.classList.add("hidden")
+        span.classList.add("warning")
+        span.innerText = "Please reload page after all flight info pages open"
+
+        extractAllFlightProfit('all')
+    })
+    btn1.addEventListener("click", (event) => {
+        btn.classList.add("hidden")
+        btn1.classList.add("hidden")
+        span.classList.add("warning")
+        span.innerText = "Please reload page after all flight info pages open"
+
+        extractAllFlightProfit('finished')
     })
 }
 

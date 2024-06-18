@@ -35,7 +35,7 @@ async function getSettings() {
     const data = await chrome.storage.local.get(['settings']);
     return data.settings;
   } catch (error) {
-    console.error('Error fetching settings:', error);
+    throw new Error('Error fetching settings:' + error.message);
     return {};
   }
 }

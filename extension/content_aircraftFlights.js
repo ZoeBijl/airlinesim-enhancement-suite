@@ -212,7 +212,7 @@ function saveData() {
 }
 
 function display() {
-    displayFlightProfit()
+    aircraftFlightsTab.displayProfits()
     createButtonOld()
 }
 
@@ -257,26 +257,6 @@ function extractAllFlightProfit(type) {
     });
 }
 
-function displayFlightProfit() {
-    const table = document.querySelector("#aircraft-flight-instances-table")
-    aircraftFlightData.flights.forEach(function(flight) {
-        if (!flight.data) {
-            return
-        }
-
-        const daysAgo = AES.getDateDiff(flight.data.date)
-        const profitCell = flight.row.querySelector("td:nth-child(13)")
-        profitCell.innerHTML = null
-        profitCell.classList.remove("text-center")
-        profitCell.classList.add("text-right")
-        profitCell.append(AES.formatCurrency(flight.data.money.CM5.Total))
-        const extractedCell = flight.row.querySelector("td:nth-child(14)")
-        extractedCell.innerHTML = null
-        extractedCell.classList.remove("text-center")
-        extractedCell.append(AES.formatDaysAgo(daysAgo))
-    })
-}
-
 /** Class representing the Aircraft Flights tab */
 class AircraftFlightsTab {
     #data
@@ -284,8 +264,10 @@ class AircraftFlightsTab {
     #infoPanel
     #statisticsPanel
     #currentFlights
+    #flightsTable
 
     constructor() {
+        this.#flightsTable = document.querySelector("#aircraft-flight-instances-table")
         this.#info = this.getAircraftInfo()
         this.#data = new Aircraft()
         this.#setAircraftData()
@@ -362,6 +344,71 @@ class AircraftFlightsTab {
         }
 
         return flights
+    }
+
+    extractFlightProfit() {
+
+    }
+
+    extractFlightProfit() {
+
+    }
+
+    /**
+     * Loops over an aircraft’s flights to display relevant data.
+     */
+    displayProfits() {
+        for (const flight of aircraftFlightData.flights) {
+            this.#displayFlightProfit(flight)
+        }
+    }
+
+    /**
+     * Loops over a flight’s data and calls functions to display it in the “Flights” table.
+     * @param {object} flight
+     */
+    #displayFlightProfit(flight) {
+        if (!flight.data) {
+            return
+        }
+
+        this.#setProfitCell(flight)
+        this.#setExtractionDateCell(flight)
+    }
+
+    /**
+     * Gets the flight’s profit and calls `#setFlightCell` to display it.
+     * @param {object} flight
+     */
+    #setProfitCell(flight) {
+        const value = AES.formatCurrency(flight.data.money.CM5.Total)
+        const cell = flight.row.querySelector("td:nth-child(13)")
+        this.#setFlightCell(cell, value, "right")
+    }
+
+    /**
+     * Gets the flight’s profit extraction date and calls `#setFlightCell` to display it.
+     * @param {object} flight
+     */
+    #setExtractionDateCell(flight) {
+        const value = AES.formatDaysAgo(AES.getDateDiff(flight.data.date))
+        const cell = flight.row.querySelector("td:nth-child(14)")
+        this.#setFlightCell(cell, value)
+    }
+
+    /**
+     * Adjusts a table cell’s attributes and appends the provided content.
+     * @param {HTMLElement} cell
+     * @param {string|HTMLElement} content
+     * @param {string} alignment - "left" | "right"
+     */
+    #setFlightCell(cell, content, alignment = "left") {
+        cell.innerHTML = null
+        cell.classList.remove("text-center")
+        if (alignment === "right") {
+            cell.classList.add("text-right")
+        }
+        cell.append(content)
     }
 
     get data() {

@@ -5,7 +5,7 @@ class ExtractionButton {
     className
     type
 
-    constructor(label, callback, className = "btn btn-default", type = "button") {
+    constructor(label, callback = null, className = "btn btn-default", type = "button") {
         this.label = label
         this.callback = callback
         this.className = className
@@ -13,13 +13,13 @@ class ExtractionButton {
 
         this.element = this.#createElement()
     }
-    
+
     #createElement() {
         const button = document.createElement("button")
         button.type = this.type
         button.innerText = this.label
         button.className = this.className
-        
+
         return button
     }
 }

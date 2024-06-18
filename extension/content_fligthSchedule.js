@@ -23,9 +23,9 @@ $(function(){
       });
     } else {
       //Check if automation via competitor monitoring
-      let server = getServerName();
-      let airlineId = getAirlineId();
-      let key = server+airlineId+'competitorMonitoring';
+      let serverName = AES.getServerName();
+      let airlineId = AES.getAirlineId();
+      let key = serverName+airlineId+'competitorMonitoring';
       chrome.storage.local.get([key], function(compMonitoringData) {
         compData = compMonitoringData[key];
         if(compData){
@@ -110,19 +110,19 @@ function extractSchedule(){
   });
   //Save to storage
   let dateTime = AES.getServerDate()
-  let server = getServerName();
-  let airline = getAirlineCode();
+  let serverName = AES.getServerName();
+  let airlineCode = getAirlineCode();
   let newScheduleData = {
     date:dateTime.date,
     updateTime:dateTime.time,
     schedule:schedule
   };
   //New key and data storage
-  let key = server+airline+'schedule';
+  let key = serverName+airlineCode+'schedule';
   let defaultScheduleData = {
     type:'schedule',
-    server:server,
-    airline:airline,
+    server:serverName,
+    airline:airlineCode,
     date:{}
   };
   chrome.storage.local.get({[key]:defaultScheduleData}, function(result) {
@@ -177,19 +177,15 @@ function extractSchedule(){
   }
 }
 //Helper Functions
-function getServerName(){
-  let server = window.location.hostname
-  server = server.split('.');
-  return server[0];
-}
+/**
+ * This function extracts the airline code from the flight numbers on flight schedule table.
+ *
+ * @returns {string} The airline code.
+ */
 function getAirlineCode(){
+  // Select the first cell with class 'code' inside the first row of the flight schedule table
   let airline = $(".flight-schedule td.code:first").text().split(" ");
+
+  // The airline code is the first element of the split string
   return airline[0];
-}
-function getAirlineId(){
-  //ID
-  let id = window.location.pathname;
-  id = id.split("/");
-  id = id[id.length-1];
-  return id;
 }

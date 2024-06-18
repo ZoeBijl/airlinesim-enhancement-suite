@@ -2,7 +2,7 @@
 //MAIN
 //Global vars
 var aircraftData = [];
-var server,aircraftFleetKey,aircraftFleetStorageData,airlineName;
+var serverName,aircraftFleetKey,aircraftFleetStorageData,airlineName;
 $(function(){
   if(fltmng_fleetManagementPageOpen()){
     fltmng_getData();
@@ -20,7 +20,7 @@ function fltmng_fleetManagementPageOpen(){
 }
 function fltmng_getData(){
   //Global
-  server = fltmng_getServerName();
+  serverName = AES.getServerName();
   let date = AES.getServerDate()
   //Aircraft
   let table = $('.as-page-fleet-management > .row > .col-md-9 > .as-panel:eq(0) table');
@@ -69,7 +69,7 @@ function fltmng_getAircraftId(value){
 function fltmng_getStorageData(){
   let keys = [];
   aircraftData.forEach(function(value){
-    let key = server + 'aircraftFlights' + value.aircraftId;
+    let key = serverName + 'aircraftFlights' + value.aircraftId;
     keys.push(key);
   });
   chrome.storage.local.get(keys, function(result) {
@@ -93,7 +93,7 @@ function fltmng_getStorageData(){
 }
 function fltmng_getAircraftStorageFleetData(){
   airlineName = fltmng_getAirlineName();
-  aircraftFleetKey = server + airlineName + 'aircraftFleet';
+  aircraftFleetKey = serverName + airlineName + 'aircraftFleet';
   chrome.storage.local.get(aircraftFleetKey, function(result) {
     fltmng_updateAircraftFleetStorageData(result[aircraftFleetKey]);
     fltmng_saveData();
@@ -106,7 +106,7 @@ function fltmng_getAirlineName(){
 }
 function fltmng_updateAircraftFleetStorageData(data){
   aircraftFleetStorageData = {
-    server:server,
+    server:serverName,
     type:'aircraftFleet',
     airline:airlineName,
     fleet:aircraftData
@@ -204,34 +204,29 @@ function fltmng_displayNewUpdates(){
   let span = $('<span class="good"></span>').text('Updated aircraft data for '+aircraftData.length+ ' from '+aircraftData[0].fleet);
   return span;
 }
-function fltmng_getServerName(){
-  let server = window.location.hostname
-  server = server.split('.');
-  return server[0];
-}
 function fltmng_formatMoney(value){
   let container = document.createElement("td")
   let formattedValue = Intl.NumberFormat().format(value)
   let indicatorEl = document.createElement("span")
   let valueEl = document.createElement("span")
   let currencyEl = document.createElement("span")
-  
+
   if (value >= 0) {
     valueEl.classList.add("good")
     indicatorEl.innerText = "+"
   }
-  
+
   if (value < 0) {
     valueEl.classList.add("bad")
     indicatorEl.innerText = "-"
     formattedValue = formattedValue.replace("-", "")
   }
-  
+
   valueEl.innerText = formattedValue
   currencyEl.innerText = " AS$"
-  
+
   container.classList.add("aes-text-right", "aes-no-text-wrap")
   container.append(indicatorEl, valueEl, currencyEl)
-  
+
   return container
 }

@@ -3,8 +3,8 @@
 //Global vars
 var server,airlineId,activeTab,compData;
 $(function(){
-    server = getServerName();
-    airlineId = getAirlineId();
+    server = AES.getServerName();
+    airlineId = AES.getAirlineId();
     activeTab = $(".nav-tabs .active").attr('class').split(" ");
     activeTab = activeTab[0];
     let key = server+airlineId+'competitorMonitoring';
@@ -69,7 +69,7 @@ function displayMain(){
           // Nothing Controled via schedule content script
           break;
         default:
-          console.log('Error 0925: Enterprice Overview Active Tab not found '+activeTab)
+          console.error('Error 0925: Enterprice Overview Active Tab not found '+activeTab)
           die();
       }
       displayAutomation(actionBar);
@@ -340,6 +340,11 @@ function getTab2Data(){
   data.tab2data=2;
   return data;
 }
+/**
+ * Retrieves the airline's code, name, and display name from the enterprises page.
+ *
+ * @returns {Object} An object containing the airline's code, name, and display name.
+ */
 function getAirline(){
   let table = $(".container-fluid:eq(2) .layout-row:eq(0) > .layout-col-md-4 > .as-fieldset:eq(0) table tbody");
   let code = table.find('tr:eq(1) td:eq(1)').text().trim().replace(/[^A-Za-z0-9]/g, '');
@@ -347,18 +352,6 @@ function getAirline(){
   let name = displayName.replace(/[^A-Za-z0-9]/g, '');
 
   return {code:code,name:name,displayName:displayName};
-}
-function getAirlineId(){
-  //ID
-  let id = window.location.pathname;
-  id = id.split("/");
-  id = id[id.length-1];
-  return id;
-}
-function getServerName(){
-  let server = window.location.hostname
-  server = server.split('.');
-  return server[0];
 }
 function formatWeekDate(date){
   let a = date.toString();

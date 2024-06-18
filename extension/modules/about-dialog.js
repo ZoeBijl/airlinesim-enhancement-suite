@@ -18,11 +18,11 @@ class AboutDialog {
         this.#container.append(this.#modalDialog)
         this.#target = this.#setTarget()
         this.#target.append(this.#container)
-        
+
         const observer = this.#mutationObserver()
         observer.observe(this.#container, {attributes: true})
     }
-    
+
     #createContainer() {
         const container = document.createElement("div")
         container.class = "modal"
@@ -34,21 +34,21 @@ class AboutDialog {
 
         return container
     }
-    
+
     #createModalDialog() {
         const modalDialog = document.createElement("div")
         modalDialog.className = "modal-dialog modal-md"
-        
+
         return modalDialog
     }
-    
+
     #createModalContent() {
         const modalContent = document.createElement("div")
         modalContent.className = "modal-content"
-        
+
         return modalContent
     }
-    
+
     #createCloseButton() {
         const icon = document.createElement("span")
         icon.setAttribute("aria-hidden", "true")
@@ -64,14 +64,18 @@ class AboutDialog {
 
         return button
     }
-    
+
     #createBody() {
         const body = document.createElement("div")
         body.className = "modal-body"
         const manifest = chrome.runtime.getManifest()
         const description = manifest.description
-        const version = manifest.version
-        
+        const versionName = manifest.version_name
+        let version = manifest.version
+        if (versionName) {
+            version = versionName
+        }
+
         body.innerHTML = `
             <img src="${chrome.runtime.getURL('images/AES-logo-128.png')}">
             <h2>AirlineSim Enhancement Suite</h2>
@@ -79,20 +83,20 @@ class AboutDialog {
             <p>Browser ${window.navigator.userAgent}<p>
             <p>Copyright &copy; 2020-2024 AES Authors. MIT License.</p>
         `
-        
+
         return body
     }
-    
+
     #setTarget() {
         const target = document.querySelector("body")
         return target
     }
-    
+
     #mutationObserver() {
         const observer = new MutationObserver(this.#correctBootstrapBehaviour.bind(this))
         return observer
     }
-    
+
     #correctBootstrapBehaviour() {
         if (this.#container.classList.contains("in") && !this.#container.classList.contains("modal")) {
             this.#container.classList.add("modal")

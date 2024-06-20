@@ -1,10 +1,14 @@
 "use strict";
 //MAIN
 //Global vars
-var flightInfoData, saveDataSpan;
+var flightInfoData,
+    saveDataSpan,
+    notifications
+
 $(function() {
     if (privateFlight()) {
         if (correctTabOpen()) {
+            notifications = new Notifications()
             flightInfoData = getData();
             saveData();
             display();
@@ -17,7 +21,7 @@ function saveData() {
     let key = flightInfoData.server + flightInfoData.type + flightInfoData.flightId;
     chrome.storage.local.set({
         [key]: flightInfoData }, function() {
-        saveDataSpan.addClass('good').text('Flight info data saved!');
+        notifications.add("AES: Flight data saved")
         chrome.storage.local.get(['settings'], function(result) {
             let settings = result.settings;
             if (settings.flightInfo) {

@@ -5,9 +5,11 @@ let aircraftFlightData,
     aircraftFlightInfoData,
     aircraftFlightsTab,
     statisticsPanel,
-    infoPanel
+    infoPanel,
+    notifications
 
 window.addEventListener("load", async (event) => {
+    notifications = new Notifications()
     aircraftFlightsTab = new AircraftFlightsTab()
     buildUI()
     await getData()
@@ -232,24 +234,15 @@ function createButtonOld() {
     target.after(li)
 
     btn.addEventListener("click", (event) => {
-        btn.classList.add("hidden")
-        btn1.classList.add("hidden")
-        span.classList.add("warning")
-        span.innerText = "Please reload page after all flight info pages open"
-
         extractAllFlightProfit('all')
     })
     btn1.addEventListener("click", (event) => {
-        btn.classList.add("hidden")
-        btn1.classList.add("hidden")
-        span.classList.add("warning")
-        span.innerText = "Please reload page after all flight info pages open"
-
         extractAllFlightProfit('finished')
     })
 }
 
 function extractAllFlightProfit(type) {
+    notifications.add("AES: Please reload page after all flight info pages open", {type: "warning"})
     aircraftFlightData.flights.forEach(function(value) {
         if (type == 'finished') {
             if (value.status == 'finished' || value.status == 'inflight') {

@@ -7,15 +7,72 @@ $(function() {
     airline = AES.getAirlineCode();
     server = AES.getServerName();
     chrome.storage.local.get(['settings'], function(result) {
-        settings = result.settings;
+      settings = result.settings;
 
-        displayDashboard();
+      if ((settings['flightInformationsFixed'] === undefined) || (settings['flightInformationsFixed'] !== 1)) {
+        fixAndDeleteInvalidData();
+      }
+
+      displayDashboard();
+      dashboardHandle();
+      
+      $("#aes-select-dashboard-main").change(function() {
         dashboardHandle();
-        $("#aes-select-dashboard-main").change(function() {
-            dashboardHandle();
-        });
+      });
     });
 });
+
+function fixAndDeleteInvalidData() {
+  chrome.storage.local.get(null, function (entries) {
+    const tasks = [];
+
+    function cleanAndSave(entry, key) {
+      return new Promise((resolve, reject) => {
+        if (key.endsWith("routeAnalysis") || key.endsWith("schedule")) {
+          if (entry.date) {
+            for (const dateKey in entry.date) {
+              if (!dateKey.startsWith("20") || dateKey.length !== 8) {
+                delete entry.date[dateKey];
+              }
+            }
+          }
+        } else if (key.endsWith("aircraftFleet")) {
+          entry.fleet = entry.fleet.filter(item => item.date && item.date.startsWith("20") && item.date.length === 8);
+        } else if (key.endsWith("personelManagement") || key.includes("flightInfo") || key.includes("aircraftFlights")) {
+          if (entry.date && (!entry.date.startsWith("20") || entry.date.length !== 8)) {
+            delete entries[key];
+          }
+        }
+
+        chrome.storage.local.set({ [key]: entry }, function () {
+          if (chrome.runtime.lastError) {
+            reject(new Error('Error saving cleaned data for ' + key + ': ' + chrome.runtime.lastError.message));
+          } else {
+            resolve();
+          }
+        });
+      });
+    }
+
+    Object.keys(entries).forEach(key => {
+      tasks.push(cleanAndSave(entries[key], key));
+    });
+
+    Promise.all(tasks).then(() => {
+      chrome.storage.local.get('settings', function (result) {
+        const settings = result.settings || {};
+        settings.flightInformationsFixed = 1;
+        chrome.storage.local.set({ settings: settings }, function () {
+          if (chrome.runtime.lastError) {
+            console.error('Error setting flightInformationsFixed:', chrome.runtime.lastError.message);
+          }
+        });
+      });
+    }).catch(error => {
+      console.error('Error cleaning and saving data:', error);
+    });
+  });
+}
 
 function displayDashboard() {
     let mainDiv = $("#enterprise-dashboard");

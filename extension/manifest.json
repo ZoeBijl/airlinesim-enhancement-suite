@@ -30,7 +30,7 @@
         {
             "css": ["css/content.css"],
             "js": [
-                "jquery-3.7.1.slim.min.js",
+                "js/vendor/jquery-3.7.1.slim.min.js",
                 "helpers.js",
                 "modules/aes-menu.js",
                 "modules/about-dialog.js"

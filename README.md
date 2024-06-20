@@ -43,6 +43,45 @@ The community has published some updates in the meantime but no continued develo
 
 Sources: the [original forum thread](https://forums.airlinesim.aero/t/introducing-airlinesim-enhancement-suite-beta/21684).
 
+## Developer Features
+
+These features make developing for AES easier.
+
+### Notifications
+
+AES comes with its own notification API. This uses AS’ notification style and location. The AES notification API consists of two components: `Notifications` and `Notification`.
+
+#### Usage
+
+Notifications should only be used as a response to an action by the user; don’t add notifications on page load.
+
+#### Initiate the `Notifications`:
+
+To start using the notification API create a new `Notifications`:
+
+```
+const notifications = new Notifications()
+```
+
+#### Add a new notification
+
+To add a notification:
+
+```
+notifications.add("The settings have been updated")
+```
+
+By default a new notification comes with the success styling (a checkmark icon and a green background). The style can be changed by passing an options object:
+
+```
+notifications.new("Failed to save data", {type: "warning"})
+```
+
+The possible values for `type` are:
+- `"success"`
+- `"warning"`
+- `"error"`
+
 ## Credits
 
 - Marcipanas for the original development
